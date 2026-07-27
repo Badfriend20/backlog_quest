@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "title": "Backlog Quest",
+    "createdAt": "2026-07-27T00:00:00.000Z",
+    "updatedAt": "2026-07-27T00:00:00.000Z",
+    "source": "Backlog Quest v2.3",
+    "notes": "Estado inicial incluido con la aplicación."
+  },
+  "preferences": {
+    "theme": "midnight",
+    "hidePrivateByDefault": true,
+    "activeView": "dashboard",
+    "activeSlotProfileId": "day-night",
+    "slotProfiles": [
+      {
+        "id": "day-night",
+        "label": "Día / Noche",
+        "custom": false,
+        "slots": [
+          {
+            "id": "first",
+            "label": "Día"
+          },
+          {
+            "id": "second",
+            "label": "Noche"
+          }
+        ]
+      },
+      {
+        "id": "early-late",
+        "label": "Temprano / Tarde",
+        "custom": false,
+        "slots": [
+          {
+            "id": "first",
+            "label": "Temprano"
+          },
+          {
+            "id": "second",
+            "label": "Tarde"
+          }
+        ]
+      },
+      {
+        "id": "morning-night",
+        "label": "Mañana / Noche",
+        "custom": false,
+        "slots": [
+          {
+            "id": "first",
+            "label": "Mañana"
+          },
+          {
+            "id": "second",
+            "label": "Noche"
+          }
+        ]
+      },
+      {
+        "id": "work-home",
+        "label": "Oficina / Casa",
+        "custom": false,
+        "slots": [
+          {
+            "id": "first",
+            "label": "Oficina"
+          },
+          {
+            "id": "second",
+            "label": "Casa"
+          }
+        ]
+      }
+    ],
+    "secondarySlotLabel": "Secundario",
+    "flexibleSlotLabel": "Flexible",
+    "queueDisplayCount": 10,
+    "deferPosition": 2,
+    "scheduleWeeks": 4,
+    "weekStartsOn": 1,
+    "compactCards": false,
+    "showTooltips": true,
+    "confirmDestructiveActions": true,
+    "autoSuggestNext": true,
+    "rules": [],
+    "quickCopyPresets": [],
+    "quickCopyPresetsReady": false,
+    "ownershipDisplayRules": {}
+  },
+  "catalogs": {
+    "statuses": [
+      {
+        "id": "wishlist",
+        "label": "Wishlist",
+        "color": "pink",
+        "description": "Juego que todavía no tienes o no está disponible en tu biblioteca."
+      },
+      {
+        "id": "next-release",
+        "label": "Próximo lanzamiento",
+        "color": "cyan",
+        "description": "Todavía no se puede jugar; permanece en espera hasta su fecha de disponibilidad."
+      },
+      {
+        "id": "available",
+        "label": "Disponible",
+        "color": "yellow",
+        "description": "Tienes acceso al juego, pero no hay una misión activa."
+      },
+      {
+        "id": "queued",
+        "label": "En cola",
+        "color": "slate",
+        "description": "Está considerado para jugarse más adelante."
+      },
+      {
+        "id": "queued-now",
+        "label": "En cola inmediata",
+        "color": "purple",
+        "description": "Es uno de los siguientes candidatos para convertirse en misión."
+      },
+      {
+        "id": "playing",
+        "label": "Jugando",
+        "color": "green",
+        "description": "Campaña o recorrido principal activo."
+      },
+      {
+        "id": "playing-secondary",
+        "label": "Jugando secundario",
+        "color": "blue",
+        "description": "Misión activa con menor frecuencia que la campaña principal."
+      },
+      {
+        "id": "replaying",
+        "label": "Rejugando",
+        "color": "pink",
+        "description": "Nuevo recorrido de un juego que ya terminaste antes."
+      },
+      {
+        "id": "paused",
+        "label": "Pausado",
+        "color": "orange",
+        "description": "Conserva su progreso, pero no ocupa una franja activa."
+      },
+      {
+        "id": "finished",
+        "label": "Terminado",
+        "color": "emerald",
+        "description": "Llegaste a los créditos o cumpliste el objetivo principal."
+      },
+      {
+        "id": "completed",
+        "label": "Completado",
+        "color": "emerald",
+        "description": "Terminaste todo lo que personalmente querías hacer en ese contenido."
+      },
+      {
+        "id": "abandoned",
+        "label": "Abandonado",
+        "color": "red",
+        "description": "La partida se cerró sin intención actual de continuarla."
+      },
+      {
+        "id": "unlikely",
+        "label": "Probablemente no lo juegue",
+        "color": "gray",
+        "description": "Permanece en la biblioteca, pero está al final de las prioridades."
+      },
+      {
+        "id": "watching",
+        "label": "En la mira",
+        "color": "violet",
+        "description": "Te interesa, aunque todavía no forma parte de la cola inmediata."
+      }
+    ],
+    "priorities": [
+      {
+        "id": "s",
+        "label": "S",
+        "description": "Prioridad máxima o con fecha importante."
+      },
+      {
+        "id": "high",
+        "label": "Alta",
+        "description": "Interés fuerte; debe aparecer antes que la prioridad media."
+      },
+      {
+        "id": "medium",
+        "label": "Media",
+        "description": "Interés normal, sin urgencia."
+      },
+      {
+        "id": "low",
+        "label": "Baja",
+        "description": "Curiosidad, regalo o título sin interés inmediato."
+      }
+    ],
+    "platforms": [],
+    "ownership": ["Propio", "Biblioteca familiar", "Suscripción", "Gratis/regalo", "Wishlist"],
+    "deviceKinds": ["handheld", "console", "console-handheld", "computer", "emulation"],
+    "queueStates": [
+      {
+        "id": "active",
+        "label": "Activo",
+        "description": "Actualmente ocupa una misión."
+      },
+      {
+        "id": "queued",
+        "label": "En cola",
+        "description": "Disponible para convertirse en misión."
+      },
+      {
+        "id": "paused",
+        "label": "Pausado",
+        "description": "Conserva su posición y progreso."
+      },
+      {
+        "id": "deferred",
+        "label": "Aplazado",
+        "description": "Se movió temporalmente fuera de los próximos lugares."
+      },
+      {
+        "id": "replay",
+        "label": "Rejugada futura",
+        "description": "Terminado y con intención clara de rejugarlo."
+      },
+      {
+        "id": "replay-later",
+        "label": "Quizá rejugar",
+        "description": "Podría volver a jugarse, pero no pronto."
+      },
+      {
+        "id": "archived",
+        "label": "Archivado",
+        "description": "Terminado sin intención actual de rejugarlo."
+      },
+      {
+        "id": "low-interest",
+        "label": "Al final",
+        "description": "No interesa actualmente, aunque sigue en la biblioteca."
+      },
+      {
+        "id": "blocked",
+        "label": "Bloqueado",
+        "description": "Conviene completar otro título antes."
+      },
+      {
+        "id": "wishlist",
+        "label": "Wishlist",
+        "description": "No está disponible todavía."
+      }
+    ]
+  },
+  "platforms": [],
+  "queue": [],
+  "missions": [],
+  "scheduleRules": [],
+  "scheduleOverrides": [],
+  "activityLog": [],
+  "games": []
+}

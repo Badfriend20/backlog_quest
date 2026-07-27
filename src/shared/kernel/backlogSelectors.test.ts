@@ -1,0 +1,121 @@
+import { describe, expect, it } from "vitest";
+import type { BacklogData, Game, QuickCopyPreset } from "./backlog";
+import {
+  mergeQuickCopyPresets,
+  normalizeOwnershipDisplayRules,
+  ownershipDisplayKey,
+  quickCopyLabel,
+  selectExistingQuickCopyKeys,
+  selectGlobalQuickCopyPresets,
+} from "./backlogSelectors";
+
+const GAME_PASS = "Game Pass";
+const NINTENDO_SWITCH = "Nintendo Switch";
+const FAMILY_LIBRARY = "Biblioteca familiar";
+const SUBSCRIPTION = "Suscripción";
+
+function preset(library: string, ownership: string, deviceIds: string[] = []): QuickCopyPreset {
+  return {
+    key: `${library}::${ownership}`,
+    library,
+    ownership,
+    deviceIds,
+    status: "Disponible",
+    priority: "Media",
+    idealSession: "Flexible",
+    crossCopyProgress: "separate",
+    notes: "",
+    updatedAt: "2026-01-01T00:00:00.000Z",
+  };
+}
+
+describe("etiquetas de agregado rápido", () => {
+  const rules = {
+    [ownershipDisplayKey("Propio")]: { hidden: true, label: "Propio" },
+    [ownershipDisplayKey(GAME_PASS)]: { hidden: false, label: GAME_PASS },
+    [ownershipDisplayKey(FAMILY_LIBRARY)]: { hidden: false, label: "Familiar" },
+  };
+
+  it("oculta o presenta cada propiedad según su configuración", () => {
+    expect(quickCopyLabel({ library: NINTENDO_SWITCH, ownership: "Propio" }, rules)).toBe(
+      NINTENDO_SWITCH
+    );
+    expect(quickCopyLabel({ library: "Xbox Game Pass", ownership: GAME_PASS }, rules)).toBe(
+      "Xbox Game Pass"
+    );
+    expect(quickCopyLabel({ library: "Steam", ownership: FAMILY_LIBRARY }, rules)).toBe(
+      "Steam Familiar"
+    );
+  });
+
+  it("limita los textos configurables a 24 caracteres", () => {
+    const normalized = normalizeOwnershipDisplayRules([SUBSCRIPTION], {
+      [ownershipDisplayKey(SUBSCRIPTION)]: {
+        hidden: false,
+        label: "Una etiqueta demasiado extensa para un botón compacto",
+      },
+    });
+
+    expect(normalized[ownershipDisplayKey(SUBSCRIPTION)].label).toHaveLength(24);
+    expect(quickCopyLabel({ library: "Plataforma", ownership: SUBSCRIPTION }, normalized)).toBe(
+      `Plataforma ${normalized[ownershipDisplayKey(SUBSCRIPTION)].label}`
+    );
+  });
+
+  it("usa el término original cuando no existe una regla guardada", () => {
+    expect(quickCopyLabel({ library: "Steam", ownership: FAMILY_LIBRARY }, {})).toBe(
+      "Steam Biblioteca familiar"
+    );
+  });
+});
+
+describe("selección global de agregado rápido", () => {
+  it("mantiene todas las combinaciones globales y separa las ya agregadas", () => {
+    const xbox = preset("Xbox", GAME_PASS);
+    const nintendo = preset(NINTENDO_SWITCH, "Propio");
+    const steam = preset("Steam", FAMILY_LIBRARY);
+    const game = {
+      copies: [{ id: "C1", library: "Xbox", ownership: GAME_PASS }],
+    } as Game;
+    const data = {
+      platforms: [],
+      games: [game],
+      preferences: {
+        quickCopyPresetsReady: false,
+        quickCopyPresets: [xbox, nintendo, steam],
+      },
+    } as unknown as BacklogData;
+
+    expect(selectGlobalQuickCopyPresets(data).map(item => item.library)).toEqual([
+      "Xbox",
+      NINTENDO_SWITCH,
+      "Steam",
+    ]);
+    expect(selectExistingQuickCopyKeys(game)).toEqual(new Set(["xbox::game-pass"]));
+  });
+
+  it("conserva primero la configuración más reciente para una combinación repetida", () => {
+    const older = preset("Xbox", GAME_PASS, ["D1"]);
+    const incomingCopy = {
+      id: "C2",
+      library: "Xbox",
+      ownership: GAME_PASS,
+      deviceIds: ["D2"],
+      device: "Dispositivo 2",
+      status: "Disponible",
+      priority: "Alta",
+      idealSession: "Noche",
+      crossCopyProgress: "shared" as const,
+      notes: "Reciente",
+    };
+
+    const merged = mergeQuickCopyPresets(
+      { platforms: [{ id: "D2", name: "Dispositivo 2" }] } as BacklogData,
+      [older],
+      [incomingCopy]
+    );
+
+    expect(merged).toHaveLength(1);
+    expect(merged[0]).toMatchObject({ deviceIds: ["D2"], priority: "Alta", notes: "Reciente" });
+  });
+});

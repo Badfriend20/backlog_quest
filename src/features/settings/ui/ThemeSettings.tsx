@@ -1,0 +1,88 @@
+import type { AppPreferences, ThemeColors } from "../../../shared/kernel/backlog";
+import { THEMES } from "../domain/themes";
+
+const COLOR_FIELDS: Array<{ key: keyof ThemeColors; label: string }> = [
+  { key: "background", label: "Fondo" },
+  { key: "panel", label: "Panel" },
+  { key: "panelAlt", label: "Panel secundario" },
+  { key: "border", label: "Bordes" },
+  { key: "text", label: "Texto" },
+  { key: "muted", label: "Texto secundario" },
+  { key: "primary", label: "Color principal" },
+  { key: "accent", label: "Acento" },
+  { key: "success", label: "Éxito" },
+  { key: "warning", label: "Aviso" },
+  { key: "danger", label: "Peligro" },
+];
+
+interface ThemeSettingsProps {
+  preferences: AppPreferences;
+  onChange: (patch: Partial<AppPreferences>, message: string) => void;
+}
+
+export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
+  function updateColor(key: keyof ThemeColors, value: string) {
+    onChange(
+      { theme: "custom", customTheme: { ...preferences.customTheme, [key]: value } },
+      "Tema personalizado actualizado."
+    );
+  }
+
+  return (
+    <section className="settings-card wide">
+      <div className="settings-section-heading">
+        <div>
+          <p className="eyebrow">TEMAS</p>
+          <h2>Apariencia</h2>
+          <p>Elige una combinación predefinida o ajusta cada color manualmente.</p>
+        </div>
+      </div>
+      <div className="theme-grid">
+        {THEMES.map(theme => (
+          <button
+            type="button"
+            className={preferences.theme === theme.id ? "theme-option selected" : "theme-option"}
+            key={theme.id}
+            onClick={() => onChange({ theme: theme.id }, `Tema ${theme.label} aplicado.`)}
+          >
+            <span className="theme-swatches" aria-hidden="true">
+              <i style={{ background: theme.colors.background }} />
+              <i style={{ background: theme.colors.primary }} />
+              <i style={{ background: theme.colors.accent }} />
+            </span>
+            <strong>{theme.label}</strong>
+            <small>{theme.description}</small>
+          </button>
+        ))}
+        <button
+          type="button"
+          className={preferences.theme === "custom" ? "theme-option selected" : "theme-option"}
+          onClick={() => onChange({ theme: "custom" }, "Tema personalizado aplicado.")}
+        >
+          <span className="theme-swatches" aria-hidden="true">
+            <i style={{ background: preferences.customTheme.background }} />
+            <i style={{ background: preferences.customTheme.primary }} />
+            <i style={{ background: preferences.customTheme.accent }} />
+          </span>
+          <strong>Personalizado</strong>
+          <small>Colores elegidos manualmente.</small>
+        </button>
+      </div>
+      {preferences.theme === "custom" && (
+        <div className="color-grid">
+          {COLOR_FIELDS.map(field => (
+            <label key={field.key}>
+              <span>{field.label}</span>
+              <input
+                type="color"
+                value={preferences.customTheme[field.key]}
+                onChange={event => updateColor(field.key, event.target.value)}
+              />
+              <code>{preferences.customTheme[field.key]}</code>
+            </label>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}

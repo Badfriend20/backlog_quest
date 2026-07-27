@@ -1,0 +1,464 @@
+import type {
+  BacklogData,
+  CopyPlatform,
+  CrossCopyProgress,
+  Game,
+  GameCopy,
+  Mission,
+  OwnershipDisplayRules,
+  QueueItem,
+  QuickCopyPreset,
+} from "./backlog";
+
+export const ACTIVE_GAME_STATUSES = new Set(["Jugando", "Jugando secundario", "Rejugando"]);
+const UNKNOWN_LABEL = "Por confirmar";
+export const OWNERSHIP_LABEL_MAX_LENGTH = 24;
+export const CROSS_COPY_PROGRESS_HELP =
+  "Indica si la partida guardada de esta copia puede continuarse en otras copias o plataformas del mismo juego.";
+export const CROSS_COPY_PROGRESS_OPTIONS: Array<{
+  value: CrossCopyProgress;
+  label: string;
+}> = [
+  { value: "shared", label: "Sí, comparte progreso" },
+  { value: "separate", label: "No comparte progreso" },
+  { value: "partial", label: "Solo con algunas copias" },
+  { value: "unknown", label: "Por confirmar" },
+];
+
+export function normalizeCrossCopyProgress(value: unknown): CrossCopyProgress {
+  if (value === "shared" || value === "separate" || value === "partial" || value === "unknown")
+    return value;
+  const normalized = normalize(String(value ?? ""));
+  if (normalized === "si") return "shared";
+  if (normalized === "no") return "separate";
+  if (normalized.includes("depende") || normalized.includes("algunas")) return "partial";
+  return "unknown";
+}
+
+export function crossCopyProgressLabel(value: CrossCopyProgress): string {
+  return (
+    CROSS_COPY_PROGRESS_OPTIONS.find(option => option.value === value)?.label ?? "Por confirmar"
+  );
+}
+
+export function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+export function formatDate(date: string | null): string {
+  if (!date) return "Sin fecha";
+  return new Intl.DateTimeFormat("es-MX", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${date}T12:00:00`));
+}
+
+export function formatDateTime(date: string): string {
+  return new Intl.DateTimeFormat("es-MX", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(date));
+}
+
+export function statusClass(status: string): string {
+  const normalized = normalize(status);
+  if (
+    normalized.includes("jugando") ||
+    normalized.includes("activo") ||
+    normalized.includes("rejugando")
+  )
+    return "status-green";
+  if (
+    normalized.includes("terminado") ||
+    normalized.includes("completado") ||
+    normalized.includes("archivado")
+  )
+    return "status-cyan";
+  if (normalized.includes("pausado") || normalized.includes("aplazado")) return "status-orange";
+  if (
+    normalized.includes("abandonado") ||
+    normalized.includes("no lo juegue") ||
+    normalized.includes("al final")
+  )
+    return "status-red";
+  if (
+    normalized.includes("wishlist") ||
+    normalized.includes("mira") ||
+    normalized.includes("replay")
+  )
+    return "status-pink";
+  if (normalized.includes("cola") || normalized.includes("bloqueado")) return "status-purple";
+  return "status-yellow";
+}
+
+export function gameSearchText(game: Game): string {
+  return normalize(
+    [
+      game.title,
+      game.status,
+      game.priority,
+      game.suggestedSession,
+      game.notes,
+      ...game.tags,
+      ...game.contents.flatMap(content => [content.title, content.type, content.status]),
+      ...game.copies.flatMap(copy => [copy.library, copy.device, copy.ownership]),
+    ].join(" ")
+  );
+}
+
+export function nextGeneratedId(prefix: string, ids: string[]): string {
+  const max = ids.reduce((current, id) => {
+    const value = Number(id.replace(/\D/g, ""));
+    return Number.isFinite(value) ? Math.max(current, value) : current;
+  }, 0);
+  return `${prefix}${String(max + 1).padStart(3, "0")}`;
+}
+
+export function getActiveSlotProfile(data: BacklogData) {
+  return (
+    data.preferences.slotProfiles.find(
+      profile => profile.id === data.preferences.activeSlotProfileId
+    ) ?? data.preferences.slotProfiles[0]
+  );
+}
+
+export function getSlotLabel(data: BacklogData, slotId: string): string {
+  const profile = getActiveSlotProfile(data);
+  if (slotId === "first") return profile?.slots[0].label ?? "Primera franja";
+  if (slotId === "second") return profile?.slots[1].label ?? "Segunda franja";
+  if (slotId === "secondary") return data.preferences.secondarySlotLabel;
+  return data.preferences.flexibleSlotLabel;
+}
+
+export function deviceName(data: BacklogData, deviceId: string | null | undefined): string {
+  if (!deviceId) return UNKNOWN_LABEL;
+  return data.platforms.find(platform => platform.id === deviceId)?.name ?? UNKNOWN_LABEL;
+}
+
+export function copyPlatformKey(value: string): string {
+  return (
+    normalize(value)
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "plataforma"
+  );
+}
+
+export function normalizeCopyPlatforms(
+  existing: CopyPlatform[] = [],
+  libraryNames: string[] = []
+): CopyPlatform[] {
+  const result: CopyPlatform[] = [];
+  const names = new Set<string>();
+  const ids = new Set<string>();
+
+  for (const platform of existing) {
+    const name = platform.name.trim();
+    const normalizedName = normalize(name);
+    if (!name || names.has(normalizedName) || ids.has(platform.id)) continue;
+    result.push({ ...platform, name, active: platform.active ?? true });
+    names.add(normalizedName);
+    ids.add(platform.id);
+  }
+
+  for (const libraryName of libraryNames) {
+    const name = libraryName.trim();
+    const normalizedName = normalize(name);
+    if (!name || names.has(normalizedName)) continue;
+    const baseId = `platform-${copyPlatformKey(name)}`;
+    let id = baseId;
+    let suffix = 2;
+    while (ids.has(id)) {
+      id = `${baseId}-${suffix}`;
+      suffix += 1;
+    }
+    result.push({ id, name, active: true });
+    names.add(normalizedName);
+    ids.add(id);
+  }
+  return result;
+}
+
+export function resolveCopyPlatform(
+  platforms: CopyPlatform[],
+  platformId: string | undefined,
+  legacyLibrary: string
+): CopyPlatform | undefined {
+  return (
+    platforms.find(platform => platform.id === platformId) ??
+    platforms.find(platform => normalize(platform.name) === normalize(legacyLibrary))
+  );
+}
+
+export function inferDeviceIds(data: Pick<BacklogData, "platforms">, text: string): string[] {
+  const normalizedText = normalize(text || "");
+  if (!normalizedText || normalizedText === "por confirmar") return [];
+  return data.platforms
+    .filter(platform => {
+      const fullName = normalize(platform.name);
+      if (normalizedText.includes(fullName) || fullName.includes(normalizedText)) return true;
+      return platform.name
+        .split(/[/+]/)
+        .map(part => normalize(part))
+        .filter(part => part.length >= 3)
+        .some(part => normalizedText.includes(part));
+    })
+    .map(platform => platform.id);
+}
+
+export function copyDeviceIds(
+  data: Pick<BacklogData, "platforms">,
+  copy: GameCopy | null | undefined
+): string[] {
+  if (!copy) return [];
+  const valid = new Set(data.platforms.map(platform => platform.id));
+  const saved = (copy.deviceIds ?? []).filter(id => valid.has(id));
+  return saved.length ? saved : inferDeviceIds(data, copy.device);
+}
+
+export function deviceLabels(data: Pick<BacklogData, "platforms">, ids: string[]): string[] {
+  const valid = new Map(data.platforms.map(platform => [platform.id, platform.name]));
+  return ids.map(id => valid.get(id)).filter((name): name is string => Boolean(name));
+}
+
+export function deviceLabel(data: Pick<BacklogData, "platforms">, ids: string[]): string {
+  return deviceLabels(data, ids).join(" + ") || UNKNOWN_LABEL;
+}
+
+export function copyDeviceLabel(
+  data: Pick<BacklogData, "platforms">,
+  copy: GameCopy | null | undefined
+): string {
+  if (!copy) return UNKNOWN_LABEL;
+  const ids = copyDeviceIds(data, copy);
+  return ids.length ? deviceLabel(data, ids) : copy.device || UNKNOWN_LABEL;
+}
+
+export function quickCopyKey(library: string, ownership: string, platformId?: string): string {
+  const platformKey = platformId || copyPlatformKey(library) || "sin-plataforma";
+  return `${platformKey}::${normalize(ownership).replace(/[^a-z0-9]+/g, "-") || "sin-propiedad"}`;
+}
+
+export function ownershipDisplayKey(ownership: string): string {
+  return normalize(ownership)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function normalizeOwnershipDisplayRules(
+  ownershipTerms: string[],
+  existing: OwnershipDisplayRules = {}
+): OwnershipDisplayRules {
+  return Object.fromEntries(
+    ownershipTerms.map(ownership => {
+      const key = ownershipDisplayKey(ownership);
+      const saved = existing[key];
+      const label = (saved?.label.trim() || ownership).slice(0, OWNERSHIP_LABEL_MAX_LENGTH);
+      return [key, { hidden: saved?.hidden ?? false, label }];
+    })
+  );
+}
+
+export function quickCopyLabel(
+  preset: Pick<QuickCopyPreset, "library" | "ownership">,
+  rules: OwnershipDisplayRules = {}
+): string {
+  const library = preset.library.trim() || "Copia";
+  const ownership = preset.ownership.trim();
+  const rule = rules[ownershipDisplayKey(ownership)];
+  if (!ownership || rule?.hidden) return library;
+  const display = (rule?.label.trim() || ownership).slice(0, OWNERSHIP_LABEL_MAX_LENGTH);
+  if (!display || normalize(library).includes(normalize(display))) return library;
+  return `${library} ${display}`;
+}
+
+export function quickCopyPresetFromCopy(
+  data: Pick<BacklogData, "platforms">,
+  copy: GameCopy,
+  updatedAt = new Date().toISOString()
+): QuickCopyPreset {
+  return {
+    key: quickCopyKey(copy.library, copy.ownership, copy.platformId),
+    platformId: copy.platformId,
+    library: copy.library,
+    ownership: copy.ownership,
+    deviceIds: copyDeviceIds(data, copy),
+    status: "Disponible",
+    priority: copy.priority,
+    idealSession: copy.idealSession,
+    crossCopyProgress: copy.crossCopyProgress,
+    notes: copy.notes,
+    updatedAt,
+  };
+}
+
+export function mergeQuickCopyPresets(
+  data: Pick<BacklogData, "platforms">,
+  existing: QuickCopyPreset[],
+  copies: GameCopy[]
+): QuickCopyPreset[] {
+  const now = new Date().toISOString();
+  const incoming = copies
+    .filter(copy => copy.library.trim())
+    .map(copy => quickCopyPresetFromCopy(data, copy, now));
+  const keys = new Set(incoming.map(preset => preset.key));
+  const normalizedExisting = existing.map(preset => ({
+    ...preset,
+    key: quickCopyKey(preset.library, preset.ownership, preset.platformId),
+  }));
+  return [...incoming, ...normalizedExisting.filter(preset => !keys.has(preset.key))]
+    .filter((preset, index, all) => all.findIndex(item => item.key === preset.key) === index)
+    .slice(0, 80);
+}
+
+export function selectGlobalQuickCopyPresets(
+  data: Pick<BacklogData, "games" | "platforms" | "preferences">
+): QuickCopyPreset[] {
+  const stored = data.preferences.quickCopyPresets ?? [];
+  if (stored.length) return mergeQuickCopyPresets(data, stored, []);
+  return mergeQuickCopyPresets(
+    data,
+    [],
+    data.games.flatMap(game => game.copies)
+  );
+}
+
+export function selectExistingQuickCopyKeys(game: Pick<Game, "copies">): Set<string> {
+  return new Set(
+    game.copies.map(copy => quickCopyKey(copy.library, copy.ownership, copy.platformId))
+  );
+}
+
+export function selectQuickCopyPresets(
+  data: Pick<BacklogData, "games" | "platforms" | "preferences">,
+  sessionPresets: QuickCopyPreset[]
+): QuickCopyPreset[] {
+  const global = selectGlobalQuickCopyPresets(data);
+  const sessionKeys = new Set(
+    sessionPresets.map(preset => quickCopyKey(preset.library, preset.ownership, preset.platformId))
+  );
+  return [
+    ...sessionPresets.map(preset => ({
+      ...preset,
+      key: quickCopyKey(preset.library, preset.ownership, preset.platformId),
+    })),
+    ...global.filter(preset => !sessionKeys.has(preset.key)),
+  ].slice(0, 80);
+}
+
+export function splitDevices(device: string): string[] {
+  return device
+    .split(/[/+]/)
+    .map(item => item.trim())
+    .filter(Boolean)
+    .filter((item, index, all) => all.indexOf(item) === index);
+}
+
+export function gameForMission(data: BacklogData, mission: Mission): Game | null {
+  return data.games.find(game => game.id === mission.gameId) ?? null;
+}
+
+export function activeMissions(data: BacklogData): Mission[] {
+  const slotOrder = new Map([
+    ["first", 0],
+    ["second", 1],
+    ["secondary", 2],
+    ["flexible", 3],
+  ]);
+  return data.missions
+    .filter(mission => mission.status === "active")
+    .sort((a, b) => (slotOrder.get(a.slotId) ?? 9) - (slotOrder.get(b.slotId) ?? 9));
+}
+
+export function sortedQueue(data: BacklogData): QueueItem[] {
+  return [...data.queue].sort((a, b) => a.position - b.position);
+}
+
+export function queueLabel(data: BacklogData, state: QueueItem["state"]): string {
+  return data.catalogs.queueStates.find(item => item.id === state)?.label ?? state;
+}
+
+export function unresolvedDependencies(data: BacklogData, game: Game): Game[] {
+  return game.dependencies
+    .map(id => data.games.find(candidate => candidate.id === id))
+    .filter((candidate): candidate is Game => Boolean(candidate))
+    .filter(candidate => !["Terminado", "Completado"].includes(candidate.status));
+}
+
+export function getWeekLabel(date: Date, weekStartsOn: 0 | 1): string {
+  const start = new Date(date);
+  const day = start.getDay();
+  let delta = -day;
+  if (weekStartsOn === 1) delta = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + delta);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short" });
+  return `${formatter.format(start)} – ${formatter.format(end)}`;
+}
+
+export interface GeneratedScheduleItem {
+  id: string;
+  date: string;
+  day: string;
+  missions: Array<{ mission: Mission; game: Game; label: string; duration: string }>;
+}
+
+function durationLabel(min: number, max: number): string {
+  if (min === max) return `${min} min`;
+  return `${min}–${max} min`;
+}
+
+export function generateSchedule(data: BacklogData): GeneratedScheduleItem[] {
+  const days = Math.max(1, data.preferences.scheduleWeeks) * 7;
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const formatter = new Intl.DateTimeFormat("es-MX", { weekday: "long" });
+  const overrides = data.scheduleOverrides;
+  const result: GeneratedScheduleItem[] = [];
+
+  for (let index = 0; index < days; index += 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+    const dateKey = date.toISOString().slice(0, 10);
+    const weekday = date.getDay();
+    const missions = data.scheduleRules
+      .filter(rule => rule.enabled && rule.weekdays.includes(weekday))
+      .filter(
+        rule =>
+          !overrides.some(
+            override =>
+              override.date === dateKey &&
+              override.missionId === rule.missionId &&
+              override.action === "skip"
+          )
+      )
+      .map(rule => {
+        const mission = data.missions.find(
+          item => item.id === rule.missionId && item.status === "active"
+        );
+        if (!mission) return null;
+        const game = data.games.find(item => item.id === mission.gameId);
+        if (!game) return null;
+        return {
+          mission,
+          game,
+          label: getSlotLabel(data, mission.slotId),
+          duration: durationLabel(rule.durationMin, rule.durationMax),
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    result.push({
+      id: `CAL-${dateKey}`,
+      date: dateKey,
+      day: formatter.format(date).replace(/^./, letter => letter.toUpperCase()),
+      missions,
+    });
+  }
+  return result;
+}
