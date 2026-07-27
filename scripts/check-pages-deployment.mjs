@@ -13,8 +13,16 @@ const checks = [
     message: "El workflow debe usar actions/setup-node@v6.",
   },
   {
-    valid: workflow.includes("actions/upload-pages-artifact@v4"),
-    message: "El workflow debe usar actions/upload-pages-artifact@v4.",
+    valid: workflow.includes("actions/configure-pages@v6"),
+    message: "El workflow debe usar actions/configure-pages@v6.",
+  },
+  {
+    valid: workflow.includes("actions/upload-pages-artifact@v5"),
+    message: "El workflow debe usar actions/upload-pages-artifact@v5.",
+  },
+  {
+    valid: workflow.includes("actions/deploy-pages@v5"),
+    message: "El workflow debe usar actions/deploy-pages@v5.",
   },
   {
     valid: /path:\s*dist/.test(workflow),
