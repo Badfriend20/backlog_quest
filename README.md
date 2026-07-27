@@ -17,3 +17,7 @@ Aplicación React + TypeScript + Vite para administrar una biblioteca de videoju
 
 La documentación técnica, funcional y de mantenimiento comienza en [`docs/README.md`](docs/README.md).
 Para uso cotidiano consulta también `GUIA_RAPIDA.md`.
+
+## Licencia
+
+Este proyecto no cuenta actualmente con una licencia de código abierto. Todos los derechos están reservados.
