@@ -1,5 +1,11 @@
 # Modo offline y caché
 
+## GitHub Pages
+
+El workflow `.github/workflows/deploy.yml` compila con Vite y publica exclusivamente `dist` mediante el artefacto oficial de Pages. En **Settings → Pages → Build and deployment**, la fuente debe ser **GitHub Actions**; seleccionar una rama activa el flujo de Jekyll y publica archivos fuente o documentación en lugar de la aplicación.
+
+`npm run check:pages` verifica que el workflow use Actions compatibles con Node.js 24, que el artefacto apunte a `dist` y que el HTML compilado no conserve referencias a `main.tsx`.
+
 ## Única configuración
 
 La PWA se configura exclusivamente mediante `VitePWA` en `vite.config.ts`. No existen un service worker fuente, un script de generación posterior al build, un manifiesto manual ni código de registro dentro de React.
