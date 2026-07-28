@@ -4,6 +4,77 @@ const PRIMARY_DEVICE_ID = "device-primary";
 const SECONDARY_DEVICE_ID = "device-secondary";
 const PRIMARY_DEVICE_NAME = "Equipo principal";
 const SECONDARY_DEVICE_NAME = "Equipo secundario";
+const FIXTURE_DATE = "2026-01-01T00:00:00.000Z";
+
+const EMPTY_BACKLOG_FIXTURE: BacklogData = {
+  schemaVersion: 2,
+  meta: {
+    title: "Fixture de Backlog Quest",
+    createdAt: FIXTURE_DATE,
+    updatedAt: FIXTURE_DATE,
+    source: "Pruebas",
+    notes: "",
+  },
+  preferences: {
+    theme: "midnight",
+    customTheme: {
+      background: "#101018",
+      panel: "#181824",
+      panelAlt: "#202030",
+      border: "#36364a",
+      text: "#f4f4ff",
+      muted: "#a0a0b8",
+      primary: "#b794f4",
+      accent: "#67e8f9",
+      success: "#6ee7b7",
+      warning: "#ffd166",
+      danger: "#ff6f7d",
+    },
+    hidePrivateByDefault: true,
+    activeView: "dashboard",
+    activeSlotProfileId: "test-profile",
+    slotProfiles: [
+      {
+        id: "test-profile",
+        label: "Día / Noche",
+        custom: false,
+        slots: [
+          { id: "first", label: "Día" },
+          { id: "second", label: "Noche" },
+        ],
+      },
+    ],
+    secondarySlotLabel: "Secundario",
+    flexibleSlotLabel: "Flexible",
+    queueDisplayCount: 10,
+    deferPosition: 2,
+    scheduleWeeks: 1,
+    weekStartsOn: 1,
+    compactCards: false,
+    showTooltips: true,
+    confirmDestructiveActions: true,
+    autoSuggestNext: true,
+    rules: [],
+    quickCopyPresetsReady: false,
+    quickCopyPresets: [],
+    ownershipDisplayRules: {},
+  },
+  catalogs: {
+    statuses: [],
+    priorities: [],
+    platforms: [],
+    ownership: ["Propio"],
+    deviceKinds: ["computer", "console"],
+    queueStates: [],
+  },
+  platforms: [],
+  queue: [],
+  missions: [],
+  scheduleRules: [],
+  scheduleOverrides: [],
+  activityLog: [],
+  games: [],
+};
 
 function game(
   id: string,
@@ -55,7 +126,7 @@ function game(
             device,
             deviceId,
             status: "Jugando",
-            startedAt: "2026-01-01T00:00:00.000Z",
+            startedAt: FIXTURE_DATE,
             finishedAt: null,
             notes: "",
             contentId: "main-campaign",
@@ -175,7 +246,7 @@ export function withBacklogFixture(base: BacklogData): BacklogData {
         status: "active",
         playthroughId: "playthrough-1",
         scheduleRuleId: "schedule-1",
-        startedAt: "2026-01-01T00:00:00.000Z",
+        startedAt: FIXTURE_DATE,
         finishedAt: null,
         notes: "",
       },
@@ -184,7 +255,7 @@ export function withBacklogFixture(base: BacklogData): BacklogData {
       {
         id: "schedule-1",
         missionId: "mission-1",
-        weekdays: [1],
+        sessions: [{ weekday: 1, slotId: "first" }],
         durationMin: 30,
         durationMax: 60,
         enabled: true,
@@ -193,4 +264,8 @@ export function withBacklogFixture(base: BacklogData): BacklogData {
     scheduleOverrides: [],
     activityLog: [],
   };
+}
+
+export function createBacklogFixture(): BacklogData {
+  return withBacklogFixture(EMPTY_BACKLOG_FIXTURE);
 }

@@ -41,6 +41,8 @@ export interface Playthrough {
   finishedAt: string | null;
   notes: string;
   contentId?: string;
+  contentTitle?: string;
+  contentType?: ContentType;
   copyId?: string;
 }
 
@@ -138,10 +140,15 @@ export interface Mission {
 export interface ScheduleRule {
   id: string;
   missionId: string;
-  weekdays: number[];
+  sessions: ScheduleSession[];
   durationMin: number;
   durationMax: number;
   enabled: boolean;
+}
+
+export interface ScheduleSession {
+  weekday: number;
+  slotId: string;
 }
 
 export interface ScheduleOverride {
@@ -280,13 +287,12 @@ export interface CompletionFormValue {
 
 export interface MissionFormValue {
   gameId: string;
-  contentTitle: string;
-  contentType: ContentType;
+  contentId: string;
   copyId: string;
   activeDevice: string;
   activeDeviceId: string;
   slotId: string;
-  weekdays: number[];
+  sessions: ScheduleSession[];
   durationMin: number;
   durationMax: number;
   notes: string;

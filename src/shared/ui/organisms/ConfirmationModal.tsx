@@ -1,4 +1,12 @@
+import styled from "styled-components";
+import { Button } from "../atoms";
+import { ModalActions } from "../layout";
 import { Modal } from "./Modal";
+
+const ConfirmationMessage = styled.p`
+  color: var(--muted);
+  line-height: 1.6;
+`;
 
 export function ConfirmationModal({
   title,
@@ -15,15 +23,13 @@ export function ConfirmationModal({
 }) {
   return (
     <Modal eyebrow="CONFIRMACIÓN REQUERIDA" title={title} onClose={onClose}>
-      <p className="confirmation-message">{message}</p>
-      <div className="modal-actions">
-        <button type="button" className="ghost-button" onClick={onClose}>
-          Cancelar
-        </button>
-        <button type="button" className="danger-button" onClick={onConfirm}>
+      <ConfirmationMessage>{message}</ConfirmationMessage>
+      <ModalActions>
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button variant="danger" onClick={onConfirm}>
           {confirmLabel}
-        </button>
-      </div>
+        </Button>
+      </ModalActions>
     </Modal>
   );
 }

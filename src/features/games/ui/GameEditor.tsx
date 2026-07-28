@@ -1,14 +1,33 @@
 import type { GameEditorProps } from "./gameEditorTypes";
-import { Modal } from "../../../shared/ui";
+import { Button, Modal, ModalActions } from "../../../shared/ui";
 import { QuickCopyModal } from "./QuickCopyModal";
 import { GameGeneralPanel } from "./GameGeneralPanel";
 import { GameCopiesPanel } from "./GameCopiesPanel";
 import { GamePlaythroughsPanel } from "./GamePlaythroughsPanel";
 import { useGameEditor } from "./useGameEditor";
-import { GamesStyles } from "./GamesStyles";
+import { GamesScope } from "./GamesStyles";
 
-export function GameEditor({ game, data, onClose, onSave }: GameEditorProps) {
-  const editor = useGameEditor({ game, data, onSave });
+export function GameEditor({
+  game,
+  data,
+  missionIntent,
+  onClose,
+  onSave,
+  onResolveMissionRelation,
+  onRemoveContent,
+  onRemoveCopy,
+  onRemovePlaythrough,
+}: GameEditorProps) {
+  const editor = useGameEditor({
+    game,
+    data,
+    missionIntent,
+    onSave,
+    onResolveMissionRelation,
+    onRemoveContent,
+    onRemoveCopy,
+    onRemovePlaythrough,
+  });
   const {
     isNew,
     draft,
@@ -22,8 +41,7 @@ export function GameEditor({ game, data, onClose, onSave }: GameEditorProps) {
     addCopyFromPreset,
   } = editor;
   return (
-    <>
-      <GamesStyles />
+    <GamesScope>
       <Modal
         title={isNew ? "Agregar juego" : draft.title}
         eyebrow={isNew ? "NUEVO REGISTRO" : draft.id}
@@ -57,14 +75,12 @@ export function GameEditor({ game, data, onClose, onSave }: GameEditorProps) {
           {tab === "copies" && <GameCopiesPanel data={data} editor={editor} />}
           {tab === "playthroughs" && <GamePlaythroughsPanel data={data} editor={editor} />}
           {tab === "general" && (
-            <div className="modal-actions">
-              <button type="button" className="ghost-button" onClick={onClose}>
-                Cancelar
-              </button>
-              <button type="submit" className="primary-button">
+            <ModalActions>
+              <Button onClick={onClose}>Cancelar</Button>
+              <Button type="submit" variant="primary">
                 Guardar cambios generales
-              </button>
-            </div>
+              </Button>
+            </ModalActions>
           )}
         </form>
       </Modal>
@@ -77,6 +93,6 @@ export function GameEditor({ game, data, onClose, onSave }: GameEditorProps) {
           onClose={() => setShowQuickOptions(false)}
         />
       )}
-    </>
+    </GamesScope>
   );
 }

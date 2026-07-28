@@ -1,5 +1,7 @@
 import type { AppPreferences, ThemeColors } from "../../../shared/kernel/backlog";
+import { Eyebrow } from "../../../shared/ui";
 import { THEMES } from "../domain/themes";
+import { SettingsCard, SettingsSectionHeading } from "./SettingsStyles";
 
 const COLOR_FIELDS: Array<{ key: keyof ThemeColors; label: string }> = [
   { key: "background", label: "Fondo" },
@@ -29,14 +31,14 @@ export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
   }
 
   return (
-    <section className="settings-card wide">
-      <div className="settings-section-heading">
+    <SettingsCard $wide>
+      <SettingsSectionHeading>
         <div>
-          <p className="eyebrow">TEMAS</p>
+          <Eyebrow>TEMAS</Eyebrow>
           <h2>Apariencia</h2>
           <p>Elige una combinación predefinida o ajusta cada color manualmente.</p>
         </div>
-      </div>
+      </SettingsSectionHeading>
       <div className="theme-grid">
         {THEMES.map(theme => (
           <button
@@ -83,6 +85,6 @@ export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
           ))}
         </div>
       )}
-    </section>
+    </SettingsCard>
   );
 }

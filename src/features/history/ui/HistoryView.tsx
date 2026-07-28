@@ -1,6 +1,7 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
 import { deviceName, formatDate, statusClass } from "../../../shared/kernel/backlogSelectors";
-import { HistoryStyles } from "./HistoryStyles";
+import { Button, StatusChip } from "../../../shared/ui";
+import { HistoryScope } from "./HistoryStyles";
 
 export function HistoryView({
   data,
@@ -18,8 +19,7 @@ export function HistoryView({
         ) || a.game.title.localeCompare(b.game.title, "es")
     );
   return (
-    <>
-      <HistoryStyles />
+    <HistoryScope>
       <p className="mobile-scroll-hint">Desliza horizontalmente para ver todas las columnas.</p>
       <section className="table-wrap" aria-label="Historial desplazable">
         <table>
@@ -61,7 +61,7 @@ export function HistoryView({
                       : play.platform || "Por confirmar"}
                   </td>
                   <td>
-                    <span className={`status-pill ${statusClass(play.status)}`}>{play.status}</span>
+                    <StatusChip tone={statusClass(play.status)}>{play.status}</StatusChip>
                   </td>
                   <td>
                     {play.deviceId
@@ -71,13 +71,9 @@ export function HistoryView({
                   <td>{formatDate(play.finishedAt)}</td>
                   <td>{play.notes || "—"}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="ghost-button compact"
-                      onClick={() => onSelectGame(game.id)}
-                    >
+                    <Button size="compact" onClick={() => onSelectGame(game.id)}>
                       Editar
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               );
@@ -85,6 +81,6 @@ export function HistoryView({
           </tbody>
         </table>
       </section>
-    </>
+    </HistoryScope>
   );
 }

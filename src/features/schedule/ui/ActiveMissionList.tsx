@@ -1,75 +1,85 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
-import { activeMissions, deviceName, getSlotLabel } from "../../../shared/kernel/backlogSelectors";
-
-const DAYS = [
-  { id: 1, label: "L" },
-  { id: 2, label: "M" },
-  { id: 3, label: "X" },
-  { id: 4, label: "J" },
-  { id: 5, label: "V" },
-  { id: 6, label: "S" },
-  { id: 0, label: "D" },
-];
+import {
+  activeMissions,
+  deviceName,
+  missionLinkState,
+} from "../../../shared/kernel/backlogSelectors";
+import { missionScheduleLabel } from "../../../shared/kernel/schedule";
+import { Button, EmptyState, Eyebrow, SectionHeading } from "../../../shared/ui";
+import { MissionLinkActions } from "../../missions";
 
 export function ActiveMissionList({
   data,
   onEditMission,
+  onManageContentsForMission,
+  onAddCopyForMission,
+  onAddPlaythroughForMission,
 }: {
   data: BacklogData;
   onEditMission(missionId: string): void;
+  onManageContentsForMission(missionId: string): void;
+  onAddCopyForMission(missionId: string): void;
+  onAddPlaythroughForMission(missionId: string): void;
 }) {
   const missions = activeMissions(data);
 
   return (
     <section className="plan-mission-manager">
-      <div className="section-heading">
+      <SectionHeading>
         <div>
-          <p className="eyebrow">ACCESO PERMANENTE</p>
+          <Eyebrow>ACCESO PERMANENTE</Eyebrow>
           <h2>Misiones activas ({missions.length})</h2>
           <p>Edita una misión aunque todavía no tenga días programados en el calendario.</p>
         </div>
-      </div>
+      </SectionHeading>
       <div className="plan-mission-list">
         {missions.map(mission => {
           const game = data.games.find(item => item.id === mission.gameId);
           const rule = data.scheduleRules.find(
             item => item.missionId === mission.id && item.enabled
           );
-          const scheduledDays = DAYS.filter(day => rule?.weekdays.includes(day.id))
-            .map(day => day.label)
-            .join(" · ");
-          const scheduleLabel = scheduledDays
-            ? `${scheduledDays} · ${rule?.durationMin}–${rule?.durationMax} min`
-            : "Sin días programados";
+          const scheduleLabel = missionScheduleLabel(data, mission);
+          const scheduled = Boolean(rule?.sessions.length);
+          const links = missionLinkState(data, mission);
 
           return (
-            <article className="plan-mission-row" key={mission.id}>
+            <article
+              className={links.complete ? "plan-mission-row" : "plan-mission-row mission-alert"}
+              key={mission.id}
+            >
               <div>
                 <strong>{game?.title ?? "Juego no disponible"}</strong>
                 <span>{mission.contentTitle}</span>
+                <MissionLinkActions
+                  hasContent={links.hasContent}
+                  hasCopy={links.hasCopy}
+                  hasPlaythrough={links.hasPlaythrough}
+                  canCreatePlaythrough={Boolean(game?.copies.length && game.contents.length)}
+                  onManageContents={() => onManageContentsForMission(mission.id)}
+                  onAddCopy={() => onAddCopyForMission(mission.id)}
+                  onAddPlaythrough={() => onAddPlaythroughForMission(mission.id)}
+                />
               </div>
               <div className="plan-mission-meta">
-                <span>{getSlotLabel(data, mission.slotId)}</span>
                 <span>
                   {mission.activeDeviceId
                     ? deviceName(data, mission.activeDeviceId)
                     : mission.activeDevice}
                 </span>
-                <span className={scheduledDays ? "" : "unscheduled-label"}>{scheduleLabel}</span>
+                <span className={scheduled ? "" : "unscheduled-label"}>{scheduleLabel}</span>
+                {scheduled && (
+                  <span>
+                    {rule?.durationMin}–{rule?.durationMax} min
+                  </span>
+                )}
               </div>
-              <button
-                type="button"
-                className="ghost-button compact"
-                onClick={() => onEditMission(mission.id)}
-              >
+              <Button size="compact" onClick={() => onEditMission(mission.id)}>
                 Editar misión
-              </button>
+              </Button>
             </article>
           );
         })}
-        {!missions.length && (
-          <div className="empty-relation">No hay misiones activas para administrar.</div>
-        )}
+        {!missions.length && <EmptyState>No hay misiones activas para administrar.</EmptyState>}
       </div>
     </section>
   );

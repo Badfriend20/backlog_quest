@@ -1,6 +1,13 @@
 import { useState } from "react";
 import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
-import { ConfirmationModal, Modal } from "../../../shared/ui";
+import {
+  Button,
+  CardActions,
+  ConfirmationModal,
+  FormGrid,
+  Modal,
+  ModalActions,
+} from "../../../shared/ui";
 import { deviceUsageCount, removeUnusedDevice, saveDevice } from "../domain/deviceCatalog";
 
 interface DeviceEditorModalProps {
@@ -51,7 +58,7 @@ export function DeviceEditorModal({
         onClose={onClose}
       >
         <form onSubmit={submit}>
-          <div className="form-grid">
+          <FormGrid>
             <label>
               <span>Nombre</span>
               <input
@@ -104,7 +111,7 @@ export function DeviceEditorModal({
                 onChange={event => update({ notes: event.target.value })}
               />
             </label>
-          </div>
+          </FormGrid>
 
           {!isNew && (
             <div className="device-reference-summary">
@@ -117,28 +124,25 @@ export function DeviceEditorModal({
             </div>
           )}
 
-          <div className="modal-actions split-actions">
+          <ModalActions $split>
             <div>
               {!isNew && (
-                <button
-                  type="button"
-                  className="danger-button"
+                <Button
+                  variant="danger"
                   disabled={usageCount > 0}
                   onClick={() => setConfirmingRemoval(true)}
                 >
                   Eliminar
-                </button>
+                </Button>
               )}
             </div>
-            <div className="card-actions">
-              <button type="button" className="ghost-button" onClick={onClose}>
-                Cancelar
-              </button>
-              <button type="submit" className="primary-button">
+            <CardActions>
+              <Button onClick={onClose}>Cancelar</Button>
+              <Button type="submit" variant="primary">
                 {isNew ? "Agregar dispositivo" : "Guardar cambios"}
-              </button>
-            </div>
-          </div>
+              </Button>
+            </CardActions>
+          </ModalActions>
         </form>
       </Modal>
       {confirmingRemoval && (

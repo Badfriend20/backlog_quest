@@ -9,6 +9,7 @@ import { DashboardView } from "../../dashboard";
 import { PlatformsView } from "../../devices";
 import { HistoryView } from "../../history";
 import { LibraryView } from "../../games";
+import type { MissionActions } from "../../missions";
 import { QueueView } from "../../queue";
 import { ScheduleView } from "../../schedule";
 import { SettingsView } from "../../settings";
@@ -29,15 +30,7 @@ interface BacklogViewProps {
   onCopyPlatformsChange(platforms: CopyPlatform[]): void;
   onReplaceData(data: BacklogData): void;
   onReset(): void;
-  missionActions: {
-    onEditGame(id: string): void;
-    onFinish(id: string): void;
-    onDefer(id: string): void;
-    onPause(id: string): void;
-    onSendEnd(id: string): void;
-    onAbandon(id: string): void;
-    onEditMission(id: string): void;
-  };
+  missionActions: MissionActions;
 }
 
 export function BacklogView(props: BacklogViewProps) {
@@ -55,7 +48,15 @@ export function BacklogView(props: BacklogViewProps) {
         />
       );
     case "schedule":
-      return <ScheduleView data={data} onEditMission={props.onEditMission} />;
+      return (
+        <ScheduleView
+          data={data}
+          onEditMission={props.onEditMission}
+          onManageContentsForMission={props.missionActions.onManageContentsForMission}
+          onAddCopyForMission={props.missionActions.onAddCopyForMission}
+          onAddPlaythroughForMission={props.missionActions.onAddPlaythroughForMission}
+        />
+      );
     case "history":
       return <HistoryView data={data} onSelectGame={props.onSelectGame} />;
     case "platforms":

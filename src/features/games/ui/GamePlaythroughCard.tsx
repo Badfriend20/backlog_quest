@@ -5,6 +5,7 @@ import {
   deviceName,
   inferDeviceIds,
 } from "../../../shared/kernel/backlogSelectors";
+import { FormGrid, RelationSummaryGrid } from "../../../shared/ui";
 import { DeviceSelect } from "../../devices";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
@@ -51,17 +52,21 @@ export function GamePlaythroughCard({
         </>
       }
       itemLabel="partida"
-      deleteMessage={`Se eliminará la partida #${play.number} y su historial editable.`}
+      deleteMessage={
+        linkedMission
+          ? `Se eliminará la partida #${play.number} y su historial editable. La misión ${linkedMission.id} permanecerá sin partida hasta que la edites y guardes nuevamente.`
+          : `Se eliminará la partida #${play.number} y su historial editable.`
+      }
       onEdit={() => beginPlaythroughEdit(play.id)}
       onRemove={() => removePlaythrough(play.id)}
       onSave={savePlaythroughEdit}
       onDiscard={discardPlaythroughEdit}
       summary={
         <>
-          <dl className="relation-summary-grid">
+          <RelationSummaryGrid>
             <div>
               <dt>Contenido</dt>
-              <dd>{selectedContent?.title ?? "Campaña sin especificar"}</dd>
+              <dd>{selectedContent?.title ?? play.contentTitle ?? "Contenido no disponible"}</dd>
             </div>
             <div>
               <dt>Copia utilizada</dt>
@@ -79,13 +84,13 @@ export function GamePlaythroughCard({
               <dt>Fecha final</dt>
               <dd>{play.finishedAt || "Sin registrar"}</dd>
             </div>
-          </dl>
+          </RelationSummaryGrid>
           {play.notes && <p className="copy-summary-notes">{play.notes}</p>}
         </>
       }
       editor={
         <>
-          <div className="form-grid compact-form">
+          <FormGrid $compact>
             <label>
               <span>Número</span>
               <input
@@ -101,13 +106,18 @@ export function GamePlaythroughCard({
               <span>Contenido</span>
               <select
                 value={play.contentId ?? ""}
-                onChange={event =>
+                onChange={event => {
+                  const content = draft.contents.find(item => item.id === event.target.value);
                   updatePlaythrough(play.id, {
-                    contentId: event.target.value || undefined,
-                  })
-                }
+                    contentId: content?.id,
+                    contentTitle: content?.title,
+                    contentType: content?.type,
+                  });
+                }}
               >
-                <option value="">Campaña sin especificar</option>
+                <option value="" disabled>
+                  {play.contentTitle ?? "Selecciona un contenido"}
+                </option>
                 {draft.contents.map(content => (
                   <option key={content.id} value={content.id}>
                     {content.title}
@@ -125,7 +135,9 @@ export function GamePlaythroughCard({
                   })
                 }
               >
-                <option value="">Por confirmar</option>
+                <option value="" disabled>
+                  Selecciona una copia
+                </option>
                 {draft.copies.map(copy => (
                   <option key={copy.id} value={copy.id}>
                     {copy.library || "Sin biblioteca"} · {copyDeviceLabel(data, copy)} ·{" "}
@@ -195,7 +207,7 @@ export function GamePlaythroughCard({
                 onChange={event => updatePlaythrough(play.id, { notes: event.target.value })}
               />
             </label>
-          </div>
+          </FormGrid>
           <div className="playthrough-link-summary">
             <span>
               Copia registrada: <strong>{copyLabel}</strong>

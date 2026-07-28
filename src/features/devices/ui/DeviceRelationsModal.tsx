@@ -9,9 +9,28 @@ import {
   deviceName,
   formatDate,
   getSlotLabel,
+  missionLinkState,
   statusClass,
 } from "../../../shared/kernel/backlogSelectors";
-import { Modal } from "../../../shared/ui";
+import {
+  Button,
+  CardOpenButton,
+  CardTopline,
+  ChipList,
+  EmptyState,
+  LibraryCard,
+  LibraryGrid,
+  Modal,
+  PriorityChip,
+  ProgressRow,
+  RelationActions,
+  RelationBadges,
+  RelationCard,
+  RelationHeader,
+  RelationId,
+  RelationSummaryGrid,
+  StatusChip,
+} from "../../../shared/ui";
 
 export function DeviceRelationsModal({
   data,
@@ -43,35 +62,35 @@ export function DeviceRelationsModal({
   }
 
   const gamesContent = games.length ? (
-    <section className="library-grid device-library-grid">
+    <LibraryGrid className="device-library-grid">
       {games.map(({ game, copies }) => (
-        <article className="game-card library-card" key={game.id}>
-          <button type="button" className="card-open" onClick={() => selectGame(game.id)}>
-            <div className="card-topline">
-              <span className={`status-pill ${statusClass(game.status)}`}>{game.status}</span>
-              <span className="priority-chip">{game.priority}</span>
-            </div>
+        <LibraryCard key={game.id}>
+          <CardOpenButton type="button" onClick={() => selectGame(game.id)}>
+            <CardTopline>
+              <StatusChip tone={statusClass(game.status)}>{game.status}</StatusChip>
+              <PriorityChip>{game.priority}</PriorityChip>
+            </CardTopline>
             <h3>
               {game.private ? "🔒 " : ""}
               {game.title}
             </h3>
-            <div className="progress-row">
+            <ProgressRow>
               <span>{game.progress.completions} terminaciones</span>
               <span>{game.progress.replays} rejugadas</span>
-            </div>
-            <div className="copy-chips">
+            </ProgressRow>
+            <ChipList>
               {copies.map(copy => (
                 <span key={copy.id}>
                   {copy.library || "Sin plataforma"} · {copy.ownership}
                 </span>
               ))}
-            </div>
-          </button>
-        </article>
+            </ChipList>
+          </CardOpenButton>
+        </LibraryCard>
       ))}
-    </section>
+    </LibraryGrid>
   ) : (
-    <div className="empty-relation">Este dispositivo no está habilitado en ningún juego.</div>
+    <EmptyState>Este dispositivo no está habilitado en ningún juego.</EmptyState>
   );
 
   const missionsContent = missions.length ? (
@@ -79,19 +98,33 @@ export function DeviceRelationsModal({
       {missions.map(mission => {
         const game = data.games.find(item => item.id === mission.gameId);
         const copy = game?.copies.find(item => item.id === mission.copyId);
+        const links = missionLinkState(data, mission);
         return (
-          <article className="relation-card" key={mission.id}>
-            <div className="relation-card-header">
+          <RelationCard $warning={!links.complete} key={mission.id}>
+            <RelationHeader>
               <div>
-                <span className="relation-id">{mission.id}</span>
+                <RelationId>{mission.id}</RelationId>
                 <strong>{game?.title ?? "Juego no disponible"}</strong>
               </div>
-              <div className="relation-badges">
+              <RelationBadges>
                 <span>{mission.status}</span>
                 <span>{getSlotLabel(data, mission.slotId)}</span>
+              </RelationBadges>
+            </RelationHeader>
+            {!links.complete && (
+              <div className="mission-link-warnings">
+                {!links.hasContent && (
+                  <span className="mission-link-warning">Sin contenido vinculado</span>
+                )}
+                {!links.hasCopy && (
+                  <span className="mission-link-warning">Sin copia vinculada</span>
+                )}
+                {!links.hasPlaythrough && (
+                  <span className="mission-link-warning">Sin partida vinculada</span>
+                )}
               </div>
-            </div>
-            <dl className="relation-summary-grid">
+            )}
+            <RelationSummaryGrid>
               <div>
                 <dt>Contenido</dt>
                 <dd>{mission.contentTitle}</dd>
@@ -112,22 +145,18 @@ export function DeviceRelationsModal({
                 <dt>Inicio</dt>
                 <dd>{formatDate(mission.startedAt)}</dd>
               </div>
-            </dl>
-            <div className="relation-actions">
-              <button
-                type="button"
-                className="primary-button compact"
-                onClick={() => editMission(mission.id)}
-              >
+            </RelationSummaryGrid>
+            <RelationActions>
+              <Button variant="primary" size="compact" onClick={() => editMission(mission.id)}>
                 Editar misión
-              </button>
-            </div>
-          </article>
+              </Button>
+            </RelationActions>
+          </RelationCard>
         );
       })}
     </section>
   ) : (
-    <div className="empty-relation">Este dispositivo no tiene misiones activas.</div>
+    <EmptyState>Este dispositivo no tiene misiones activas.</EmptyState>
   );
 
   const isGamesView = view === "games";

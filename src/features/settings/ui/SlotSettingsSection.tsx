@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { BacklogData, SlotProfile } from "../../../shared/kernel/backlog";
-import { ConfirmationModal } from "../../../shared/ui";
+import { Button, ConfirmationModal, Eyebrow, FormGrid } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
+import { SettingsCard } from "./SettingsStyles";
 
 export function SlotSettingsSection({
   data,
@@ -47,8 +48,8 @@ export function SlotSettingsSection({
     setPendingRemoval(undefined);
   }
   return (
-    <section className="settings-card wide">
-      <p className="eyebrow">FRANJAS</p>
+    <SettingsCard $wide>
+      <Eyebrow>FRANJAS</Eyebrow>
       <h2>Cómo divides tu día</h2>
       <p>
         Estos nombres se aplican inmediatamente en misiones, calendario, activación y edición. Los
@@ -108,11 +109,11 @@ export function SlotSettingsSection({
             placeholder="Ej. Después de cenar"
           />
         </label>
-        <button type="button" className="primary-button" onClick={addProfile}>
+        <Button variant="primary" onClick={addProfile}>
           Agregar y usar
-        </button>
+        </Button>
       </div>
-      <div className="form-grid setting-subgrid">
+      <FormGrid className="setting-subgrid">
         <label>
           <span>Nombre de la franja secundaria</span>
           <input
@@ -137,7 +138,7 @@ export function SlotSettingsSection({
             }
           />
         </label>
-      </div>
+      </FormGrid>
       {pendingRemoval && (
         <ConfirmationModal
           title="Eliminar par de franjas"
@@ -147,6 +148,6 @@ export function SlotSettingsSection({
           onClose={() => setPendingRemoval(undefined)}
         />
       )}
-    </section>
+    </SettingsCard>
   );
 }

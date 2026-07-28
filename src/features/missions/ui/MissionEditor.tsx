@@ -5,13 +5,14 @@ import {
   copyDeviceLabel,
   deviceName,
   inferDeviceIds,
-  getSlotLabel,
   sortedQueue,
   unresolvedDependencies,
 } from "../../../shared/kernel/backlogSelectors";
+import { findScheduleConflicts } from "../../../shared/kernel/schedule";
 import { DeviceSelect } from "../../devices";
-import { Modal } from "../../../shared/ui";
-import { MissionsStyles } from "./MissionsStyles";
+import { Button, FormGrid, Modal, ModalActions } from "../../../shared/ui";
+import { MissionScheduleField } from "./MissionScheduleField";
+import { MissionsScope } from "./MissionsStyles";
 
 export function MissionEditor({
   data,
@@ -19,12 +20,14 @@ export function MissionEditor({
   initialGameId,
   onClose,
   onSave,
+  onManageContents,
 }: {
   data: BacklogData;
   mission: Mission | null;
   initialGameId: string | null;
   onClose: () => void;
   onSave: (form: MissionFormValue) => void;
+  onManageContents: (gameId: string) => void;
 }) {
   const initialGame =
     data.games.find(game => game.id === (mission?.gameId ?? initialGameId)) ?? data.games[0];
@@ -47,30 +50,26 @@ export function MissionEditor({
       ""
   );
   const activeDevice = activeDeviceId ? deviceName(data, activeDeviceId) : "Por confirmar";
-  const [contentTitle, setContentTitle] = useState(
-    mission?.contentTitle ??
-      game.contents.find(content => content.status === "paused")?.title ??
-      "Campaña principal"
+  const [contentId, setContentId] = useState(
+    game.contents.some(content => content.id === mission?.contentId)
+      ? (mission?.contentId ?? "")
+      : (game.contents[0]?.id ?? "")
   );
-  const [contentType, setContentType] = useState<MissionFormValue["contentType"]>(
-    mission?.contentType ?? "campaign"
-  );
-  const [slotId, setSlotId] = useState(
+  const initialSlotId =
     mission?.slotId ??
-      data.queue.find(item => item.gameId === game.id)?.preferredSlotId ??
-      "flexible"
-  );
+    data.queue.find(item => item.gameId === game.id)?.preferredSlotId ??
+    "flexible";
   const existingRule = mission
     ? data.scheduleRules.find(rule => rule.missionId === mission.id)
     : null;
-  const [weekdays, setWeekdays] = useState<number[]>(existingRule?.weekdays ?? []);
+  const [sessions, setSessions] = useState(
+    existingRule?.sessions ?? (mission ? [] : [{ weekday: 1, slotId: initialSlotId }])
+  );
   const [durationMin, setDurationMin] = useState(existingRule?.durationMin ?? 30);
   const [durationMax, setDurationMax] = useState(existingRule?.durationMax ?? 60);
   const [notes, setNotes] = useState(mission?.notes ?? game.progress.chapter ?? "");
   const [replaceOccupied, setReplaceOccupied] = useState(false);
-  const occupied = data.missions.find(
-    item => item.status === "active" && item.slotId === slotId && item.id !== mission?.id
-  );
+  const conflicts = findScheduleConflicts(data, sessions, mission?.id);
   const blockers = unresolvedDependencies(data, game);
   function selectGame(nextGameId: string) {
     const nextGame = data.games.find(item => item.id === nextGameId);
@@ -86,9 +85,7 @@ export function MissionEditor({
         copyDeviceIds(data, nextCopy)[0] ??
         ""
     );
-    setContentTitle(
-      nextGame.contents.find(content => content.status === "paused")?.title ?? "Campaña principal"
-    );
+    setContentId(nextGame.contents[0]?.id ?? "");
     setNotes(nextGame.progress.chapter || nextGame.notes || "");
   }
   function selectCopy(nextCopyId: string) {
@@ -99,204 +96,162 @@ export function MissionEditor({
       nextDeviceIds.includes(current) ? current : (nextDeviceIds[0] ?? "")
     );
   }
-  const days = [
-    { id: 1, label: "L" },
-    { id: 2, label: "M" },
-    { id: 3, label: "X" },
-    { id: 4, label: "J" },
-    { id: 5, label: "V" },
-    { id: 6, label: "S" },
-    { id: 0, label: "D" },
-  ];
   return (
-    <Modal
-      title={mission ? `Editar misión: ${game.title}` : "Activar nueva misión"}
-      eyebrow={mission ? mission.id : "COPIA + DISPOSITIVO + FRANJA"}
-      onClose={onClose}
-    >
-      <MissionsStyles />
-      <div className="form-grid">
-        <label className="wide-field">
-          <span>Juego</span>
-          <select
-            value={gameId}
-            disabled={Boolean(mission)}
-            onChange={event => selectGame(event.target.value)}
-          >
-            {sortedQueue(data).map(item => {
-              const candidate = data.games.find(current => current.id === item.gameId);
-              return candidate ? (
-                <option key={candidate.id} value={candidate.id}>
-                  {item.position}. {candidate.title}
+    <MissionsScope>
+      <Modal
+        title={mission ? `Editar misión: ${game.title}` : "Activar nueva misión"}
+        eyebrow={mission ? mission.id : "COPIA + DISPOSITIVO + FRANJA"}
+        onClose={onClose}
+      >
+        <FormGrid>
+          <label className="wide-field">
+            <span>Juego</span>
+            <select
+              value={gameId}
+              disabled={Boolean(mission)}
+              onChange={event => selectGame(event.target.value)}
+            >
+              {sortedQueue(data).map(item => {
+                const candidate = data.games.find(current => current.id === item.gameId);
+                return candidate ? (
+                  <option key={candidate.id} value={candidate.id}>
+                    {item.position}. {candidate.title}
+                  </option>
+                ) : null;
+              })}
+            </select>
+          </label>
+          {blockers.length > 0 && (
+            <div className="dependency-warning wide-field">
+              Orden recomendado: termina antes {blockers.map(item => item.title).join(", ")}. Puedes
+              continuar si deseas, el software no llamará a la policía narrativa.
+            </div>
+          )}
+          <label className="wide-field">
+            <span>Contenido</span>
+            <select value={contentId} onChange={event => setContentId(event.target.value)}>
+              <option value="">Selecciona un contenido</option>
+              {game.contents.map(content => (
+                <option key={content.id} value={content.id}>
+                  {content.title}
                 </option>
-              ) : null;
-            })}
-          </select>
-        </label>
-        {blockers.length > 0 && (
-          <div className="dependency-warning wide-field">
-            Orden recomendado: termina antes {blockers.map(item => item.title).join(", ")}. Puedes
-            continuar si deseas, el software no llamará a la policía narrativa.
-          </div>
-        )}
-        <label>
-          <span>Contenido</span>
-          <input
-            list="content-options"
-            value={contentTitle}
-            onChange={event => setContentTitle(event.target.value)}
-          />
-          <datalist id="content-options">
-            {game.contents.map(content => (
-              <option key={content.id} value={content.title} />
-            ))}
-          </datalist>
-        </label>
-        <label>
-          <span>Tipo</span>
-          <select
-            value={contentType}
-            onChange={event =>
-              setContentType(event.target.value as MissionFormValue["contentType"])
-            }
-          >
-            <option value="campaign">Campaña</option>
-            <option value="dlc">DLC</option>
-            <option value="replay">Rejugada</option>
-            <option value="custom">Objetivo personalizado</option>
-          </select>
-        </label>
-        <label className="wide-field">
-          <span>Copia o versión</span>
-          <select value={copyId} onChange={event => selectCopy(event.target.value)}>
-            {game.copies.map(item => (
-              <option key={item.id} value={item.id}>
-                {item.library} · {copyDeviceLabel(data, item)} · {item.ownership}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label htmlFor="mission-device">
-          <span>Dispositivo en uso</span>
-          <DeviceSelect
-            id="mission-device"
+              ))}
+            </select>
+            <Button variant="text" onClick={() => onManageContents(game.id)}>
+              Administrar contenidos del juego
+            </Button>
+          </label>
+          {!game.contents.length && (
+            <div className="dependency-warning wide-field">
+              Este juego aún no tiene contenidos. Agrega al menos uno antes de activar la misión.
+            </div>
+          )}
+          <label className="wide-field">
+            <span>Copia o versión</span>
+            <select value={copyId} onChange={event => selectCopy(event.target.value)}>
+              <option value="">Selecciona una copia</option>
+              {game.copies.map(item => (
+                <option key={item.id} value={item.id}>
+                  {item.library} · {copyDeviceLabel(data, item)} · {item.ownership}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label htmlFor="mission-device">
+            <span>Dispositivo en uso</span>
+            <DeviceSelect
+              id="mission-device"
+              data={data}
+              selectedId={activeDeviceId}
+              allowedIds={availableDeviceIds}
+              onChange={setActiveDeviceId}
+              allowUnknown={false}
+            />
+          </label>
+          <MissionScheduleField
             data={data}
-            selectedId={activeDeviceId}
-            allowedIds={availableDeviceIds}
-            onChange={setActiveDeviceId}
-            allowUnknown={false}
-          />
-        </label>
-        <label>
-          <span>Franja</span>
-          <select
-            value={slotId}
-            onChange={event => {
-              setSlotId(event.target.value);
+            sessions={sessions}
+            onChange={nextSessions => {
+              setSessions(nextSessions);
               setReplaceOccupied(false);
             }}
-          >
-            <option value="first">{getSlotLabel(data, "first")}</option>
-            <option value="second">{getSlotLabel(data, "second")}</option>
-            <option value="secondary">{getSlotLabel(data, "secondary")}</option>
-            <option value="flexible">{getSlotLabel(data, "flexible")}</option>
-          </select>
-        </label>
-        {occupied && (
-          <div className="occupied-warning wide-field">
-            <strong>
-              Franja ocupada por {data.games.find(item => item.id === occupied.gameId)?.title}
-            </strong>
-            <label className="check-row">
-              <input
-                type="checkbox"
-                checked={replaceOccupied}
-                onChange={event => setReplaceOccupied(event.target.checked)}
-              />
-              <span>Aplazar esa misión a la posición {data.preferences.deferPosition}</span>
-            </label>
-          </div>
-        )}
-        <fieldset className="wide-field weekday-field">
-          <legend>Días programados</legend>
-          <div>
-            {days.map(day => (
-              <label key={day.id}>
+          />
+          {conflicts.length > 0 && (
+            <div className="occupied-warning wide-field">
+              <strong>
+                Coincide en día y franja con{" "}
+                {conflicts
+                  .map(conflict => data.games.find(item => item.id === conflict.gameId)?.title)
+                  .filter(Boolean)
+                  .join(", ")}
+              </strong>
+              <label className="check-row">
                 <input
                   type="checkbox"
-                  checked={weekdays.includes(day.id)}
-                  onChange={event =>
-                    setWeekdays(current =>
-                      event.target.checked
-                        ? [...current, day.id]
-                        : current.filter(item => item !== day.id)
-                    )
-                  }
+                  checked={replaceOccupied}
+                  onChange={event => setReplaceOccupied(event.target.checked)}
                 />
-                <span>{day.label}</span>
+                <span>
+                  Aplazar las misiones en conflicto a la posición {data.preferences.deferPosition}
+                </span>
               </label>
-            ))}
-          </div>
-          <small>Sin días seleccionados: misión activa sin calendario fijo.</small>
-        </fieldset>
-        <label>
-          <span>Duración mínima</span>
-          <input
-            type="number"
-            min="10"
-            max="600"
-            value={durationMin}
-            onChange={event => setDurationMin(Number(event.target.value))}
-          />
-        </label>
-        <label>
-          <span>Duración máxima</span>
-          <input
-            type="number"
-            min={durationMin}
-            max="600"
-            value={durationMax}
-            onChange={event => setDurationMax(Number(event.target.value))}
-          />
-        </label>
-        <label className="wide-field">
-          <span>Objetivo o punto actual</span>
-          <textarea rows={3} value={notes} onChange={event => setNotes(event.target.value)} />
-        </label>
-      </div>
-      <div className="modal-actions">
-        <button type="button" className="ghost-button" onClick={onClose}>
-          Cancelar
-        </button>
-        <button
-          type="button"
-          className="primary-button"
-          disabled={
-            !copyId ||
-            !activeDeviceId ||
-            !contentTitle.trim() ||
-            Boolean(occupied && !replaceOccupied)
-          }
-          onClick={() =>
-            onSave({
-              gameId,
-              contentTitle: contentTitle.trim(),
-              contentType,
-              copyId,
-              activeDevice,
-              activeDeviceId,
-              slotId,
-              weekdays,
-              durationMin,
-              durationMax: Math.max(durationMin, durationMax),
-              notes,
-              replaceOccupied,
-            })
-          }
-        >
-          {mission ? "Guardar misión" : "Activar misión"}
-        </button>
-      </div>
-    </Modal>
+            </div>
+          )}
+          <label>
+            <span>Duración mínima</span>
+            <input
+              type="number"
+              min="10"
+              max="600"
+              value={durationMin}
+              onChange={event => setDurationMin(Number(event.target.value))}
+            />
+          </label>
+          <label>
+            <span>Duración máxima</span>
+            <input
+              type="number"
+              min={durationMin}
+              max="600"
+              value={durationMax}
+              onChange={event => setDurationMax(Number(event.target.value))}
+            />
+          </label>
+          <label className="wide-field">
+            <span>Objetivo o punto actual</span>
+            <textarea rows={3} value={notes} onChange={event => setNotes(event.target.value)} />
+          </label>
+        </FormGrid>
+        <ModalActions>
+          <Button onClick={onClose}>Cancelar</Button>
+          <Button
+            variant="primary"
+            disabled={
+              !copyId ||
+              !activeDeviceId ||
+              !contentId ||
+              Boolean(conflicts.length && !replaceOccupied)
+            }
+            onClick={() =>
+              onSave({
+                gameId,
+                contentId,
+                copyId,
+                activeDevice,
+                activeDeviceId,
+                slotId: sessions[0]?.slotId ?? initialSlotId,
+                sessions,
+                durationMin,
+                durationMax: Math.max(durationMin, durationMax),
+                notes,
+                replaceOccupied,
+              })
+            }
+          >
+            {mission ? "Guardar misión" : "Activar misión"}
+          </Button>
+        </ModalActions>
+      </Modal>
+    </MissionsScope>
   );
 }

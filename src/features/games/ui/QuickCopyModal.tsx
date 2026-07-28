@@ -7,7 +7,15 @@ import {
   quickCopyKey,
   quickCopyLabel,
 } from "../../../shared/kernel/backlogSelectors";
-import { HelpTooltip, Modal } from "../../../shared/ui";
+import {
+  Button,
+  EmptyState,
+  Eyebrow,
+  FormGrid,
+  HelpTooltip,
+  Modal,
+  ModalActions,
+} from "../../../shared/ui";
 import { createQuickCopyPreset } from "../domain/quickCopy";
 
 export function QuickCopyModal({
@@ -65,19 +73,17 @@ export function QuickCopyModal({
             </button>
           );
         })}
-        {!presets.length && (
-          <div className="empty-relation">Todavía no hay combinaciones guardadas.</div>
-        )}
+        {!presets.length && <EmptyState>Todavía no hay combinaciones guardadas.</EmptyState>}
       </div>
       <section className="quick-custom-form">
         <div>
-          <p className="eyebrow">NUEVA COMBINACIÓN</p>
+          <Eyebrow>NUEVA COMBINACIÓN</Eyebrow>
           <h3>Configurar y agregar</h3>
           <p>
             Al guardar el juego, esta combinación aparecerá primero en futuros agregados rápidos.
           </p>
         </div>
-        <div className="form-grid compact-form">
+        <FormGrid $compact>
           <label>
             <span>Plataforma</span>
             <select value={platformId} onChange={event => setPlatformId(event.target.value)}>
@@ -133,21 +139,18 @@ export function QuickCopyModal({
             <span>Notas predeterminadas</span>
             <textarea rows={2} value={notes} onChange={event => setNotes(event.target.value)} />
           </label>
-        </div>
+        </FormGrid>
       </section>
-      <div className="modal-actions">
-        <button type="button" className="ghost-button" onClick={onClose}>
-          Cerrar
-        </button>
-        <button
-          type="button"
-          className="primary-button"
+      <ModalActions>
+        <Button onClick={onClose}>Cerrar</Button>
+        <Button
+          variant="primary"
           disabled={!library || existingKeys.has(quickCopyKey(library, ownership, platformId))}
           onClick={createCustom}
         >
           Agregar esta copia
-        </button>
-      </div>
+        </Button>
+      </ModalActions>
     </Modal>
   );
 }

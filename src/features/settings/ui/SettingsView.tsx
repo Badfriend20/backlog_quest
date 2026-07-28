@@ -10,7 +10,7 @@ import { StorageSettingsSection } from "./StorageSettingsSection";
 import { DangerSettingsSection } from "./DangerSettingsSection";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { OwnershipSettingsSection } from "./OwnershipSettingsSection";
-import { SettingsStyles } from "./SettingsStyles";
+import { SettingsGrid, SettingsScope } from "./SettingsStyles";
 import { PlatformSettingsSection } from "./PlatformSettingsSection";
 
 interface SettingsViewProps {
@@ -25,18 +25,19 @@ interface SettingsViewProps {
 export function SettingsView(props: SettingsViewProps) {
   const { data, onChange, onCopyPlatformsChange, onReplaceData, onReset, storage } = props;
   return (
-    <div className="settings-grid">
-      <SettingsStyles />
-      <ThemeSettings preferences={data.preferences} onChange={onChange} />
-      <SlotSettingsSection data={data} onChange={onChange} />
-      <OwnershipSettingsSection data={data} onChange={onChange} />
-      <PlatformSettingsSection data={data} onChange={onCopyPlatformsChange} />
-      <QueueSettingsSection data={data} onChange={onChange} />
-      <CalendarSettingsSection data={data} onChange={onChange} />
-      <InterfaceSettingsSection data={data} onChange={onChange} />
-      <PortabilitySettingsSection data={data} storage={storage} onReplaceData={onReplaceData} />
-      <StorageSettingsSection data={data} />
-      <DangerSettingsSection onReset={onReset} />
-    </div>
+    <SettingsScope>
+      <SettingsGrid>
+        <ThemeSettings preferences={data.preferences} onChange={onChange} />
+        <SlotSettingsSection data={data} onChange={onChange} />
+        <OwnershipSettingsSection data={data} onChange={onChange} />
+        <PlatformSettingsSection data={data} onChange={onCopyPlatformsChange} />
+        <QueueSettingsSection data={data} onChange={onChange} />
+        <CalendarSettingsSection data={data} onChange={onChange} />
+        <InterfaceSettingsSection data={data} onChange={onChange} />
+        <PortabilitySettingsSection data={data} storage={storage} onReplaceData={onReplaceData} />
+        <StorageSettingsSection data={data} />
+        <DangerSettingsSection onReset={onReset} />
+      </SettingsGrid>
+    </SettingsScope>
   );
 }

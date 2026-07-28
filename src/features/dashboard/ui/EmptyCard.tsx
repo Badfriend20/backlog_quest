@@ -10,12 +10,13 @@ export function EmptyCard({
   onAction(): void;
 }) {
   return (
-    <article className="game-card empty-card">
+    <GameCard className="empty-card">
       <h3>{title}</h3>
       <p>{text}</p>
-      <button type="button" className="primary-button compact" onClick={onAction}>
+      <Button variant="primary" size="compact" onClick={onAction}>
         {action}
-      </button>
-    </article>
+      </Button>
+    </GameCard>
   );
 }
+import { Button, GameCard } from "../../../shared/ui";

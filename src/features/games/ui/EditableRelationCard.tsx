@@ -1,6 +1,14 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { ConfirmationModal } from "../../../shared/ui";
+import {
+  Button,
+  ConfirmationModal,
+  RelationActions,
+  RelationBadges,
+  RelationCard,
+  RelationHeader,
+  RelationId,
+} from "../../../shared/ui";
 
 export function EditableRelationCard({
   editing,
@@ -38,41 +46,37 @@ export function EditableRelationCard({
 
   return (
     <>
-      <article className={editing ? "relation-card editing" : "relation-card"}>
-        <div className="relation-card-header">
+      <RelationCard $editing={editing}>
+        <RelationHeader>
           <div>
-            <span className="relation-id">{identifier}</span>
+            <RelationId>{identifier}</RelationId>
             <strong>{title}</strong>
           </div>
-          {badges && <div className="relation-badges">{badges}</div>}
-        </div>
+          {badges && <RelationBadges>{badges}</RelationBadges>}
+        </RelationHeader>
 
         {editing ? editor : summary}
 
-        <div className={editing ? "relation-actions split-actions" : "relation-actions"}>
-          <button
-            type="button"
-            className="danger-button compact"
-            onClick={() => setConfirmingRemoval(true)}
-          >
+        <RelationActions $split={editing}>
+          <Button variant="danger" size="compact" onClick={() => setConfirmingRemoval(true)}>
             Eliminar {itemLabel}
-          </button>
+          </Button>
           {editing ? (
             <div className="relation-save-actions">
-              <button type="button" className="ghost-button compact" onClick={onDiscard}>
+              <Button size="compact" onClick={onDiscard}>
                 Cerrar sin guardar
-              </button>
-              <button type="button" className="primary-button compact" onClick={onSave}>
+              </Button>
+              <Button variant="primary" size="compact" onClick={onSave}>
                 Guardar y cerrar
-              </button>
+              </Button>
             </div>
           ) : (
-            <button type="button" className="ghost-button compact" onClick={onEdit}>
+            <Button size="compact" onClick={onEdit}>
               Editar {itemLabel}
-            </button>
+            </Button>
           )}
-        </div>
-      </article>
+        </RelationActions>
+      </RelationCard>
 
       {confirmingRemoval && (
         <ConfirmationModal

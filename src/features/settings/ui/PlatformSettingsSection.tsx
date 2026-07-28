@@ -5,7 +5,15 @@ import {
   normalizeCopyPlatforms,
   resolveCopyPlatform,
 } from "../../../shared/kernel/backlogSelectors";
-import { ConfirmationModal } from "../../../shared/ui";
+import {
+  Button,
+  Callout,
+  ConfirmationModal,
+  Eyebrow,
+  FormGrid,
+  ModalActions,
+} from "../../../shared/ui";
+import { SettingsCard, SettingsSectionHeading } from "./SettingsStyles";
 
 const PLATFORM_NAME_MAX_LENGTH = 40;
 
@@ -71,26 +79,24 @@ export function PlatformSettingsSection({
   );
 
   return (
-    <section className="settings-card wide">
-      <div className="settings-section-heading">
+    <SettingsCard $wide>
+      <SettingsSectionHeading>
         <div>
-          <p className="eyebrow">PLATAFORMAS</p>
+          <Eyebrow>PLATAFORMAS</Eyebrow>
           <h2>Bibliotecas y ecosistemas de las copias</h2>
           <p>
             Una plataforma se combina con una propiedad. Si dos entradas representan la misma,
             asígnales el mismo nombre y al guardar se fusionarán sin perder sus copias.
           </p>
         </div>
-        <button type="button" className="ghost-button" onClick={add}>
-          + Plataforma
-        </button>
-      </div>
+        <Button onClick={add}>+ Plataforma</Button>
+      </SettingsSectionHeading>
       <div className="device-settings-list">
         {draft.map(platform => {
           const nameKey = normalize(platform.name.trim());
           return (
             <article className="device-settings-card" key={platform.id}>
-              <div className="form-grid compact-form">
+              <FormGrid $compact>
                 <label>
                   <span>Nombre</span>
                   <input
@@ -110,37 +116,28 @@ export function PlatformSettingsSection({
                   />
                   <span>Disponible en nuevas copias</span>
                 </label>
-              </div>
+              </FormGrid>
               {duplicateNames.has(nameKey) && (
-                <p className="callout mini">
+                <Callout as="p" $compact>
                   Se fusionará con la otra plataforma del mismo nombre.
-                </p>
+                </Callout>
               )}
               <div className="relation-actions">
                 <small>{usage(platform)} referencias</small>
-                <button
-                  type="button"
-                  className="danger-button compact"
-                  onClick={() => remove(platform)}
-                >
+                <Button variant="danger" size="compact" onClick={() => remove(platform)}>
                   Eliminar
-                </button>
+                </Button>
               </div>
             </article>
           );
         })}
       </div>
-      <div className="modal-actions inline-actions">
-        <button
-          type="button"
-          className="ghost-button"
-          onClick={() => setDraft(structuredClone(data.catalogs.platforms))}
-        >
+      <ModalActions $inline>
+        <Button onClick={() => setDraft(structuredClone(data.catalogs.platforms))}>
           Descartar
-        </button>
-        <button
-          type="button"
-          className="primary-button"
+        </Button>
+        <Button
+          variant="primary"
           disabled={draft.some(item => !item.name.trim())}
           onClick={() => {
             onChange(draft);
@@ -148,8 +145,8 @@ export function PlatformSettingsSection({
           }}
         >
           Guardar plataformas
-        </button>
-      </div>
+        </Button>
+      </ModalActions>
       {pendingRemoval && (
         <ConfirmationModal
           title="Eliminar plataforma"
@@ -159,6 +156,6 @@ export function PlatformSettingsSection({
           onClose={() => setPendingRemoval(undefined)}
         />
       )}
-    </section>
+    </SettingsCard>
   );
 }

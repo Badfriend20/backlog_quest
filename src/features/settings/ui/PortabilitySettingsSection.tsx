@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { Button, Eyebrow } from "../../../shared/ui";
 import type { BacklogStorage } from "../../backlog";
+import { SettingsCard } from "./SettingsStyles";
 
 export function PortabilitySettingsSection({
   data,
@@ -25,20 +27,18 @@ export function PortabilitySettingsSection({
     }
   }
   return (
-    <section className="settings-card">
-      <p className="eyebrow">PORTABILIDAD</p>
+    <SettingsCard>
+      <Eyebrow>PORTABILIDAD</Eyebrow>
       <h2>Importar y exportar</h2>
       <p>
         El navegador guarda una copia local. El JSON v2 contiene catálogo, cola completa, misiones,
         calendario, configuración y actividad.
       </p>
       <div className="button-stack">
-        <button type="button" className="primary-button" onClick={() => storage.export(data)}>
+        <Button variant="primary" onClick={() => storage.export(data)}>
           Exportar JSON v2
-        </button>
-        <button type="button" className="ghost-button" onClick={() => inputRef.current?.click()}>
-          Importar JSON v1 o v2
-        </button>
+        </Button>
+        <Button onClick={() => inputRef.current?.click()}>Importar JSON v1 o v2</Button>
         <input
           ref={inputRef}
           className="visually-hidden"
@@ -52,6 +52,6 @@ export function PortabilitySettingsSection({
           {error}
         </p>
       )}
-    </section>
+    </SettingsCard>
   );
 }

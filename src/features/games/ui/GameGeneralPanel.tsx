@@ -1,6 +1,8 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { FormGrid } from "../../../shared/ui";
 import { getSlotLabel } from "../../../shared/kernel/backlogSelectors";
 import type { GameEditorController } from "./useGameEditor";
+import { GameContentsSection } from "./GameContentsSection";
 
 export function GameGeneralPanel({
   data,
@@ -27,7 +29,7 @@ export function GameGeneralPanel({
   }
 
   return (
-    <div className="form-grid editor-panel">
+    <FormGrid className="editor-panel">
       <label className="wide-field">
         <span>Nombre</span>
         <input
@@ -129,9 +131,10 @@ export function GameGeneralPanel({
           onChange={event => patch("notes", event.target.value)}
         />
       </label>
+      <GameContentsSection editor={editor} />
       <fieldset className="wide-field planning-fields">
         <legend>Planificación</legend>
-        <div className="form-grid compact-form">
+        <FormGrid $compact>
           <label>
             <span>Disponible desde</span>
             <input
@@ -157,7 +160,7 @@ export function GameGeneralPanel({
             </select>
             <small>Las dependencias pendientes bloquean el juego en la cola.</small>
           </label>
-        </div>
+        </FormGrid>
         {draft.dependencies.length > 0 && (
           <div className="dependency-selection">
             {draft.dependencies.map(id => (
@@ -175,6 +178,6 @@ export function GameGeneralPanel({
           </div>
         )}
       </fieldset>
-    </div>
+    </FormGrid>
   );
 }

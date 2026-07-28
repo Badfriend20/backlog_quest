@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { createBacklogFixture } from "../testing/backlogFixture";
 import type { BacklogData, Game, QuickCopyPreset } from "./backlog";
 import {
   mergeQuickCopyPresets,
+  generateSchedule,
   normalizeOwnershipDisplayRules,
   ownershipDisplayKey,
   quickCopyLabel,
@@ -66,6 +68,33 @@ describe("etiquetas de agregado rápido", () => {
     expect(quickCopyLabel({ library: "Steam", ownership: FAMILY_LIBRARY }, {})).toBe(
       "Steam Biblioteca familiar"
     );
+  });
+});
+
+describe("agenda recurrente", () => {
+  it("genera cada día con la franja asignada a esa sesión", () => {
+    const data = createBacklogFixture();
+    data.preferences.scheduleWeeks = 1;
+    const mission = data.missions[0];
+    const rule = data.scheduleRules.find(item => item.missionId === mission.id)!;
+    rule.sessions = [
+      { weekday: 1, slotId: "first" },
+      { weekday: 2, slotId: "second" },
+      { weekday: 3, slotId: "flexible" },
+    ];
+
+    const generated = generateSchedule(data);
+    const missionSlots = new Map(
+      generated.flatMap(day =>
+        day.missions
+          .filter(item => item.mission.id === mission.id)
+          .map(item => [new Date(`${day.date}T12:00:00`).getDay(), item.label] as const)
+      )
+    );
+
+    expect(missionSlots.get(1)).toBe("Día");
+    expect(missionSlots.get(2)).toBe("Noche");
+    expect(missionSlots.get(3)).toBe("Flexible");
   });
 });
 

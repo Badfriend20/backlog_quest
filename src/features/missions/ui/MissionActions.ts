@@ -6,4 +6,7 @@ export interface MissionActions {
   onSendEnd: (id: string) => void;
   onAbandon: (id: string) => void;
   onEditMission: (id: string) => void;
+  onAddCopyForMission: (id: string) => void;
+  onAddPlaythroughForMission: (id: string) => void;
+  onManageContentsForMission: (id: string) => void;
 }

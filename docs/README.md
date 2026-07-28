@@ -1,6 +1,6 @@
 # Documentación de Backlog Quest
 
-Esta carpeta es la fuente de verdad para mantener Backlog Quest v2.3.0. El repositorio incluye un estado inicial anónimo; los datos del usuario se conservan en `localStorage` y en los respaldos JSON que exporte. La aplicación funciona sin backend.
+Esta carpeta es la fuente de verdad para mantener Backlog Quest v2.5.0. El repositorio incluye un estado inicial anónimo; los datos del usuario se conservan en `localStorage` y en los respaldos JSON que exporte. La aplicación funciona sin backend.
 
 ## Mapa de documentos
 

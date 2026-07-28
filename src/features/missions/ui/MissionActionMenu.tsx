@@ -56,7 +56,7 @@ export function MissionActionMenu({
       {open && (
         <div id={menuId} role="menu">
           <button type="button" role="menuitem" onClick={() => run(actions.onEditMission)}>
-            Cambiar plataforma o agenda
+            Editar contenido, plataforma o agenda
           </button>
           <button type="button" role="menuitem" onClick={() => run(actions.onPause)}>
             Pausar

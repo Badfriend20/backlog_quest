@@ -1,36 +1,68 @@
 # Arquitectura de estilos
 
-Desde la versión 2.3.0, Backlog Quest utiliza `styled-components`. El punto de entrada no importa hojas CSS y los estilos se distribuyen según su propietario.
+Desde la versión 2.5.0, Backlog Quest usa la API de `styled-components` como unidad real de
+encapsulación, no como un mecanismo para inyectar antiguas hojas globales.
 
 ## Propiedad
 
-- `shared/ui/tokens/GlobalStyles.ts` contiene únicamente reglas transversales: tokens, reset, controles nativos y patrones consumidos realmente por más de una feature.
-- Cada feature mantiene un componente de estilo en su carpeta `ui`: `BacklogStyles`, `DashboardStyles`, `DevicesStyles`, `GamesStyles`, `HistoryStyles`, `MissionsStyles`, `QueueStyles`, `ScheduleStyles` y `SettingsStyles`.
-- La vista o componente autónomo que puede aparecer fuera de su vista principal monta el componente de estilo que necesita. Por ejemplo, `GameEditor` monta `GamesStyles` y `MissionEditor` monta `MissionsStyles`.
-- Los temas siguen llegando desde las preferencias como variables CSS en el shell. Las reglas de los styled components consumen esas variables, por lo que no duplican la lógica de temas.
+- `shared/ui/tokens/GlobalStyles.ts` contiene solamente variables, reset y valores base de
+  elementos HTML.
+- Los componentes reutilizables declaran sus elementos con `styled.button`, `styled.article`,
+  `styled.dialog`, `styled(Component)` o fragmentos `css` compartidos.
+- Cada feature mantiene un scope renderizado (`BacklogScope`, `GamesScope`, etc.) para partes
+  estrictamente internas que todavía se expresan mediante clases semánticas. Está prohibido usar
+  `createGlobalStyle` en esos scopes.
+- Un componente autónomo monta su scope cuando lo necesita; no depende de haber visitado otra vista.
+- Los temas llegan desde preferencias como variables CSS. Los componentes consumen esas variables
+  sin duplicar la lógica de temas.
 
-## Criterio de colocación
+## Sistema compartido
 
-Una regla pertenece a una feature cuando todos sus consumidores están en esa feature. Solo se mueve a `shared` después de comprobar consumidores reales en más de una feature y una semántica estable.
+`shared/ui` se divide por profundidad:
 
-No se crean wrappers styled que únicamente reenvían propiedades. Un componente de estilo debe ocultar una decisión visual reutilizable o concentrar las reglas de una vista completa.
+- `atoms`: botones, chips y ayudas pequeñas;
+- `layout`: tarjetas, rejillas, acciones, formularios, estados vacíos y resúmenes;
+- `organisms`: modales y composiciones reutilizadas por varias features;
+- `tokens`: reset y tokens globales, nunca estilos de una feature.
+
+Las variantes de acción se expresan con `Button`: `primary`, `ghost`, `danger`, `warning` y `text`;
+`size="compact"` y `fullWidth` son opciones de presentación. No se recrean mediante clases.
+
+## Extracción y duplicación
+
+Una regla pertenece a una feature cuando todos sus consumidores están en esa feature. Solo se mueve
+a `shared` después de comprobar consumidores reales en más de una feature y una semántica estable.
+
+Los wrappers estructurales son válidos cuando agrupan contenido o expresan layout. No se crea un
+wrapper que solo cambie el nombre de otro componente sin ocultar una decisión visual.
+
+La segunda aparición confirmada de una misma pieza visual obliga a extraerla: localmente si ambos
+consumidores pertenecen a una feature, o a `shared/ui` si cruza features con la misma semántica. Se
+pueden repetir dos o tres declaraciones de layout cuando abstraerlas mezclaría conceptos distintos;
+no se duplica markup con interacción, estados o variantes.
 
 ## Responsivo
 
-Los media queries viven junto al módulo al que modifican. Las reglas transversales, como el cambio entre sidebar y encabezado móvil, pertenecen a `BacklogStyles`. Los breakpoints actuales verificados son 320, 390, 760, 761, 900 y 1280 píxeles.
+Los media queries viven junto al componente o scope al que modifican. El cambio entre sidebar y
+encabezado móvil pertenece a `BacklogStyles`. Los breakpoints de referencia son 320, 390, 760, 761,
+900 y 1280 píxeles.
 
 ## Reglas verificables
 
 - No se admiten archivos `.css` dentro de `src`.
 - `src/app/composition/main.tsx` monta `GlobalStyles`.
+- `createGlobalStyle` solo puede aparecer en `shared/ui/tokens/GlobalStyles.ts`.
+- No se crean clases `primary-button`, `ghost-button` o `danger-button`; se usa `Button`.
 - Una feature no importa el archivo de estilos interno de otra feature.
-- `npm run check:architecture` comprueba que no reaparezcan hojas CSS.
+- `npm run check:architecture` comprueba estas restricciones.
 - `npm run validate` comprueba formato, lint, pruebas, arquitectura y build.
 
 ## Cómo agregar estilos
 
-1. Agrega la regla al componente de estilo de la feature propietaria.
-2. Si el componente puede renderizarse de forma autónoma, asegúrate de que monte su componente de estilo.
-3. Conserva estados visuales como clases semánticas o atributos; no introduzcas estilos inline salvo variables dinámicas del tema.
-4. Ejecuta `npm run validate`.
-5. Revisa al menos un ancho móvil y uno de escritorio cuando cambies layout, overflow o posición.
+1. Declara el elemento con `styled.tag` junto al componente propietario.
+2. Si el patrón ya existe, reutiliza un átomo, layout u organismo de `shared/ui`.
+3. Usa el scope de feature solo para markup estrictamente local; nunca agregues CSS global.
+4. Conserva estados visuales mediante transient props (`$active`, `$warning`), atributos o clases
+   semánticas locales. No uses estilos inline salvo variables dinámicas del tema.
+5. Ejecuta `npm run validate`.
+6. Revisa al menos un ancho móvil y uno de escritorio cuando cambies layout, overflow o posición.

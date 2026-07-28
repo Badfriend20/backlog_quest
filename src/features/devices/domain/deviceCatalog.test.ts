@@ -1,12 +1,10 @@
 import { describe, expect, it } from "vitest";
-import defaultBacklogJson from "../../../data/backlog.json";
-import { withBacklogFixture } from "../../../shared/testing/backlogFixture";
-import { migrateBacklog } from "../../backlog";
+import { createBacklogFixture } from "../../../shared/testing/backlogFixture";
 import { createDevice, deviceUsageCount, removeUnusedDevice, saveDevice } from "./deviceCatalog";
 
 describe("catálogo de dispositivos", () => {
   it("crea un ID nuevo y agrega el dispositivo sin alterar los existentes", () => {
-    const data = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    const data = createBacklogFixture();
     const draft = createDevice(data.platforms);
     const platforms = saveDevice(data.platforms, { ...draft, name: "  Equipo nuevo  " });
 
@@ -16,7 +14,7 @@ describe("catálogo de dispositivos", () => {
   });
 
   it("edita un dispositivo conservando su ID y posición", () => {
-    const data = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    const data = createBacklogFixture();
     const original = data.platforms[0];
     const platforms = saveDevice(data.platforms, { ...original, name: "Nombre actualizado" });
 
@@ -25,7 +23,7 @@ describe("catálogo de dispositivos", () => {
   });
 
   it("solo permite eliminar dispositivos sin referencias", () => {
-    const data = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    const data = createBacklogFixture();
     const used = data.platforms.find(platform => deviceUsageCount(data, platform.id) > 0);
     const unused = createDevice(data.platforms);
     const dataWithUnused = { ...data, platforms: [...data.platforms, unused] };

@@ -10,6 +10,8 @@ El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y 
 
 `BacklogData` es el documento completo: metadatos, preferencias, catálogos, dispositivos, cola, misiones, reglas, excepciones, actividad y juegos. `catalogs.platforms` guarda las plataformas configurables y cada copia las referencia mediante `platformId`. Cada juego contiene copias, partidas, contenidos y dependencias.
 
+Cada regla de agenda guarda `sessions`: una lista de combinaciones `{ weekday, slotId }`. La duración mínima y máxima sigue perteneciendo a la regla completa. Una lista vacía representa una misión activa sin calendario fijo.
+
 `crossCopyProgress` indica compatibilidad de partidas guardadas entre copias mediante valores estables: `shared`, `separate`, `partial` o `unknown`. La migración convierte el antiguo `sharedProgress` y elimina `platformPriority` y el porcentaje global `progress.percent` de respaldos anteriores.
 
 ## Persistencia
@@ -39,3 +41,11 @@ Se exporta un único JSON UTF-8 con preferencias, catálogos de plataformas y pr
 ## Integridad
 
 Las operaciones de Domain actualizan conjuntamente las relaciones afectadas. No se debe modificar una misión, partida, cola o copia de manera aislada desde un componente.
+
+Las relaciones de misión con contenido, copia y partida son opcionales una vez creadas. `contentId`, `copyId` o `playthroughId` vacíos representan una misión que requiere atención. Eliminar un contenido limpia su ID en misiones y partidas, pero conserva snapshots de `contentTitle` y `contentType`. Renombrar o reclasificar un contenido todavía existente sincroniza esos snapshots. Eliminar una copia limpia su referencia en misiones, partidas y Cola; conserva las descripciones históricas de la partida. Eliminar una partida limpia su identificador en las misiones relacionadas. Ninguna operación elimina la misión, sus reglas ni las entradas descriptivas de `activityLog`.
+
+La creación y la conservación tienen reglas diferentes: una partida nueva requiere una copia y un contenido válidos, mientras que una partida existente puede quedar sin cualquiera de esas relaciones después de desacoplarlas.
+
+La migración conserva arreglos de contenido explícitamente vacíos; no inventa una campaña para sustituir una decisión del usuario. En respaldos anteriores completa los snapshots de partidas a partir del contenido referenciado cuando todavía existe.
+
+Los respaldos anteriores con `weekdays` se convierten a `sessions` usando `mission.slotId` como franja de cada día heredado. La normalización elimina `weekdays` al exportar para evitar dos fuentes de verdad.

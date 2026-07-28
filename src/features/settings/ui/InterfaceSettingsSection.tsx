@@ -1,5 +1,7 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
+import { SettingsCard } from "./SettingsStyles";
 
 export function InterfaceSettingsSection({
   data,
@@ -9,8 +11,8 @@ export function InterfaceSettingsSection({
   onChange: SettingsChangeHandler;
 }) {
   return (
-    <section className="settings-card">
-      <p className="eyebrow">INTERFAZ</p>
+    <SettingsCard>
+      <Eyebrow>INTERFAZ</Eyebrow>
       <h2>Presentación</h2>
       <div className="settings-form">
         <div className="setting-with-description">
@@ -69,6 +71,6 @@ export function InterfaceSettingsSection({
           <span>Confirmar abandonar o enviar al final</span>
         </label>
       </div>
-    </section>
+    </SettingsCard>
   );
 }

@@ -8,6 +8,7 @@ import type {
   QueueItem,
   QueueState,
   ScheduleRule,
+  ScheduleSession,
   SlotProfile,
   StatusCatalogItem,
   ThemeColors,
@@ -24,6 +25,7 @@ import {
   quickCopyKey,
   resolveCopyPlatform,
 } from "../../../shared/kernel/backlogSelectors";
+import { normalizeScheduleSessions } from "../../../shared/kernel/schedule";
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
   Wishlist: "Juego que todavía no tienes o no está disponible en tu biblioteca.",
@@ -513,6 +515,7 @@ export function normalizeV2(data: BacklogData): BacklogData {
     ),
   ]);
   const games = data.games.map(game => {
+    const contents = Array.isArray(game.contents) ? game.contents : defaultContent(game);
     const copies = (game.copies ?? []).map(copy => {
       const legacyLibrary = legacyPlatformName(copy.library, copy.ownership);
       const copyPlatform = resolveCopyPlatform(copyPlatforms, copy.platformId, legacyLibrary);
@@ -542,6 +545,7 @@ export function normalizeV2(data: BacklogData): BacklogData {
     });
     const playthroughs = (game.playthroughs ?? []).map(play => {
       const selectedCopy = copies.find(copy => copy.id === play.copyId);
+      const selectedContent = contents.find(content => content.id === play.contentId);
       const allowed = selectedCopy?.deviceIds ?? [];
       const inferred =
         play.deviceId && data.platforms.some(platform => platform.id === play.deviceId)
@@ -549,6 +553,8 @@ export function normalizeV2(data: BacklogData): BacklogData {
           : (inferDeviceIds(platformData, play.device)[0] ?? allowed[0]);
       return {
         ...play,
+        contentTitle: play.contentTitle ?? selectedContent?.title,
+        contentType: play.contentType ?? selectedContent?.type,
         deviceId: inferred,
         device: inferred ? deviceLabel(platformData, [inferred]) : play.device || "Por confirmar",
       };
@@ -561,7 +567,7 @@ export function normalizeV2(data: BacklogData): BacklogData {
         replays: game.progress?.replays ?? 0,
         lastPlayedAt: game.progress?.lastPlayedAt ?? null,
       },
-      contents: game.contents?.length ? game.contents : defaultContent(game),
+      contents,
       dependencies: game.dependencies ?? dependenciesFor(),
       availableFrom: game.availableFrom ?? availableFromFor(),
       tags: game.tags ?? [],
@@ -668,6 +674,28 @@ export function normalizeV2(data: BacklogData): BacklogData {
     );
     if (legacyOwnTerm) ownershipDisplayRules[ownershipDisplayKey(legacyOwnTerm)].hidden = true;
   }
+  const scheduleRules = (data.scheduleRules ?? []).map(rule => {
+    const mission = missions.find(item => item.id === rule.missionId);
+    const legacyRule = rule as unknown as ScheduleRule & {
+      sessions?: ScheduleSession[];
+      weekdays?: number[];
+    };
+    const sessions = normalizeScheduleSessions(
+      legacyRule.sessions ??
+        (legacyRule.weekdays ?? []).map(weekday => ({
+          weekday,
+          slotId: mission?.slotId ?? "flexible",
+        }))
+    );
+    return {
+      id: rule.id,
+      missionId: rule.missionId,
+      sessions,
+      durationMin: rule.durationMin,
+      durationMax: rule.durationMax,
+      enabled: rule.enabled,
+    };
+  });
   return {
     ...data,
     schemaVersion: 2,
@@ -725,7 +753,7 @@ export function normalizeV2(data: BacklogData): BacklogData {
     games,
     queue,
     missions,
-    scheduleRules: data.scheduleRules ?? [],
+    scheduleRules,
     scheduleOverrides: data.scheduleOverrides ?? [],
     activityLog: data.activityLog ?? [],
   };

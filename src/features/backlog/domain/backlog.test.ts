@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import defaultBacklogJson from "../../../data/backlog.json";
-import { withBacklogFixture } from "../../../shared/testing/backlogFixture";
-import { migrateBacklog } from "../infrastructure/migration";
+import { createBacklogFixture } from "../../../shared/testing/backlogFixture";
 import {
   activateMission,
   deferMission,
@@ -11,7 +9,7 @@ import {
 } from "./backlog";
 
 function referenceData() {
-  return withBacklogFixture(migrateBacklog(structuredClone(defaultBacklogJson)));
+  return createBacklogFixture();
 }
 
 function linkedState(action: typeof pauseMission) {
@@ -76,6 +74,82 @@ describe("acciones coherentes de misión", () => {
     expect(result.activityLog.length).toBeGreaterThan(data.activityLog.length);
   });
 
+  it("terminar una misión sin partida crea y vincula su historial", () => {
+    const data = referenceData();
+    const mission = data.missions[0];
+    const game = data.games.find(item => item.id === mission.gameId)!;
+    const copy = game.copies[0];
+    const withoutPlaythrough = {
+      ...data,
+      missions: data.missions.map(item =>
+        item.id === mission.id ? { ...item, playthroughId: "" } : item
+      ),
+      games: data.games.map(item => (item.id === game.id ? { ...item, playthroughs: [] } : item)),
+    };
+
+    const result = finishMission(withoutPlaythrough, mission.id, {
+      result: "Terminado",
+      scope: "game",
+      replayIntent: "no",
+      copyId: copy.id,
+      device: mission.activeDevice,
+      deviceId: mission.activeDeviceId!,
+      notes: "",
+    });
+    const updatedMission = result.missions.find(item => item.id === mission.id)!;
+    const updatedGame = result.games.find(item => item.id === game.id)!;
+
+    expect(updatedMission.playthroughId).not.toBe("");
+    expect(updatedGame.playthroughs.some(play => play.id === updatedMission.playthroughId)).toBe(
+      true
+    );
+  });
+
+  it("terminar una misión sin copia conserva el cierre desacoplado", () => {
+    const data = referenceData();
+    const mission = data.missions[0];
+    const game = data.games.find(item => item.id === mission.gameId)!;
+    const withoutCopy = {
+      ...data,
+      missions: data.missions.map(item =>
+        item.id === mission.id ? { ...item, copyId: "" } : item
+      ),
+      games: data.games.map(item =>
+        item.id === game.id
+          ? {
+              ...item,
+              copies: item.copies.filter(copy => copy.id !== mission.copyId),
+              playthroughs: item.playthroughs.map(play =>
+                play.id === mission.playthroughId ? { ...play, copyId: undefined } : play
+              ),
+            }
+          : item
+      ),
+    };
+
+    const result = finishMission(withoutCopy, mission.id, {
+      result: "Terminado",
+      scope: "game",
+      replayIntent: "no",
+      copyId: "",
+      device: mission.activeDevice,
+      deviceId: mission.activeDeviceId ?? "",
+      notes: "",
+    });
+    const updatedMission = result.missions.find(item => item.id === mission.id)!;
+    const updatedGame = result.games.find(item => item.id === game.id)!;
+    const updatedPlaythrough = updatedGame.playthroughs.find(
+      play => play.id === updatedMission.playthroughId
+    )!;
+    const updatedQueueItem = result.queue.find(item => item.gameId === game.id)!;
+
+    expect(updatedMission.status).toBe("finished");
+    expect(updatedMission.copyId).toBe("");
+    expect(updatedPlaythrough.status).toBe("Terminado");
+    expect(updatedPlaythrough.copyId).toBeUndefined();
+    expect(updatedQueueItem.preferredCopyId).toBeNull();
+  });
+
   it("activar crea una misión y vincula copia, dispositivo, partida, cola y calendario", () => {
     const data = referenceData();
     const activeGameIds = new Set(
@@ -87,14 +161,17 @@ describe("acciones coherentes de misión", () => {
       copy.deviceIds?.[0] ?? data.platforms.find(platform => platform.active)?.id ?? "";
     const result = activateMission(data, {
       gameId: game.id,
-      contentTitle: game.contents[0]?.title ?? "Campaña principal",
-      contentType: "campaign",
+      contentId: game.contents[0]?.id ?? "",
       copyId: copy.id,
       activeDevice:
         data.platforms.find(platform => platform.id === deviceId)?.name ?? "Por confirmar",
       activeDeviceId: deviceId,
       slotId: "flexible",
-      weekdays: [1],
+      sessions: [
+        { weekday: 1, slotId: "second" },
+        { weekday: 2, slotId: "first" },
+        { weekday: 3, slotId: "flexible" },
+      ],
       durationMin: 30,
       durationMax: 60,
       notes: "Activación probada",
@@ -109,6 +186,10 @@ describe("acciones coherentes de misión", () => {
     expect(mission.activeDeviceId).toBe(deviceId);
     expect(updatedGame.playthroughs.some(play => play.id === mission.playthroughId)).toBe(true);
     expect(result.queue.find(item => item.gameId === game.id)?.state).toBe("active");
-    expect(result.scheduleRules.some(rule => rule.missionId === mission.id)).toBe(true);
+    expect(result.scheduleRules.find(rule => rule.missionId === mission.id)?.sessions).toEqual([
+      { weekday: 1, slotId: "second" },
+      { weekday: 2, slotId: "first" },
+      { weekday: 3, slotId: "flexible" },
+    ]);
   });
 });

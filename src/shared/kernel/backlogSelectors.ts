@@ -379,6 +379,22 @@ export function sortedQueue(data: BacklogData): QueueItem[] {
   return [...data.queue].sort((a, b) => a.position - b.position);
 }
 
+export function missionLinkState(
+  data: BacklogData,
+  mission: Pick<Mission, "gameId" | "contentId" | "copyId" | "playthroughId">
+): { hasContent: boolean; hasCopy: boolean; hasPlaythrough: boolean; complete: boolean } {
+  const game = data.games.find(item => item.id === mission.gameId);
+  const hasContent = Boolean(
+    mission.contentId && game?.contents.some(content => content.id === mission.contentId)
+  );
+  const hasCopy = Boolean(mission.copyId && game?.copies.some(copy => copy.id === mission.copyId));
+  const hasPlaythrough = Boolean(
+    mission.playthroughId &&
+    game?.playthroughs.some(playthrough => playthrough.id === mission.playthroughId)
+  );
+  return { hasContent, hasCopy, hasPlaythrough, complete: hasContent && hasCopy && hasPlaythrough };
+}
+
 export function queueLabel(data: BacklogData, state: QueueItem["state"]): string {
   return data.catalogs.queueStates.find(item => item.id === state)?.label ?? state;
 }
@@ -406,7 +422,13 @@ export interface GeneratedScheduleItem {
   id: string;
   date: string;
   day: string;
-  missions: Array<{ mission: Mission; game: Game; label: string; duration: string }>;
+  missions: Array<{
+    mission: Mission;
+    game: Game;
+    slotId: string;
+    label: string;
+    duration: string;
+  }>;
 }
 
 function durationLabel(min: number, max: number): string {
@@ -427,32 +449,31 @@ export function generateSchedule(data: BacklogData): GeneratedScheduleItem[] {
     date.setDate(today.getDate() + index);
     const dateKey = date.toISOString().slice(0, 10);
     const weekday = date.getDay();
-    const missions = data.scheduleRules
-      .filter(rule => rule.enabled && rule.weekdays.includes(weekday))
-      .filter(
-        rule =>
-          !overrides.some(
-            override =>
-              override.date === dateKey &&
-              override.missionId === rule.missionId &&
-              override.action === "skip"
-          )
-      )
-      .map(rule => {
-        const mission = data.missions.find(
-          item => item.id === rule.missionId && item.status === "active"
-        );
-        if (!mission) return null;
-        const game = data.games.find(item => item.id === mission.gameId);
-        if (!game) return null;
-        return {
+    const missions = data.scheduleRules.flatMap(rule => {
+      if (!rule.enabled) return [];
+      const skipped = overrides.some(
+        override =>
+          override.date === dateKey &&
+          override.missionId === rule.missionId &&
+          override.action === "skip"
+      );
+      if (skipped) return [];
+      const mission = data.missions.find(
+        item => item.id === rule.missionId && item.status === "active"
+      );
+      if (!mission) return [];
+      const game = data.games.find(item => item.id === mission.gameId);
+      if (!game) return [];
+      return rule.sessions
+        .filter(session => session.weekday === weekday)
+        .map(session => ({
           mission,
           game,
-          label: getSlotLabel(data, mission.slotId),
+          slotId: session.slotId,
+          label: getSlotLabel(data, session.slotId),
           duration: durationLabel(rule.durationMin, rule.durationMax),
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+        }));
+    });
     result.push({
       id: `CAL-${dateKey}`,
       date: dateKey,

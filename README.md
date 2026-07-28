@@ -1,12 +1,12 @@
-# Backlog Quest v2.3.0
+# Backlog Quest v2.5.0
 
 Aplicación React + TypeScript + Vite para administrar una biblioteca de videojuegos sin servidor ni cuenta.
 
 ## Funciones principales
 
 - Biblioteca y cola completa.
-- Misiones activas vinculadas a copia, dispositivo y franja.
-- Calendario dinámico.
+- Misiones activas vinculadas a contenido, copia y dispositivo.
+- Calendario dinámico con distintas franjas por día.
 - Historial de partidas y rejugadas.
 - Copias editables por biblioteca y propiedad.
 - Agregado rápido dinámico.

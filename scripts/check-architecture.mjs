@@ -54,6 +54,20 @@ function containsJsx(node) {
 
 for (const file of walk(sourceRoot).filter(candidate => /\.(ts|tsx)$/.test(candidate))) {
   const text = fs.readFileSync(file, "utf8");
+  const normalizedFile = relative(file);
+  if (
+    text.includes("createGlobalStyle") &&
+    normalizedFile !== "src/shared/ui/tokens/GlobalStyles.ts"
+  ) {
+    violations.push(
+      `${normalizedFile} usa createGlobalStyle; solo GlobalStyles puede definir reset y tokens globales.`
+    );
+  }
+  if (file.endsWith(".tsx") && /\b(primary-button|ghost-button|danger-button)\b/.test(text)) {
+    violations.push(
+      `${normalizedFile} recrea una variante visual por clase; usa el átomo compartido Button.`
+    );
+  }
   if (path.basename(file) === "index.ts" && !text.trim()) {
     violations.push(
       `${relative(file)} es un barrel vacío; elimínalo hasta que exista una interfaz.`
@@ -111,7 +125,6 @@ for (const file of walk(sourceRoot).filter(candidate => /\.(ts|tsx)$/.test(candi
         `${relative(file)} importa internals de ${targetFeature}; usa su index.ts público.`
       );
     }
-    const normalizedFile = relative(file);
     const normalizedTarget = resolved.replaceAll("\\", "/");
     if (normalizedTarget.includes("/shared/ui/organisms/")) importedOrganisms += 1;
     if (normalizedFile.startsWith("src/shared/") && normalizedTarget.includes("/src/features/")) {

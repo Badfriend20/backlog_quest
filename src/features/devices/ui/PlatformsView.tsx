@@ -1,9 +1,10 @@
 import { useState } from "react";
 import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
+import { Button, Eyebrow } from "../../../shared/ui";
 import { createDevice } from "../domain/deviceCatalog";
 import { DeviceCard } from "./DeviceCard";
 import { DeviceEditorModal } from "./DeviceEditorModal";
-import { DevicesStyles } from "./DevicesStyles";
+import { DevicesScope } from "./DevicesStyles";
 
 interface PlatformsViewProps {
   data: BacklogData;
@@ -27,20 +28,15 @@ export function PlatformsView({
   }
 
   return (
-    <>
-      <DevicesStyles />
+    <DevicesScope>
       <div className="device-view-heading">
         <div>
-          <p className="eyebrow">CATÁLOGO DE DISPOSITIVOS</p>
+          <Eyebrow>CATÁLOGO DE DISPOSITIVOS</Eyebrow>
           <p>Selecciona el título o el botón Editar para modificar un dispositivo.</p>
         </div>
-        <button
-          type="button"
-          className="primary-button"
-          onClick={() => openEditor(createDevice(data.platforms), true)}
-        >
+        <Button variant="primary" onClick={() => openEditor(createDevice(data.platforms), true)}>
           + Dispositivo
-        </button>
+        </Button>
       </div>
 
       <div className="platform-grid">
@@ -66,6 +62,6 @@ export function PlatformsView({
           onClose={() => setSelectedDevice(undefined)}
         />
       )}
-    </>
+    </DevicesScope>
   );
 }

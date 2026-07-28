@@ -7,7 +7,7 @@ import {
   crossCopyProgressLabel,
   getSlotLabel,
 } from "../../../shared/kernel/backlogSelectors";
-import { HelpTooltip } from "../../../shared/ui";
+import { FormGrid, HelpTooltip, RelationSummaryGrid } from "../../../shared/ui";
 import { DeviceMultiSelect } from "../../devices";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
@@ -55,14 +55,14 @@ export function GameCopyCard({
         </>
       }
       itemLabel="copia"
-      deleteMessage={`Se eliminará la copia ${copy.library || copy.id}. Esta acción no se puede deshacer desde el formulario.`}
+      deleteMessage={`Se eliminará la copia ${copy.library || copy.id}. Las misiones y partidas vinculadas se conservarán sin copia.`}
       onEdit={() => beginCopyEdit(copy.id)}
       onRemove={() => removeCopy(copy.id)}
       onSave={saveCopyEdit}
       onDiscard={discardCopyEdit}
       summary={
         <>
-          <dl className="relation-summary-grid">
+          <RelationSummaryGrid>
             <div>
               <dt>Propiedad</dt>
               <dd>{copy.ownership}</dd>
@@ -87,13 +87,13 @@ export function GameCopyCard({
               <dt>Progreso entre copias</dt>
               <dd>{crossCopyProgressLabel(copy.crossCopyProgress)}</dd>
             </div>
-          </dl>
+          </RelationSummaryGrid>
           {copy.notes && <p className="copy-summary-notes">{copy.notes}</p>}
         </>
       }
       editor={
         <>
-          <div className="form-grid compact-form">
+          <FormGrid $compact>
             <label>
               <span>Plataforma</span>
               <select
@@ -183,7 +183,7 @@ export function GameCopyCard({
                 onChange={event => updateCopy(copy.id, { notes: event.target.value })}
               />
             </label>
-          </div>
+          </FormGrid>
         </>
       }
     />

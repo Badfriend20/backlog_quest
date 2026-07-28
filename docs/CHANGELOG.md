@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.5.0 — 2026-07-27
+
+### Styled components y sistema compartido
+
+- `GlobalStyles` queda limitado a tokens, reset y elementos HTML base.
+- Los scopes de feature son wrappers renderizados; ya no se inyectan hojas globales por feature.
+- Modal, botones, tooltips, chips, tarjetas, rejillas, formularios, acciones y resúmenes usan
+  `styled.tag`, `styled(Component)`, transient props y fragmentos `css`.
+- Los patrones usados entre features se concentran en `shared/ui/atoms`, `layout` y `organisms`.
+- La arquitectura rechaza `createGlobalStyle` fuera del reset y variantes de botón por clase.
+- Se documenta un umbral objetivo de prop drilling que obliga a adoptar un gestor de estado.
+
+## 2.4.0 — 2026-07-27
+
+### Agenda flexible
+
+- Cada misión admite cero o varias sesiones recurrentes, definidas por día y franja.
+- Una misma misión puede programarse en franjas diferentes durante la semana y repetir más de una franja el mismo día.
+- Plan muestra la franja correspondiente a cada sesión, no una franja global de la misión.
+- Los conflictos se detectan únicamente cuando dos misiones coinciden en día y franja.
+- Los respaldos con `weekdays` se migran automáticamente a `sessions` usando la franja preferida que ya tenía la misión.
+- La edición vuelve a usar activadores `L M X J V S D`, agrupados dentro de cada franja única; se pueden agregar hasta cuatro franjas sin combinaciones duplicadas.
+
+### Sistema de diseño y arquitectura
+
+- `Button` vive en `shared/ui` como átomo reutilizable con variantes `primary`, `ghost`, `danger`, `warning` y `text`.
+- Inicio, Misiones, Contenidos y la composición principal consumen el mismo botón tipado.
+- La lógica recurrente de sesiones, conflictos y etiquetas se concentra en `shared/kernel/schedule.ts`.
+- Se agregaron pruebas de migración, persistencia y generación de calendarios multirranja.
+- Una fachada de comandos concentra persistencia, deshacer, avisos, importación y restauración fuera de `BacklogQuestApp`.
+- `useGameEditor` compone controladores separados para Contenidos, Copias y Partidas sin cambiar la interfaz consumida por el modal.
+
 ## 2.3.0 — 2026-07-26
 
 ### Datos iniciales y presentación
@@ -8,6 +40,17 @@
 - Eliminado `meta.owner`; los respaldos anteriores siguen importándose y el campo se descarta al normalizar.
 - Pruebas de dominio desacopladas del JSON inicial mediante datos sintéticos.
 - “Tarjetas compactas” se aclara como una vista de menor espaciado que no oculta información.
+- Biblioteca incorpora orden independiente de Cola: pendientes primero, alfabético, prioridad o actividad reciente.
+- Las partidas pueden eliminarse aunque estén vinculadas; las misiones permanecen desacopladas y muestran una alerta.
+- Las copias pueden eliminarse aunque estén vinculadas; misiones, partidas y Cola limpian la referencia sin perder historial.
+- Inicio y Plan distinguen misiones activas `Sin copia` y `Sin partida`.
+- Las alertas de relaciones abren directamente el formulario de alta y vinculan el registro al guardarlo.
+- Crear partidas requiere una copia disponible, sin volver a bloquear la eliminación posterior.
+- General administra un catálogo ordenable de contenidos; misiones y partidas seleccionan sus elementos por ID.
+- Eliminar contenido desacopla las relaciones sin perder sus snapshots históricos; las misiones afectadas muestran `Sin contenido`.
+- Crear partidas requiere además un contenido disponible.
+- Editar misión queda visible en la tarjeta y permite corregir contenido sin abandonar.
+- Cerrar una misión sin partida crea y vincula el historial faltante.
 
 ### Arquitectura visual
 

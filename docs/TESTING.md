@@ -39,6 +39,16 @@ npm run validate
 - Propiedades: ocultar deshabilita el texto visible; al mostrarlo se respeta el máximo de 24 caracteres.
 - Tema personalizado: cada color se persiste al cambiar de vista.
 - Vista compacta: reduce espacios en Inicio, Biblioteca y Cola sin ocultar información.
+- Biblioteca: cambiar el orden no modifica posiciones de Cola y los cerrados quedan al final en el orden predeterminado.
+- Partidas: eliminar una vinculada conserva la misión con alerta; editarla o cerrarla vuelve a crear el vínculo.
+- Copias: eliminar una vinculada conserva misión y partida, limpia la preferencia de Cola y muestra `Sin copia` sin borrar las descripciones históricas.
+- Alertas de misión: `Sin contenido` abre General; `Sin copia` abre una copia nueva; `Sin partida` abre una partida nueva y queda deshabilitada hasta que existan copia y contenido.
+- Contenidos: renombrar sincroniza los snapshots; eliminar desacopla misión y partida conservando título y tipo históricos.
+- Creación de partidas: siempre comienza con una copia y un contenido válidos; eliminar cualquiera posteriormente sigue permitido.
+- Agenda: una regla heredada conserva sus días al migrar y cada uno recibe la franja preferida anterior.
+- Agenda multirranja: `generateSchedule` respeta la franja de cada combinación día/franja y `activateMission` guarda la lista completa.
+- Activadores de agenda: agrupar sesiones produce una sola entrada por franja; alternar un día no duplica la franja ni modifica los demás días.
+- Conflictos: solo bloquean sesiones que coinciden simultáneamente en día y franja.
 - Tooltips: cursor y teclado no quedan recortados en las chips inferiores.
 
 ## Incorporar nuevas pruebas

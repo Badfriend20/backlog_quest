@@ -5,7 +5,9 @@ import {
   OWNERSHIP_LABEL_MAX_LENGTH,
   ownershipDisplayKey,
 } from "../../../shared/kernel/backlogSelectors";
+import { Button, Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
+import { SettingsCard } from "./SettingsStyles";
 
 export function OwnershipSettingsSection({
   data,
@@ -31,8 +33,8 @@ export function OwnershipSettingsSection({
   }
 
   return (
-    <section className="settings-card">
-      <p className="eyebrow">PROPIEDADES</p>
+    <SettingsCard>
+      <Eyebrow>PROPIEDADES</Eyebrow>
       <h2>Presentación en agregado rápido</h2>
       <p className="settings-help">
         La propiedad real no cambia. Decide si se oculta o qué término breve se muestra en cada
@@ -69,9 +71,9 @@ export function OwnershipSettingsSection({
           );
         })}
       </div>
-      <button type="button" className="primary-button compact" onClick={save}>
+      <Button variant="primary" size="compact" onClick={save}>
         Guardar presentación
-      </button>
-    </section>
+      </Button>
+    </SettingsCard>
   );
 }

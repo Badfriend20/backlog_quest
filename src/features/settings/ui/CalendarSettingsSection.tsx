@@ -1,5 +1,7 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
+import { SettingsCard } from "./SettingsStyles";
 
 export function CalendarSettingsSection({
   data,
@@ -9,8 +11,8 @@ export function CalendarSettingsSection({
   onChange: SettingsChangeHandler;
 }) {
   return (
-    <section className="settings-card">
-      <p className="eyebrow">CALENDARIO</p>
+    <SettingsCard>
+      <Eyebrow>CALENDARIO</Eyebrow>
       <h2>Horizonte y semana</h2>
       <div className="settings-form">
         <label>
@@ -44,6 +46,6 @@ export function CalendarSettingsSection({
           </select>
         </label>
       </div>
-    </section>
+    </SettingsCard>
   );
 }

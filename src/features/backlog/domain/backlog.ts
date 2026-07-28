@@ -2,12 +2,14 @@ import type {
   ActivityItem,
   BacklogData,
   CompletionFormValue,
+  ContentType,
   Game,
   MissionFormValue,
   QueueItem,
   QueueState,
 } from "../../../shared/kernel/backlog";
-import { nextGeneratedId, normalize } from "../../../shared/kernel/backlogSelectors";
+import { nextGeneratedId } from "../../../shared/kernel/backlogSelectors";
+import { findScheduleConflicts, normalizeScheduleSessions } from "../../../shared/kernel/schedule";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -105,7 +107,7 @@ function replayReason(intent: CompletionFormValue["replayIntent"]): string {
   return "Terminado; sin intención actual de rejugarlo.";
 }
 
-function activeGameStatus(contentType: MissionFormValue["contentType"], slotId: string): string {
+function activeGameStatus(contentType: ContentType, slotId: string): string {
   if (contentType === "replay") return "Rejugando";
   if (slotId === "secondary") return "Jugando secundario";
   return "Jugando";
@@ -249,10 +251,18 @@ export function finishMission(
   const copy =
     game.copies.find(item => item.id === form.copyId) ??
     game.copies.find(item => item.id === mission.copyId);
+  const resolvedCopyId = copy?.id;
   const shouldCountCompletion =
     form.scope === "game" || mission.contentType === "campaign" || mission.contentType === "replay";
   const target = replayTarget(form.replayIntent, data.queue.length);
   const queueState = replayQueueState(form.replayIntent);
+  const existingPlaythrough = game.playthroughs.some(play => play.id === mission.playthroughId);
+  const resolvedPlaythroughId = existingPlaythrough
+    ? mission.playthroughId
+    : nextGeneratedId(
+        "P",
+        data.games.flatMap(item => item.playthroughs.map(play => play.id))
+      );
   let next: BacklogData = {
     ...data,
     missions: data.missions.map(item =>
@@ -263,14 +273,15 @@ export function finishMission(
             finishedAt: today(),
             activeDevice: form.device,
             activeDeviceId: form.deviceId,
-            copyId: form.copyId,
+            copyId: resolvedCopyId ?? "",
+            playthroughId: resolvedPlaythroughId,
           }
         : item
     ),
     scheduleRules: data.scheduleRules.filter(rule => rule.missionId !== missionId),
     queue: moveQueue(data.queue, game.id, target, queueState, {
       replayIntent: form.replayIntent,
-      preferredCopyId: form.copyId,
+      preferredCopyId: resolvedCopyId ?? null,
       preferredDevice: form.device,
       preferredDeviceId: form.deviceId,
       preferredSlotId: mission.slotId,
@@ -280,8 +291,7 @@ export function finishMission(
   };
   next = updateGame(next, game.id, current => {
     const completions = current.progress.completions + (shouldCountCompletion ? 1 : 0);
-    const existingPlay = current.playthroughs.some(play => play.id === mission.playthroughId);
-    const closedPlay = existingPlay
+    const closedPlay = existingPlaythrough
       ? current.playthroughs.map(play =>
           play.id === mission.playthroughId
             ? {
@@ -289,8 +299,10 @@ export function finishMission(
                 platform: copy?.library ?? play.platform,
                 device: form.device,
                 deviceId: form.deviceId,
-                copyId: form.copyId,
+                copyId: resolvedCopyId,
                 contentId: mission.contentId,
+                contentTitle: mission.contentTitle,
+                contentType: mission.contentType,
                 status: form.result,
                 finishedAt: today(),
                 notes: form.notes || play.notes,
@@ -300,16 +312,15 @@ export function finishMission(
       : [
           ...current.playthroughs,
           {
-            id: nextGeneratedId(
-              "P",
-              data.games.flatMap(item => item.playthroughs.map(play => play.id))
-            ),
+            id: resolvedPlaythroughId,
             number: Math.max(1, completions),
             platform: copy?.library ?? "Por confirmar",
             device: form.device,
             deviceId: form.deviceId,
-            copyId: form.copyId,
+            copyId: resolvedCopyId,
             contentId: mission.contentId,
+            contentTitle: mission.contentTitle,
+            contentType: mission.contentType,
             status: form.result,
             startedAt: mission.startedAt,
             finishedAt: today(),
@@ -327,7 +338,7 @@ export function finishMission(
         lastPlayedAt: today(),
       },
       copies: current.copies.map(item =>
-        item.id === form.copyId ? { ...item, status: form.result } : item
+        item.id === resolvedCopyId ? { ...item, status: form.result } : item
       ),
       contents: current.contents.map(content =>
         content.id === mission.contentId
@@ -350,13 +361,6 @@ export function finishMission(
   return touch(next);
 }
 
-function slug(value: string): string {
-  const result = normalize(value)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return result || "custom-content";
-}
-
 function updateOrCreatePlaythrough(
   data: BacklogData,
   game: Game,
@@ -364,6 +368,8 @@ function updateOrCreatePlaythrough(
   form: MissionFormValue,
   contentId: string
 ): { playthroughId: string; game: Game } {
+  const content = game.contents.find(item => item.id === contentId);
+  if (!content) throw new Error(`Contenido inexistente: ${contentId}`);
   const existingMission = missionId
     ? data.missions.find(mission => mission.id === missionId)
     : null;
@@ -387,6 +393,8 @@ function updateOrCreatePlaythrough(
                 deviceId: form.activeDeviceId,
                 copyId: form.copyId,
                 contentId,
+                contentTitle: content.title,
+                contentType: content.type,
                 status: "Jugando",
                 finishedAt: null,
               }
@@ -413,6 +421,8 @@ function updateOrCreatePlaythrough(
           deviceId: form.activeDeviceId,
           copyId: form.copyId,
           contentId,
+          contentTitle: content.title,
+          contentType: content.type,
           status: "Jugando",
           startedAt: today(),
           finishedAt: null,
@@ -429,23 +439,25 @@ export function activateMission(
   existingMissionId: string | null = null
 ): BacklogData {
   let data = original;
-  const occupied = data.missions.find(
-    mission =>
-      mission.status === "active" &&
-      mission.slotId === form.slotId &&
-      mission.id !== existingMissionId
-  );
-  if (occupied && form.replaceOccupied) data = deferMission(data, occupied.id);
-  if (occupied && !form.replaceOccupied) return data;
+  const sessions = normalizeScheduleSessions(form.sessions);
+  const conflicts = findScheduleConflicts(data, sessions, existingMissionId ?? undefined);
+  if (conflicts.length && !form.replaceOccupied) return data;
+  if (form.replaceOccupied) {
+    conflicts.forEach(conflict => {
+      data = deferMission(data, conflict.id);
+    });
+  }
 
   const game = data.games.find(item => item.id === form.gameId);
   if (!game) return data;
   const copy = game.copies.find(item => item.id === form.copyId);
   if (!copy) return data;
+  const content = game.contents.find(item => item.id === form.contentId);
+  if (!content) return data;
   const existingMission = existingMissionId
     ? data.missions.find(item => item.id === existingMissionId)
     : null;
-  const contentId = existingMission?.contentId ?? slug(form.contentTitle);
+  const contentId = content.id;
   const playResult = updateOrCreatePlaythrough(data, game, existingMissionId, form, contentId);
   const missionId =
     existingMission?.id ??
@@ -453,7 +465,7 @@ export function activateMission(
       "M",
       data.missions.map(item => item.id)
     );
-  const ruleId = form.weekdays.length
+  const ruleId = sessions.length
     ? (existingMission?.scheduleRuleId ??
       nextGeneratedId(
         "SR",
@@ -464,8 +476,8 @@ export function activateMission(
     id: missionId,
     gameId: game.id,
     contentId,
-    contentTitle: form.contentTitle,
-    contentType: form.contentType,
+    contentTitle: content.title,
+    contentType: content.type,
     copyId: form.copyId,
     activeDevice: form.activeDevice,
     activeDeviceId: form.activeDeviceId,
@@ -490,7 +502,7 @@ export function activateMission(
             {
               id: ruleId,
               missionId,
-              weekdays: form.weekdays,
+              sessions,
               durationMin: form.durationMin,
               durationMax: form.durationMax,
               enabled: true,
@@ -504,7 +516,7 @@ export function activateMission(
       preferredDeviceId: form.activeDeviceId,
       preferredSlotId: form.slotId,
       deferredAt: null,
-      reason: form.notes || `${form.contentTitle} activo en ${form.activeDevice}.`,
+      reason: form.notes || `${content.title} activo en ${form.activeDevice}.`,
     }),
   };
   next = {
@@ -513,35 +525,22 @@ export function activateMission(
       item.id === game.id
         ? {
             ...playResult.game,
-            status: activeGameStatus(form.contentType, form.slotId),
+            status: activeGameStatus(content.type, form.slotId),
             suggestedSession: form.slotId,
             notes: form.notes || item.notes,
-            progress: { ...item.progress, chapter: form.contentTitle, lastPlayedAt: today() },
+            progress: { ...item.progress, chapter: content.title, lastPlayedAt: today() },
             copies: item.copies.map(currentCopy =>
               currentCopy.id === form.copyId ? { ...currentCopy, status: "Jugando" } : currentCopy
             ),
-            contents: item.contents.some(content => content.id === contentId)
-              ? item.contents.map(content =>
-                  content.id === contentId
-                    ? {
-                        ...content,
-                        title: form.contentTitle,
-                        type: form.contentType,
-                        status: "active",
-                        notes: form.notes,
-                      }
-                    : content
-                )
-              : [
-                  ...item.contents,
-                  {
-                    id: contentId,
-                    title: form.contentTitle,
-                    type: form.contentType,
+            contents: item.contents.map(current =>
+              current.id === contentId
+                ? {
+                    ...current,
                     status: "active",
-                    notes: form.notes,
-                  },
-                ],
+                    notes: form.notes || current.notes,
+                  }
+                : current
+            ),
           }
         : item
     ),

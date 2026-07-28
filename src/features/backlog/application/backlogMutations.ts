@@ -23,6 +23,114 @@ function preferredDevice(data: BacklogData, copy?: GameCopy) {
   return { deviceId, label: deviceId ? deviceName(data, deviceId) : (copy?.device ?? "") };
 }
 
+export function removeGameContent(
+  data: BacklogData,
+  gameId: string,
+  contentId: string
+): BacklogData {
+  const game = data.games.find(item => item.id === gameId);
+  const content = game?.contents.find(item => item.id === contentId);
+  if (!game || !content) return data;
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    games: data.games.map(item =>
+      item.id === gameId
+        ? {
+            ...item,
+            contents: item.contents.filter(candidate => candidate.id !== contentId),
+            playthroughs: item.playthroughs.map(playthrough =>
+              playthrough.contentId === contentId
+                ? {
+                    ...playthrough,
+                    contentId: undefined,
+                    contentTitle: playthrough.contentTitle ?? content.title,
+                    contentType: playthrough.contentType ?? content.type,
+                  }
+                : playthrough
+            ),
+          }
+        : item
+    ),
+    missions: data.missions.map(mission =>
+      mission.gameId === gameId && mission.contentId === contentId
+        ? {
+            ...mission,
+            contentId: "",
+            contentTitle: mission.contentTitle || content.title,
+            contentType: mission.contentType || content.type,
+          }
+        : mission
+    ),
+  };
+}
+
+export type MissionRelation = { kind: "copy"; id: string } | { kind: "playthrough"; id: string };
+
+export function linkMissionRelation(
+  data: BacklogData,
+  missionId: string,
+  relation: MissionRelation
+): BacklogData {
+  const mission = data.missions.find(item => item.id === missionId);
+  const game = data.games.find(item => item.id === mission?.gameId);
+  if (!mission || !game) return data;
+
+  const playthrough =
+    relation.kind === "playthrough"
+      ? game.playthroughs.find(play => play.id === relation.id)
+      : game.playthroughs.find(play => play.id === mission.playthroughId);
+  const copyId = relation.kind === "copy" ? relation.id : playthrough?.copyId;
+  const copy = game.copies.find(item => item.id === copyId);
+  if (!copy || (relation.kind === "playthrough" && !playthrough)) return data;
+
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    games: data.games.map(item =>
+      item.id === game.id && playthrough
+        ? {
+            ...item,
+            playthroughs: item.playthroughs.map(play =>
+              play.id === playthrough.id
+                ? { ...play, copyId: copy.id, platform: copy.library }
+                : play
+            ),
+          }
+        : item
+    ),
+    missions: data.missions.map(item =>
+      item.id === mission.id
+        ? {
+            ...item,
+            copyId: copy.id,
+            playthroughId: relation.kind === "playthrough" ? relation.id : item.playthroughId,
+            activeDevice:
+              relation.kind === "playthrough" && playthrough?.device
+                ? playthrough.device
+                : item.activeDevice,
+            activeDeviceId:
+              relation.kind === "playthrough" ? playthrough?.deviceId : item.activeDeviceId,
+          }
+        : item
+    ),
+    queue: data.queue.map(item =>
+      item.gameId === game.id
+        ? {
+            ...item,
+            preferredCopyId: copy.id,
+            preferredDevice:
+              relation.kind === "playthrough" && playthrough?.device
+                ? playthrough.device
+                : item.preferredDevice,
+            preferredDeviceId:
+              relation.kind === "playthrough" ? playthrough?.deviceId : item.preferredDeviceId,
+          }
+        : item
+    ),
+  };
+}
+
 export function replaceGame(data: BacklogData, updated: Game): BacklogData {
   const firstCopy = updated.copies[0];
   const fallback = preferredDevice(data, firstCopy);
@@ -39,7 +147,34 @@ export function replaceGame(data: BacklogData, updated: Game): BacklogData {
         updated.copies
       ),
     },
-    games: data.games.map(game => (game.id === updated.id ? updated : game)),
+    games: data.games.map(game =>
+      game.id === updated.id
+        ? {
+            ...updated,
+            playthroughs: updated.playthroughs.map(playthrough => {
+              const content = updated.contents.find(item => item.id === playthrough.contentId);
+              return content
+                ? {
+                    ...playthrough,
+                    contentTitle: content.title,
+                    contentType: content.type,
+                  }
+                : playthrough;
+            }),
+          }
+        : game
+    ),
+    missions: data.missions.map(mission => {
+      if (mission.gameId !== updated.id) return mission;
+      const content = updated.contents.find(item => item.id === mission.contentId);
+      return content
+        ? {
+            ...mission,
+            contentTitle: content.title,
+            contentType: content.type,
+          }
+        : mission;
+    }),
     queue: data.queue.map(item => {
       if (item.gameId !== updated.id) return item;
       if (item.preferredCopyId && validCopyIds.has(item.preferredCopyId)) return item;
@@ -87,6 +222,65 @@ export function appendGame(data: BacklogData, game: Game): BacklogData {
         reason: game.notes,
       },
     ],
+  };
+}
+
+export function removePlaythrough(
+  data: BacklogData,
+  gameId: string,
+  playthroughId: string
+): BacklogData {
+  const game = data.games.find(item => item.id === gameId);
+  if (!game?.playthroughs.some(play => play.id === playthroughId)) return data;
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    games: data.games.map(item =>
+      item.id === gameId
+        ? {
+            ...item,
+            playthroughs: item.playthroughs.filter(play => play.id !== playthroughId),
+          }
+        : item
+    ),
+    missions: data.missions.map(mission =>
+      mission.gameId === gameId && mission.playthroughId === playthroughId
+        ? { ...mission, playthroughId: "" }
+        : mission
+    ),
+  };
+}
+
+export function removeCopy(data: BacklogData, gameId: string, copyId: string): BacklogData {
+  const game = data.games.find(item => item.id === gameId);
+  if (!game?.copies.some(copy => copy.id === copyId)) return data;
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    games: data.games.map(item =>
+      item.id === gameId
+        ? {
+            ...item,
+            copies: item.copies.filter(copy => copy.id !== copyId),
+            playthroughs: item.playthroughs.map(play =>
+              play.copyId === copyId ? { ...play, copyId: undefined } : play
+            ),
+          }
+        : item
+    ),
+    missions: data.missions.map(mission =>
+      mission.gameId === gameId && mission.copyId === copyId ? { ...mission, copyId: "" } : mission
+    ),
+    queue: data.queue.map(item =>
+      item.gameId === gameId && item.preferredCopyId === copyId
+        ? {
+            ...item,
+            preferredCopyId: null,
+            preferredDevice: "",
+            preferredDeviceId: undefined,
+          }
+        : item
+    ),
   };
 }
 

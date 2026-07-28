@@ -1,10 +1,12 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { Eyebrow } from "../../../shared/ui";
+import { SettingsCard } from "./SettingsStyles";
 import { activeMissions } from "../../../shared/kernel/backlogSelectors";
 
 export function StorageSettingsSection({ data }: { data: BacklogData }) {
   return (
-    <section className="settings-card">
-      <p className="eyebrow">ALMACENAMIENTO</p>
+    <SettingsCard>
+      <Eyebrow>ALMACENAMIENTO</Eyebrow>
       <h2>Qué se guarda</h2>
       <dl className="data-list">
         <div>
@@ -32,6 +34,6 @@ export function StorageSettingsSection({ data }: { data: BacklogData }) {
           <dd>{new Date(data.meta.updatedAt).toLocaleString("es-MX")}</dd>
         </div>
       </dl>
-    </section>
+    </SettingsCard>
   );
 }

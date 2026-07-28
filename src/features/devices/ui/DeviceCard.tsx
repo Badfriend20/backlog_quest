@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
 import { activeMissions, copyDeviceIds, normalize } from "../../../shared/kernel/backlogSelectors";
+import { Button, Callout, CardTopline, PriorityChip, StatusChip } from "../../../shared/ui";
 import { DeviceRelationsModal } from "./DeviceRelationsModal";
 
 type RelationView = "games" | "missions" | null;
@@ -35,10 +36,10 @@ export function DeviceCard({
   return (
     <>
       <article className="platform-card">
-        <div className="card-topline">
-          <span className="status-pill status-purple">{device.kind}</span>
-          <span className="priority-chip">{device.priority}</span>
-        </div>
+        <CardTopline>
+          <StatusChip tone="status-purple">{device.kind}</StatusChip>
+          <PriorityChip>{device.priority}</PriorityChip>
+        </CardTopline>
 
         <button
           type="button"
@@ -59,7 +60,7 @@ export function DeviceCard({
           </button>
         </div>
 
-        <div className="callout mini platform-card-role">
+        <Callout $compact className="platform-card-role">
           <strong>Rol actual:</strong>{" "}
           {missions.length
             ? missions
@@ -67,12 +68,10 @@ export function DeviceCard({
                 .filter(Boolean)
                 .join(", ")
             : device.currentRole}
-        </div>
+        </Callout>
 
         <div className="platform-card-actions">
-          <button type="button" className="ghost-button" onClick={onEdit}>
-            Editar
-          </button>
+          <Button onClick={onEdit}>Editar</Button>
         </div>
       </article>
 

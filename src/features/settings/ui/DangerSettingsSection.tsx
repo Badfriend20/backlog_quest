@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ConfirmationModal } from "../../../shared/ui";
+import { Button, ConfirmationModal, Eyebrow } from "../../../shared/ui";
 
 export function DangerSettingsSection({ onReset }: { onReset: () => void }) {
   const [confirmingReset, setConfirmingReset] = useState(false);
@@ -10,13 +10,13 @@ export function DangerSettingsSection({ onReset }: { onReset: () => void }) {
   }
 
   return (
-    <section className="settings-card danger-zone wide">
-      <p className="eyebrow">ZONA PELIGROSA</p>
+    <SettingsCard $wide $danger>
+      <Eyebrow>ZONA PELIGROSA</Eyebrow>
       <h2>Restaurar datos iniciales</h2>
       <p>Elimina cambios locales y vuelve al JSON incluido con la aplicación.</p>
-      <button type="button" className="danger-button" onClick={() => setConfirmingReset(true)}>
+      <Button variant="danger" onClick={() => setConfirmingReset(true)}>
         Restaurar respaldo inicial
-      </button>
+      </Button>
       {confirmingReset && (
         <ConfirmationModal
           title="Restaurar datos iniciales"
@@ -26,6 +26,7 @@ export function DangerSettingsSection({ onReset }: { onReset: () => void }) {
           onClose={() => setConfirmingReset(false)}
         />
       )}
-    </section>
+    </SettingsCard>
   );
 }
+import { SettingsCard } from "./SettingsStyles";

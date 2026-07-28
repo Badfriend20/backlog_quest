@@ -86,4 +86,49 @@ describe("normalizaciÃ³n del estado inicial", () => {
     expect(migrated.preferences.quickCopyPresetsReady).toBe(true);
     expect(migrated.preferences.quickCopyPresets).toHaveLength(copyKeys.size);
   });
+
+  it("conserva un catálogo de contenidos vacío definido explícitamente", () => {
+    const backup = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    backup.games[0].contents = [];
+
+    const migrated = migrateBacklog(backup);
+
+    expect(migrated.games[0].contents).toEqual([]);
+  });
+
+  it("completa snapshots históricos de partidas vinculadas", () => {
+    const backup = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    const game = backup.games[0];
+    const playthrough = game.playthroughs[0];
+    const content = game.contents.find(item => item.id === playthrough.contentId);
+    delete playthrough.contentTitle;
+    delete playthrough.contentType;
+
+    const migrated = migrateBacklog(backup);
+    const migratedPlaythrough = migrated.games[0].playthroughs[0];
+
+    expect(migratedPlaythrough.contentTitle).toBe(content?.title);
+    expect(migratedPlaythrough.contentType).toBe(content?.type);
+  });
+
+  it("convierte días heredados en sesiones con la franja preferida de la misión", () => {
+    const backup = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    const mission = backup.missions[0];
+    const rule = backup.scheduleRules.find(item => item.missionId === mission.id)!;
+    const legacyRule = rule as unknown as {
+      weekdays: number[];
+      sessions?: Array<{ weekday: number; slotId: string }>;
+    };
+    legacyRule.weekdays = [1, 3];
+    delete legacyRule.sessions;
+
+    const migrated = migrateBacklog(backup);
+    const migratedRule = migrated.scheduleRules.find(item => item.id === rule.id)!;
+
+    expect(migratedRule.sessions).toEqual([
+      { weekday: 1, slotId: mission.slotId },
+      { weekday: 3, slotId: mission.slotId },
+    ]);
+    expect("weekdays" in migratedRule).toBe(false);
+  });
 });

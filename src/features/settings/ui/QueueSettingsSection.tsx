@@ -1,5 +1,7 @@
 import type { BacklogData } from "../../../shared/kernel/backlog";
+import { Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
+import { SettingsCard } from "./SettingsStyles";
 
 export function QueueSettingsSection({
   data,
@@ -9,8 +11,8 @@ export function QueueSettingsSection({
   onChange: SettingsChangeHandler;
 }) {
   return (
-    <section className="settings-card">
-      <p className="eyebrow">COLA</p>
+    <SettingsCard>
+      <Eyebrow>COLA</Eyebrow>
       <h2>Comportamiento real</h2>
       <div className="settings-form">
         <label>
@@ -57,6 +59,6 @@ export function QueueSettingsSection({
           <span>Abrir la cola después de terminar</span>
         </label>
       </div>
-    </section>
+    </SettingsCard>
   );
 }
