@@ -48,19 +48,6 @@ const chipStyles = css`
     background: rgba(255, 213, 106, 0.08);
   }
 
-  &.slot-chip {
-    display: inline-flex;
-    padding: 4px 7px;
-    border: 1px solid var(--cyan);
-    background: rgba(97, 231, 255, 0.07);
-    color: var(--cyan);
-    font:
-      700 0.66rem ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      monospace;
-  }
-
   &.copy-chip {
     display: inline-flex;
     padding: 4px 7px;
@@ -92,12 +79,12 @@ export function TooltipChip({
   tooltip,
   className,
   children,
-}: {
+}: Readonly<{
   enabled: boolean;
   tooltip: string;
   className: string;
   children: ReactNode;
-}) {
+}>) {
   if (!enabled) return <TooltipLabel className={className}>{children}</TooltipLabel>;
 
   return (

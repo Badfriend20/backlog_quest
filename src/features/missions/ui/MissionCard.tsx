@@ -6,7 +6,6 @@ import {
   missionLinkState,
   statusClass,
 } from "../../../shared/kernel/backlogSelectors";
-import { missionScheduleLabel } from "../../../shared/kernel/schedule";
 import { Button, CardActions, CardTopline, ChipList, GameCard } from "../../../shared/ui";
 import { TooltipChip } from "./TooltipChip";
 import type { MissionActions } from "./MissionActions";
@@ -44,14 +43,7 @@ export function MissionCard({
             {game.priority}
           </TooltipChip>
         </CardTopline>
-        <div className="mission-slot-line">
-          <TooltipChip
-            enabled={data.preferences.showTooltips}
-            className="slot-chip"
-            tooltip="Franja configurada para esta misión. Se puede cambiar desde Configuración."
-          >
-            {missionScheduleLabel(data, mission)}
-          </TooltipChip>
+        <div className="mission-content-line">
           <span>{mission.contentTitle}</span>
         </div>
         <h3>{game.title}</h3>
