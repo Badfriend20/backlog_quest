@@ -41,7 +41,7 @@ describe("orden independiente de Biblioteca", () => {
     ]);
   });
 
-  it("puede ordenar alfabéticamente o por prioridad sin consultar la Cola", () => {
+  it("puede ordenar alfabéticamente o por prioridad sin consultar la Lista", () => {
     expect(sortLibraryGames(games, "title").map(item => item.title)).toEqual([
       ALPHA_TITLE,
       BETA_TITLE,

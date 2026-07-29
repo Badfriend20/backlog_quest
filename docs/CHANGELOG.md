@@ -36,13 +36,13 @@
 
 ### Datos iniciales y presentación
 
-- Estado inicial anónimo, sin juegos, cola, misiones, dispositivos, actividad ni presets personales.
+- Estado inicial anónimo, sin juegos, lista, misiones, dispositivos, actividad ni presets personales.
 - Eliminado `meta.owner`; los respaldos anteriores siguen importándose y el campo se descarta al normalizar.
 - Pruebas de dominio desacopladas del JSON inicial mediante datos sintéticos.
 - “Tarjetas compactas” se aclara como una vista de menor espaciado que no oculta información.
-- Biblioteca incorpora orden independiente de Cola: pendientes primero, alfabético, prioridad o actividad reciente.
+- Biblioteca incorpora orden independiente de Lista: pendientes primero, alfabético, prioridad o actividad reciente.
 - Las partidas pueden eliminarse aunque estén vinculadas; las misiones permanecen desacopladas y muestran una alerta.
-- Las copias pueden eliminarse aunque estén vinculadas; misiones, partidas y Cola limpian la referencia sin perder historial.
+- Las copias pueden eliminarse aunque estén vinculadas; misiones, partidas y Lista limpian la referencia sin perder historial.
 - Inicio y Plan distinguen misiones activas `Sin copia` y `Sin partida`.
 - Las alertas de relaciones abren directamente el formulario de alta y vinculan el registro al guardarlo.
 - Crear partidas requiere una copia disponible, sin volver a bloquear la eliminación posterior.

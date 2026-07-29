@@ -27,10 +27,10 @@ export function InterfaceSettingsSection({
                 )
               }
             />
-            <span>Vista compacta de tarjetas y cola</span>
+            <span>Vista compacta de tarjetas y lista</span>
           </label>
           <small>
-            Reduce el relleno y los espacios verticales en Inicio, Biblioteca y Cola; no oculta
+            Reduce el relleno y los espacios verticales en Inicio, Biblioteca y Lista; no oculta
             informaciÃ³n.
           </small>
         </div>

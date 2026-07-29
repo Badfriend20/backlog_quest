@@ -2,13 +2,13 @@
 
 ## Estado inicial y privacidad
 
-El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y preferencias estructurales. Juegos, cola, misiones, dispositivos, plataformas de copia, actividad y presets rápidos comienzan vacíos.
+El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y preferencias estructurales. Juegos, lista, misiones, dispositivos, plataformas de copia, actividad y presets rápidos comienzan vacíos.
 
 `meta.owner` dejó de formar parte del modelo. Los respaldos antiguos que lo incluyan siguen siendo válidos, pero la normalización lo descarta para que no vuelva a persistirse ni exportarse.
 
 ## Agregado raíz
 
-`BacklogData` es el documento completo: metadatos, preferencias, catálogos, dispositivos, cola, misiones, reglas, excepciones, actividad y juegos. `catalogs.platforms` guarda las plataformas configurables y cada copia las referencia mediante `platformId`. Cada juego contiene copias, partidas, contenidos y dependencias.
+`BacklogData` es el documento completo: metadatos, preferencias, catálogos, dispositivos, lista, misiones, reglas, excepciones, actividad y juegos. `catalogs.platforms` guarda las plataformas configurables y cada copia las referencia mediante `platformId`. Cada juego contiene copias, partidas, contenidos y dependencias.
 
 Cada regla de agenda guarda `sessions`: una lista de combinaciones `{ weekday, slotId }`. La duración mínima y máxima sigue perteneciendo a la regla completa. Una lista vacía representa una misión activa sin calendario fijo.
 
@@ -26,7 +26,7 @@ La UI recibe el adaptador desde `app/composition`; no accede directamente a loca
 
 ## Importación
 
-`migrateBacklog` acepta v1 y v2. `normalizeV2` completa campos faltantes, resuelve IDs de dispositivos, completa la cola y normaliza relaciones. Los valores existentes tienen prioridad sobre defaults.
+`migrateBacklog` acepta v1 y v2. `normalizeV2` completa campos faltantes, resuelve IDs de dispositivos, completa la lista y normaliza relaciones. Los valores existentes tienen prioridad sobre defaults.
 
 Los presets rápidos existentes se conservan. Si no existen o están vacíos, se reconstruyen con todas las copias y se deduplican por biblioteca/propiedad.
 
@@ -40,9 +40,9 @@ Se exporta un único JSON UTF-8 con preferencias, catálogos de plataformas y pr
 
 ## Integridad
 
-Las operaciones de Domain actualizan conjuntamente las relaciones afectadas. No se debe modificar una misión, partida, cola o copia de manera aislada desde un componente.
+Las operaciones de Domain actualizan conjuntamente las relaciones afectadas. No se debe modificar una misión, partida, lista o copia de manera aislada desde un componente.
 
-Las relaciones de misión con contenido, copia y partida son opcionales una vez creadas. `contentId`, `copyId` o `playthroughId` vacíos representan una misión que requiere atención. Eliminar un contenido limpia su ID en misiones y partidas, pero conserva snapshots de `contentTitle` y `contentType`. Renombrar o reclasificar un contenido todavía existente sincroniza esos snapshots. Eliminar una copia limpia su referencia en misiones, partidas y Cola; conserva las descripciones históricas de la partida. Eliminar una partida limpia su identificador en las misiones relacionadas. Ninguna operación elimina la misión, sus reglas ni las entradas descriptivas de `activityLog`.
+Las relaciones de misión con contenido, copia y partida son opcionales una vez creadas. `contentId`, `copyId` o `playthroughId` vacíos representan una misión que requiere atención. Eliminar un contenido limpia su ID en misiones y partidas, pero conserva snapshots de `contentTitle` y `contentType`. Renombrar o reclasificar un contenido todavía existente sincroniza esos snapshots. Eliminar una copia limpia su referencia en misiones, partidas y Lista; conserva las descripciones históricas de la partida. Eliminar una partida limpia su identificador en las misiones relacionadas. Ninguna operación elimina la misión, sus reglas ni las entradas descriptivas de `activityLog`.
 
 La creación y la conservación tienen reglas diferentes: una partida nueva requiere una copia y un contenido válidos, mientras que una partida existente puede quedar sin cualquiera de esas relaciones después de desacoplarlas.
 

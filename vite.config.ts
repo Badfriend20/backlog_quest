@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       injectRegister: "auto",
-      registerType: "autoUpdate",
+      registerType: "prompt",
       manifest: {
         name: "Backlog Quest",
         short_name: "BacklogQuest",

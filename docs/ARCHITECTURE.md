@@ -2,7 +2,7 @@
 
 El único punto de entrada de la aplicación es `src/app/composition/main.tsx`. No deben recrearse implementaciones paralelas como `src/main.tsx` o `src/App.tsx`; toda funcionalidad nueva pertenece a una feature o a un módulo compartido justificado.
 
-La infraestructura offline tiene una única seam en `vite.config.ts`. `vite-plugin-pwa` genera durante `vite build` el manifiesto web, el registro, el service worker y el precache de Workbox; React no registra ni implementa service workers y `public/` solo conserva los iconos estáticos.
+La infraestructura offline se divide en dos seams: `vite.config.ts` genera el manifiesto, el service worker y el precache de Workbox; `app/composition/PwaUpdatePrompt.tsx` registra el worker y presenta la actualización pendiente. React no implementa un service worker propio y `public/` solo conserva los iconos estáticos.
 
 ## Objetivo
 
@@ -21,7 +21,7 @@ src/
     games/               biblioteca, editor, copias y partidas
     history/             historial global
     missions/            cards, activación y cierre
-    queue/               cola completa
+    queue/               lista completa
     schedule/            calendario generado
     settings/            preferencias y temas
   shared/

@@ -93,7 +93,7 @@ export function statusClass(status: string): string {
     normalized.includes("replay")
   )
     return "status-pink";
-  if (normalized.includes("cola") || normalized.includes("bloqueado")) return "status-purple";
+  if (normalized.includes("lista") || normalized.includes("bloqueado")) return "status-purple";
   return "status-yellow";
 }
 

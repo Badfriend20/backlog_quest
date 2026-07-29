@@ -142,7 +142,7 @@ export function GameGeneralPanel({
               value={draft.availableFrom ?? ""}
               onChange={event => patch("availableFrom", event.target.value || null)}
             />
-            <small>La cola mostrará esta fecha como referencia.</small>
+            <small>La lista mostrará esta fecha como referencia.</small>
           </label>
           <label>
             <span>Requiere completar antes</span>
@@ -158,7 +158,7 @@ export function GameGeneralPanel({
                 </option>
               ))}
             </select>
-            <small>Las dependencias pendientes bloquean el juego en la cola.</small>
+            <small>Las dependencias pendientes bloquean el juego en la lista.</small>
           </label>
         </FormGrid>
         {draft.dependencies.length > 0 && (

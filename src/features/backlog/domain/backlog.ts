@@ -220,7 +220,7 @@ export function sendMissionToEnd(data: BacklogData, missionId: string): BacklogD
     "Probablemente no lo juegue",
     "low-interest",
     data.queue.length,
-    `${game?.title ?? "La misión"} fue enviado al final de la cola.`
+    `${game?.title ?? "La misión"} fue enviado al final de la lista.`
   );
 }
 

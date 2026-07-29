@@ -45,7 +45,7 @@ el formato del JSON, las claves de localStorage ni la interfaz de los casos de u
 
 ## Separación estructural
 
-El componente original `BacklogQuestApp` superaba 3400 líneas y contenía vistas, editores, formularios y reglas de datos. Se dividió en features y componentes de una sola responsabilidad. Las transformaciones de juegos y plataformas pasaron a Application; comandos de misiones y cola permanecen en Domain; migración y localStorage viven en Infrastructure.
+El componente original `BacklogQuestApp` superaba 3400 líneas y contenía vistas, editores, formularios y reglas de datos. Se dividió en features y componentes de una sola responsabilidad. Las transformaciones de juegos y plataformas pasaron a Application; comandos de misiones y lista permanecen en Domain; migración y localStorage viven en Infrastructure.
 
 `GameEditor` se separó en paneles General, Copias y Partidas, con una interfaz coordinada por `useGameEditor` y controladores internos por relación. La fecha de disponibilidad, las dependencias y el catálogo de contenidos viven en General; misiones y partidas seleccionan sus contenidos por ID. `SettingsView` se convirtió en composición de secciones independientes.
 

@@ -32,8 +32,8 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   "Próximo lanzamiento":
     "Todavía no se puede jugar; permanece en espera hasta su fecha de disponibilidad.",
   Disponible: "Tienes acceso al juego, pero no hay una misión activa.",
-  "En cola": "Está considerado para jugarse más adelante.",
-  "En cola inmediata": "Es uno de los siguientes candidatos para convertirse en misión.",
+  "En lista": "Está considerado para jugarse más adelante.",
+  "En lista prioritaria": "Es uno de los siguientes candidatos para convertirse en misión.",
   Jugando: "Campaña o recorrido principal activo.",
   "Jugando secundario": "Misión activa con menor frecuencia que la campaña principal.",
   Rejugando: "Nuevo recorrido de un juego que ya terminaste antes.",
@@ -43,7 +43,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   Abandonado: "La partida se cerró sin intención actual de continuarla.",
   "Probablemente no lo juegue":
     "Permanece en la biblioteca, pero está al final de las prioridades.",
-  "En la mira": "Te interesa, aunque todavía no forma parte de la cola inmediata.",
+  "En la mira": "Te interesa, aunque todavía no forma parte de la lista prioritaria.",
 };
 
 const PRIORITIES: PriorityCatalogItem[] = [
@@ -112,7 +112,7 @@ const DEFAULT_CUSTOM_THEME: ThemeColors = {
 
 const QUEUE_STATE_CATALOG: Array<{ id: QueueState; label: string; description: string }> = [
   { id: "active", label: "Activo", description: "Actualmente ocupa una misión." },
-  { id: "queued", label: "En cola", description: "Disponible para convertirse en misión." },
+  { id: "queued", label: "En lista", description: "Disponible para convertirse en misión." },
   { id: "paused", label: "Pausado", description: "Conserva su posición y progreso." },
   {
     id: "deferred",
@@ -461,7 +461,7 @@ export function migrateBacklog(value: unknown): BacklogData {
         missionId: null,
         at: new Date().toISOString(),
         description:
-          "Datos migrados al esquema v2 con misiones, cola completa y calendario dinámico.",
+          "Datos migrados al esquema v2 con misiones, lista completa y calendario dinámico.",
       },
     ],
     games,

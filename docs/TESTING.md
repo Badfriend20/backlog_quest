@@ -38,10 +38,12 @@ npm run validate
 - Configurar: el modal muestra todos los presets y los campos configurables, excepto dispositivos.
 - Propiedades: ocultar deshabilita el texto visible; al mostrarlo se respeta el máximo de 24 caracteres.
 - Tema personalizado: cada color se persiste al cambiar de vista.
-- Vista compacta: reduce espacios en Inicio, Biblioteca y Cola sin ocultar información.
-- Biblioteca: cambiar el orden no modifica posiciones de Cola y los cerrados quedan al final en el orden predeterminado.
+- Portabilidad: solo se muestra el botón personalizado **Importar JSON v1 o v2**; el selector nativo permanece oculto.
+- Actualización PWA: una versión nueva queda en espera hasta pulsar **Actualizar** en el aviso.
+- Vista compacta: reduce espacios en Inicio, Biblioteca y Lista sin ocultar información.
+- Biblioteca: cambiar el orden no modifica posiciones de Lista y los cerrados quedan al final en el orden predeterminado.
 - Partidas: eliminar una vinculada conserva la misión con alerta; editarla o cerrarla vuelve a crear el vínculo.
-- Copias: eliminar una vinculada conserva misión y partida, limpia la preferencia de Cola y muestra `Sin copia` sin borrar las descripciones históricas.
+- Copias: eliminar una vinculada conserva misión y partida, limpia la preferencia de Lista y muestra `Sin copia` sin borrar las descripciones históricas.
 - Alertas de misión: `Sin contenido` abre General; `Sin copia` abre una copia nueva; `Sin partida` abre una partida nueva y queda deshabilitada hasta que existan copia y contenido.
 - Contenidos: renombrar sincroniza los snapshots; eliminar desacopla misión y partida conservando título y tipo históricos.
 - Creación de partidas: siempre comienza con una copia y un contenido válidos; eliminar cualquiera posteriormente sigue permitido.

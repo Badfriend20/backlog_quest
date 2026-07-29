@@ -4,7 +4,7 @@ Aplicación React + TypeScript + Vite para administrar una biblioteca de videoju
 
 ## Funciones principales
 
-- Biblioteca y cola completa.
+- Biblioteca y lista completa.
 - Misiones activas vinculadas a contenido, copia y dispositivo.
 - Calendario dinámico con distintas franjas por día.
 - Historial de partidas y rejugadas.

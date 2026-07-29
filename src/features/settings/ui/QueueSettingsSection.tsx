@@ -12,7 +12,7 @@ export function QueueSettingsSection({
 }) {
   return (
     <SettingsCard>
-      <Eyebrow>COLA</Eyebrow>
+      <Eyebrow>LISTA</Eyebrow>
       <h2>Comportamiento real</h2>
       <div className="settings-form">
         <label>
@@ -25,7 +25,7 @@ export function QueueSettingsSection({
             onChange={event =>
               onChange(
                 { queueDisplayCount: Number(event.target.value) },
-                "Cantidad visible de la cola actualizada."
+                "Cantidad visible de la lista actualizada."
               )
             }
           />
@@ -56,7 +56,7 @@ export function QueueSettingsSection({
               )
             }
           />
-          <span>Abrir la cola después de terminar</span>
+          <span>Abrir la lista después de terminar</span>
         </label>
       </div>
     </SettingsCard>

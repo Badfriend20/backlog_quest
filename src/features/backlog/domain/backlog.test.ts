@@ -33,7 +33,7 @@ describe("acciones coherentes de misión", () => {
     ["aplazar", deferMission, "deferred", "deferred"],
     ["enviar al final", sendMissionToEnd, "deferred", "low-interest"],
   ] as const)(
-    "%s actualiza misión, partida, cola y calendario",
+    "%s actualiza misión, partida, lista y calendario",
     (_name, action, missionStatus, queueState) => {
       const state = linkedState(action);
 
@@ -150,7 +150,7 @@ describe("acciones coherentes de misión", () => {
     expect(updatedQueueItem.preferredCopyId).toBeNull();
   });
 
-  it("activar crea una misión y vincula copia, dispositivo, partida, cola y calendario", () => {
+  it("activar crea una misión y vincula copia, dispositivo, partida, lista y calendario", () => {
     const data = referenceData();
     const activeGameIds = new Set(
       data.missions.filter(mission => mission.status === "active").map(mission => mission.gameId)

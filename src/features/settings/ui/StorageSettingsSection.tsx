@@ -18,7 +18,7 @@ export function StorageSettingsSection({ data }: { data: BacklogData }) {
           <dd>{data.games.length}</dd>
         </div>
         <div>
-          <dt>Cola</dt>
+          <dt>Lista</dt>
           <dd>{data.queue.length}</dd>
         </div>
         <div>

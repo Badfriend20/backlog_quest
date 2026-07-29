@@ -31,7 +31,7 @@ export function PortabilitySettingsSection({
       <Eyebrow>PORTABILIDAD</Eyebrow>
       <h2>Importar y exportar</h2>
       <p>
-        El navegador guarda una copia local. El JSON v2 contiene catálogo, cola completa, misiones,
+        El navegador guarda una copia local. El JSON v2 contiene catálogo, lista completa, misiones,
         calendario, configuración y actividad.
       </p>
       <div className="button-stack">
@@ -41,7 +41,7 @@ export function PortabilitySettingsSection({
         <Button onClick={() => inputRef.current?.click()}>Importar JSON v1 o v2</Button>
         <input
           ref={inputRef}
-          className="visually-hidden"
+          hidden
           type="file"
           accept="application/json,.json"
           onChange={event => importFile(event.target.files?.[0])}

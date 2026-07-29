@@ -35,7 +35,7 @@ export function QueueView({
     <QueueScope>
       <Stack>
         <Callout>
-          <strong>La cola contiene todo el catálogo</strong>
+          <strong>La lista contiene todo el catálogo</strong>
           <p>
             La portada solo muestra los primeros {data.preferences.queueDisplayCount}. Aplazar manda
             a la posición {data.preferences.deferPosition}; terminar reorganiza según tu intención

@@ -2,7 +2,7 @@ import type { AppView } from "../../../shared/kernel/backlog";
 
 export const NAV_ITEMS: ReadonlyArray<{ id: AppView; label: string; icon: string }> = [
   { id: "dashboard", label: "Inicio", icon: "👾" },
-  { id: "queue", label: "Cola", icon: "🎯" },
+  { id: "queue", label: "Lista", icon: "🎯" },
   { id: "library", label: "Biblioteca", icon: "🎮" },
   { id: "schedule", label: "Plan", icon: "📅" },
   { id: "history", label: "Historial", icon: "🏆" },

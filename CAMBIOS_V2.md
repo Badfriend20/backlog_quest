@@ -16,7 +16,7 @@
 - Las copias guardan `deviceIds` además de la etiqueta legible.
 - Las partidas guardan `deviceId`.
 - Las misiones guardan `activeDeviceId`.
-- La cola guarda `preferredDeviceId`.
+- La lista guarda `preferredDeviceId`.
 - Copias usan selector múltiple.
 - Partidas, misiones y cierre de misión usan selectores simples.
 - Configuración permite agregar, renombrar, activar y eliminar dispositivos.

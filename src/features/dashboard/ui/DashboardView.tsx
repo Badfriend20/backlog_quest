@@ -68,8 +68,8 @@ export function DashboardView({
             {!missions.length && (
               <EmptyCard
                 title="No hay misiones activas"
-                text="Activa un juego desde la cola y elige su copia, dispositivo y franja."
-                action="Abrir cola"
+                text="Activa un juego desde la lista y elige su copia, dispositivo y franja."
+                action="Abrir lista"
                 onAction={() => onOpenView("queue")}
               />
             )}
@@ -84,7 +84,7 @@ export function DashboardView({
                 <h2>Próximos {data.preferences.queueDisplayCount}</h2>
               </div>
               <Button variant="text" onClick={() => onOpenView("queue")}>
-                Cola completa →
+                Lista completa →
               </Button>
             </SectionHeading>
             <ol className="quest-list">

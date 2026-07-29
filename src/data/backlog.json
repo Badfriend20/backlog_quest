@@ -111,13 +111,13 @@
       },
       {
         "id": "queued",
-        "label": "En cola",
+        "label": "En lista",
         "color": "slate",
         "description": "Está considerado para jugarse más adelante."
       },
       {
         "id": "queued-now",
-        "label": "En cola inmediata",
+        "label": "En lista prioritaria",
         "color": "purple",
         "description": "Es uno de los siguientes candidatos para convertirse en misión."
       },
@@ -173,7 +173,7 @@
         "id": "watching",
         "label": "En la mira",
         "color": "violet",
-        "description": "Te interesa, aunque todavía no forma parte de la cola inmediata."
+        "description": "Te interesa, aunque todavía no forma parte de la lista prioritaria."
       }
     ],
     "priorities": [
@@ -209,7 +209,7 @@
       },
       {
         "id": "queued",
-        "label": "En cola",
+        "label": "En lista",
         "description": "Disponible para convertirse en misión."
       },
       {

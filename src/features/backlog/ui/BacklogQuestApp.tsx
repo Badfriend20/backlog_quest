@@ -85,7 +85,7 @@ export function BacklogQuestApp({
   function addGame(game: Game, closeEditor: boolean) {
     commands.commit(
       current => appendGame(current, game),
-      "Juego agregado al catálogo y al final de la cola."
+      "Juego agregado al catálogo y al final de la lista."
     );
     setCreatingGame(false);
     setSelectedGameId(closeEditor ? null : game.id);
@@ -161,13 +161,13 @@ export function BacklogQuestApp({
     onPause: (missionId: string) =>
       commands.commit(
         current => pauseMission(current, missionId),
-        "Misión pausada; conserva su lugar en la cola."
+        "Misión pausada; conserva su lugar en la lista."
       ),
     onSendEnd: (missionId: string) => {
-      if (!destructiveAllowed("¿Enviar esta misión al final de la cola?")) return;
+      if (!destructiveAllowed("¿Enviar esta misión al final de la lista?")) return;
       commands.commit(
         current => sendMissionToEnd(current, missionId),
-        "Misión enviada al final de la cola."
+        "Misión enviada al final de la lista."
       );
     },
     onAbandon: (missionId: string) => {
@@ -211,7 +211,7 @@ export function BacklogQuestApp({
             onMove={(id, direction) =>
               commands.commit(
                 current => moveQueueOneStep(current, id, direction),
-                "Posición de cola actualizada."
+                "Posición de lista actualizada."
               )
             }
             onPreferencesChange={(patch, message) =>
@@ -271,7 +271,7 @@ export function BacklogQuestApp({
             onComplete={form => {
               commands.commit(
                 current => finishMission(current, completionMission.id, form),
-                `${data.games.find(game => game.id === completionMission.gameId)?.title ?? "La misión"} fue cerrada y la cola se reorganizó.`
+                `${data.games.find(game => game.id === completionMission.gameId)?.title ?? "La misión"} fue cerrada y la lista se reorganizó.`
               );
               setCompletionMissionId(null);
               if (data.preferences.autoSuggestNext) changeView("queue");
