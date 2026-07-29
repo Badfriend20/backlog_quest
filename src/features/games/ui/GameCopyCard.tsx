@@ -92,7 +92,6 @@ export function GameCopyCard({
         </>
       }
       editor={
-        <>
           <FormGrid $compact>
             <label>
               <span>Plataforma</span>
@@ -115,7 +114,7 @@ export function GameCopyCard({
                 selectedIds={selectedDeviceIds}
                 onChange={ids => updateCopyDevices(copy.id, ids)}
               />
-              <small>Las opciones provienen de Configuración → Dispositivos.</small>
+              <small>Las opciones provienen de la vista Dispositivos.</small>
             </div>
             <label>
               <span>Propiedad</span>
@@ -184,7 +183,6 @@ export function GameCopyCard({
               />
             </label>
           </FormGrid>
-        </>
       }
     />
   );

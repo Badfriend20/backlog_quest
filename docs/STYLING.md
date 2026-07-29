@@ -47,6 +47,23 @@ Los media queries viven junto al componente o scope al que modifican. El cambio 
 encabezado móvil pertenece a `BacklogStyles`. Los breakpoints de referencia son 320, 390, 760, 761,
 900 y 1280 píxeles.
 
+## Temas
+
+Configuración ofrece Medianoche, Grafito, Bosque, Claro y Personalizado. Las definiciones viven en
+`features/settings/domain/themes.ts`; la conversión a CSS vive en UI porque utiliza
+`CSSProperties`.
+
+Cada tema define fondo, panel, panel alterno, borde, texto, texto secundario, primario, acento,
+éxito, advertencia y peligro. `themeStyle` publica las variables CSS que consume la aplicación.
+Los controles usan específicamente `--input` y `--input-text`; no deben introducir un fondo oscuro
+literal. El tema Claro establece `colorScheme: light` para que los controles nativos conserven
+contraste; los demás usan `dark`.
+
+El usuario puede editar cada color del contrato. Los valores se guardan en
+`preferences.customTheme` y seleccionar otro tema no los borra. `themeStyle.test.ts` verifica que
+Claro publique el esquema, el fondo y el texto de los inputs. Cualquier color nuevo debe agregarse
+al contrato, al selector personalizado y a esa prueba.
+
 ## Reglas verificables
 
 - No se admiten archivos `.css` dentro de `src`.

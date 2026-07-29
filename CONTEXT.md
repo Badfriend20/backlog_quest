@@ -45,5 +45,6 @@ Agrupación visual y editable de una franja única con sus siete activadores sem
 _Avoid_: Segunda franja duplicada, selector independiente por sesión
 
 **Biblioteca**:
-Nombre heredado usado por respaldos anteriores para representar la plataforma de una copia.
-_Avoid_: Nuevo término funcional
+Vista que reúne el catálogo de juegos. En respaldos anteriores, el campo `library` también se usaba
+para representar la plataforma de una copia; ese uso se conserva únicamente por compatibilidad.
+_Avoid_: Usar biblioteca como sinónimo nuevo de plataforma

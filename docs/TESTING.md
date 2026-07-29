@@ -25,7 +25,7 @@ npm run build
 npm run validate
 ```
 
-`npm run build` ejecuta Vite y `vite-plugin-pwa` genera dentro del mismo proceso `dist/sw.js`, `dist/registerSW.js`, el runtime de Workbox y `dist/manifest.webmanifest`.
+`npm run build` ejecuta Vite y `vite-plugin-pwa` genera dentro del mismo proceso `dist/sw.js`, el runtime de Workbox y `dist/manifest.webmanifest`. El registro controlado se integra en el JavaScript compilado mediante `PwaUpdatePrompt`.
 
 `validate` debe pasar antes de entregar. Añadir una regresión requiere primero una prueba roja en la seam pública que reproduce el síntoma y después el cambio mínimo que la vuelve verde.
 

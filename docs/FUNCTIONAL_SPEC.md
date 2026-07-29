@@ -84,24 +84,6 @@ El control **Editar misión** permite seleccionar otro contenido existente, camb
 
 **Contenido** es una parte identificable del catálogo de un juego, por ejemplo una campaña, expansión, DLC, rejugada u objetivo personalizado. El juego es su propietario y conserva el orden del catálogo. Misión y Partida son consumidores: guardan `contentId` mientras la relación existe y una copia textual de título y tipo para explicar el historial si el contenido se elimina.
 
-## Integración futura de estimaciones
-
-Las estimaciones externas no forman parte de este entregable. Antes de implementarlas se debe diseñar un contrato independiente del proveedor, revisar sus condiciones de uso y evitar que la aplicación cliente conozca credenciales.
-
-```mermaid
-flowchart LR
-  A["Activar misión"] --> B["Servicio de aplicación"]
-  B --> C{"Integración habilitada y conexión disponible"}
-  C -->|No| D["Activar sin estimación"]
-  C -->|Sí| E["Adaptador de estimaciones"]
-  E --> F["Backend o función serverless"]
-  F --> G["Proveedor por definir"]
-  E -->|Respuesta o error| B
-  B --> H["Activar misión sin bloquear el flujo"]
-```
-
-Recomendación: resolver esta capacidad como una integración opcional y reemplazable detrás de un adaptador. La activación de una misión debe seguir funcionando cuando el proveedor no esté configurado, no haya conexión o la consulta falle.
-
 ## Invariantes
 
 - Toda referencia no vacía de una misión pertenece al mismo juego.

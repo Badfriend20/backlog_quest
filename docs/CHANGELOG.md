@@ -1,5 +1,19 @@
 # Changelog
 
+## Sin publicar
+
+### Interfaz y PWA
+
+- La navegación y los textos visibles usan **Lista** en lugar del término anterior.
+- El selector nativo de archivos permanece oculto y la importación se abre desde el botón propio.
+- Las actualizaciones del service worker quedan en espera hasta que el usuario pulse **Actualizar**.
+
+### Documentación
+
+- El `README.md` raíz concentra instalación, comandos y navegación documental.
+- Temas se integra en la arquitectura de estilos y se eliminan guías históricas duplicadas.
+- La especificación funcional contiene únicamente comportamiento implementado.
+
 ## 2.5.0 — 2026-07-27
 
 ### Styled components y sistema compartido
@@ -95,3 +109,10 @@
 - Pruebas Vitest de agregado rápido, temas, migración y acciones de misión.
 - Documentación técnica y funcional en `docs/`.
 - Eliminación de barrels y directorios vacíos.
+
+## 2.2.0
+
+- Agregado rápido se genera desde combinaciones únicas de plataforma y propiedad, priorizando las
+  utilizadas más recientemente.
+- Copias, partidas, misiones y Lista incorporan referencias estables a dispositivos.
+- Los respaldos mantienen `schemaVersion: 2` y se normalizan de forma retrocompatible.
