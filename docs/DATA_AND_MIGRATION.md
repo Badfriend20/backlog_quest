@@ -6,6 +6,10 @@ Las preferencias incluyen `vocabularyProfile` y `customVocabulary`. Los respaldo
 los contienen se normalizan al perfil `generic`; un término personalizado vacío usa el valor
 genérico de respaldo.
 
+`vocabularyProfile` es global para todo el respaldo. No clasifica individualmente cada actividad:
+selecciona una sola presentación para toda la aplicación y `customVocabulary` permite ajustar sus
+términos.
+
 Los estados de actividad se conservan como valores compatibles en los respaldos. La presentación
 reconoce tanto los estados neutrales actuales (`En curso`, `Repitiendo`) como los alias históricos
 (`Jugando`, `Rejugando`) y muestra la etiqueta del perfil activo sin reescribir el dato importado.
@@ -24,7 +28,11 @@ El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y 
 
 ## Agregado raíz
 
-`BacklogData` es el documento completo: metadatos, preferencias, catálogos, dispositivos, lista, misiones, reglas, excepciones, actividad y juegos. `catalogs.platforms` guarda las plataformas configurables y cada copia las referencia mediante `platformId`. Cada juego contiene copias, partidas, contenidos y dependencias.
+`QuestData` es el documento completo del dominio: metadatos, preferencias, catálogos, recursos,
+lista, misiones, reglas, excepciones, actividad y actividades. El adaptador de persistencia conserva
+las claves históricas `devices` y `games` del JSON v2. `catalogs.platforms` guarda los canales
+configurables y cada modalidad los referencia mediante `platformId`. Cada actividad contiene
+modalidades, recorridos, contenidos y dependencias.
 
 Cada regla de agenda guarda `sessions`: una lista de combinaciones `{ weekday, slotId }`. La duración mínima y máxima sigue perteneciendo a la regla completa. Una lista vacía representa una misión activa sin calendario fijo.
 

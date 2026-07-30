@@ -66,7 +66,8 @@ Ejemplos actuales:
   Settings. `GameCard`, `LibraryCard` y `RelationCard` son adapters visuales, no implementaciones
   paralelas.
 - `Modal` es compartido por Games y Missions.
-- Los contratos `BacklogData`, `Game`, `Mission` y sus selectores son transversales.
+- Los contratos `QuestData`, `Activity`, `Mission` y sus selectores son transversales; los nombres
+  históricos del JSON quedan encapsulados en el adaptador de persistencia.
 - `Metric` y `EmptyCard` pertenecen a Dashboard.
 - `TooltipChip` pertenece a Missions.
 

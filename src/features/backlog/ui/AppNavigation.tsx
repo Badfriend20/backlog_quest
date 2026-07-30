@@ -54,7 +54,7 @@ export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigation
           </span>
           <div>
             <strong>Backlog Quest</strong>
-            <small>Guardado local · v2.5.0</small>
+            <small>Guardado local · v2.6.0</small>
           </div>
         </div>
         <nav aria-label="Navegación principal">

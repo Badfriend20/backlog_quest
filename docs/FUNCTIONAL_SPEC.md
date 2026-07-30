@@ -2,35 +2,66 @@
 
 ## Alcance
 
-Backlog Quest administra localmente juegos, copias, partidas, misiones, lista, calendario y dispositivos. No usa backend, cuentas ni nube. Los textos visibles nunca son identificadores funcionales.
+Backlog Quest administra localmente actividades, modalidades, recorridos, misiones, lista,
+calendario y recursos. No usa backend, cuentas ni nube. Los textos visibles nunca son
+identificadores funcionales.
+
+## Modelo neutral y compatibilidad
+
+El lenguaje canónico es Actividad, Modalidad, Recorrido, Contenido, Recurso y Canal. Las claves
+históricas del JSON v2, como `games`, `copies` y `playthroughs`, se conservan exclusivamente como
+contrato de portabilidad; la migración las adapta al modelo neutral sin reescribir los respaldos
+del usuario.
+
+El perfil de vocabulario es una preferencia global de presentación. Cambiarlo adapta todas las
+vistas al mismo tipo de actividad y no modifica el tipo, las relaciones ni el historial de cada
+registro. El perfil Personalizado permite combinar términos, pero sigue siendo una sola
+configuración global.
 
 ## Vistas
 
-1. Inicio: métricas, misiones activas, próximos juegos, balance de dispositivos y actividad.
+1. Inicio: métricas, misiones activas, próximas actividades, balance de recursos y actividad.
 2. Lista: catálogo completo, filtros, posiciones, estados, dependencias y activación.
-3. Biblioteca: búsqueda por relaciones, filtros, privacidad, creación y edición.
+3. Colección: búsqueda por relaciones, filtros, privacidad, creación y edición.
 4. Plan: calendario generado desde reglas y preferencias, más una lista permanente de misiones activas para editar su agenda aunque no tengan días programados.
-5. Historial: partidas de todos los juegos.
-6. Dispositivos: catálogo con IDs estables e integridad referencial.
-7. Configuración: franjas, lista, calendario, interfaz, plataformas, presentación de propiedades, temas y portabilidad.
+5. Historial: recorridos de todas las actividades.
+6. Recursos: catálogo con IDs estables e integridad referencial.
+7. Configuración: vocabulario, franjas, lista, calendario, interfaz, canales, formas de acceso,
+   temas, ejemplos y portabilidad.
 
 La vista activa se conserva en `preferences.activeView`.
 
-## Editor de juego
+## Editor de actividad
 
-El editor contiene General, Copias y Partidas. General también administra el catálogo de contenidos, la fecha de disponibilidad y las dependencias que pueden bloquear el juego en la lista. Un juego nuevo recibe un ID único y una entrada al final de la lista. Puede existir sin copias ni contenidos, pero no puede activarse como misión hasta tener ambos.
+El editor contiene General, Modalidades y Recorridos; el perfil activo puede presentar esos
+términos como Copias y Partidas u otros equivalentes. General también administra el catálogo de
+contenidos, la fecha de disponibilidad y las dependencias que pueden bloquear la actividad en la
+lista. Una actividad nueva recibe un ID único y una entrada al final de la lista. Puede existir sin
+modalidades ni contenidos, pero no puede activarse como misión hasta tener ambos.
 
-Los contenidos no ocupan una pestaña independiente: se agregan, renombran, clasifican, reordenan y eliminan desde General. Misiones y partidas solo seleccionan contenidos existentes mediante un ID estable; no crean términos libres.
+Los contenidos no ocupan una pestaña independiente: se agregan, renombran, clasifican, reordenan y
+eliminan desde General. Misiones y recorridos solo seleccionan contenidos existentes mediante un
+ID estable; no crean términos libres.
 
-Una copia conserva plataforma, propiedad, dispositivos, estado, prioridad, sesión ideal, progreso entre copias y notas. La lista muestra un resumen y abre el formulario completo solo al editar. Puede eliminarse aunque una misión o partida la utilice; ambas se conservan sin la referencia.
+Una modalidad conserva canal, forma de acceso, recursos, estado, prioridad, sesión ideal,
+compatibilidad entre modalidades y notas. La lista muestra un resumen y abre el formulario completo
+solo al editar. Puede eliminarse aunque una misión o recorrido la utilice; ambos se conservan sin la
+referencia.
 
-El juego no usa un porcentaje global de progreso. El avance se expresa mediante el estado de cada partida; el punto actual, las terminaciones y las rejugadas se conservan como información histórica agregada.
+La actividad no usa un porcentaje global de progreso. El avance se expresa mediante el estado de
+cada recorrido; el punto actual, las terminaciones y las repeticiones se conservan como información
+histórica agregada.
 
-La plataforma de una copia procede de un catálogo con IDs estables. La propiedad representa la forma de acceso y nunca forma parte del nombre funcional de la plataforma.
+El canal de una modalidad procede de un catálogo con IDs estables. La forma de acceso nunca forma
+parte del nombre funcional del canal.
 
-Agregado rápido muestra todas las combinaciones biblioteca/propiedad conocidas, con la más reciente primero. Elegir una crea un formulario de copia prellenado sin seleccionar dispositivos.
+Agregado rápido muestra todas las combinaciones canal/forma de acceso conocidas, con la más reciente
+primero. Elegir una crea un formulario de modalidad prellenado sin seleccionar recursos.
 
-Una partida conserva contenido, copia, dispositivo, estado, fechas y notas. Solo puede crearse cuando el juego tiene al menos una copia y un contenido; comienza vinculada a ambos. Puede eliminarse aunque una misión la referencie; la misión se conserva y queda marcada como pendiente de vincular a una nueva partida.
+Un recorrido conserva contenido, modalidad, recurso, estado, fechas y notas. Solo puede crearse
+cuando la actividad tiene al menos una modalidad y un contenido; comienza vinculado a ambos. Puede
+eliminarse aunque una misión lo referencie; la misión se conserva y queda marcada como pendiente de
+vincular a un nuevo recorrido.
 
 ## Misiones
 

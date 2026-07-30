@@ -1,4 +1,4 @@
-# Backlog Quest v2.5.0
+# Backlog Quest v2.6.0
 
 Aplicación React + TypeScript + Vite para organizar colecciones de actividades, misiones,
 recorridos y planes sin servidor ni cuenta.

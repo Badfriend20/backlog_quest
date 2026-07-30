@@ -1,21 +1,59 @@
 # Changelog
 
-## Sin publicar
+## 2.6.0 — 2026-07-29
+
+### Modelo neutral y vocabulario
+
+- El kernel compartido adopta `QuestData`, `Activity`, `ActivityVariant`, `ActivityContent`,
+  `Journey`, `Resource` y `Channel` como lenguaje canónico, sin cambiar las claves históricas del
+  JSON v2.
+- Configuración incorpora perfiles de vocabulario para actividades genéricas, videojuegos,
+  lectura, aprendizaje y proyectos, además de un perfil personalizado con valores genéricos de
+  respaldo.
+- Los estados de actividad y recorrido conservan valores estables, pero presentan etiquetas
+  acordes al perfil activo, como `Jugando`, `Leyendo`, `Cursando` o `En ejecución`.
+- Navegación, encabezados, métricas, formularios y mensajes dejan de asumir que toda actividad es
+  un videojuego.
+
+### Catálogos y compatibilidad histórica
+
+- Formas de acceso y canales reutilizan un mismo módulo de catálogo editable con políticas de
+  eliminación específicas.
+- Eliminar una forma de acceso no reescribe modalidades ni historiales existentes; la opción deja
+  de ofrecerse para relaciones nuevas y los formularios usan `Por definir` si el catálogo queda
+  vacío.
+- Los respaldos v1 y v2 continúan importándose mediante el adaptador de migración, y el JSON inicial
+  v2 incluye preferencias y catálogos compatibles con los nuevos valores genéricos.
+
+### Temas y componentes compartidos
+
+- La composición monta `ThemeProvider` de `styled-components` y centraliza colores de fondo,
+  contenedor, barra lateral, paneles, texto, bordes y estados.
+- `CardSurface` y sus variantes seleccionables sustituyen superficies y degradados duplicados en
+  Inicio, Colección, Misiones, Recursos y Configuración.
+- Se corrige el contraste del texto en Historial y Configuración para el tema Claro.
 
 ### Interfaz y PWA
 
-- La navegación y los textos visibles usan **Lista** en lugar del término anterior.
-- El selector nativo de archivos permanece oculto y la importación se abre desde el botón propio.
-- Las actualizaciones del service worker quedan en espera hasta que el usuario pulse **Actualizar**.
 - Historial usa el color de texto temático en todas sus celdas y conserva contraste en Claro.
 - Configuración incorpora seis JSON de ejemplo con 15 actividades cada uno y una sesión de
   demostración persistente, reversible y separada de los datos reales.
+- La sección de datos de ejemplo explica la diferencia entre probar temporalmente y descargar un
+  JSON sin modificar los datos actuales.
 - Los JSON de demostración forman parte del precache offline.
 - Temas, vocabulario y franjas comparten la misma superficie de selección derivada de
   `CardSurface`.
+- El selector nativo de archivos permanece oculto y la importación se abre desde el botón propio.
+- Las actualizaciones del service worker quedan en espera hasta que el usuario pulse **Actualizar**.
 
-### Documentación
+### Calidad y documentación
 
+- La validación detecta secuencias de texto posiblemente mal codificadas antes de ejecutar pruebas
+  y build.
+- Se amplían las pruebas de vocabulario, migración, sesiones de demostración, temas, contraste y
+  primitivas compartidas.
+- El lenguaje del dominio, arquitectura, datos, estilos, offline y especificación funcional
+  documentan el modelo neutral y su compatibilidad con respaldos existentes.
 - El `README.md` raíz concentra instalación, comandos y navegación documental.
 - Temas se integra en la arquitectura de estilos y se eliminan guías históricas duplicadas.
 - La especificación funcional contiene únicamente comportamiento implementado.
