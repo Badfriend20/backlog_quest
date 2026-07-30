@@ -58,13 +58,37 @@ La administración del catálogo vive en esta vista, no en Configuración. La li
 
 ## Configuración
 
+El vocabulario se controla mediante los perfiles Genérico, Videojuegos, Lectura, Aprendizaje,
+Proyectos y Personalizado. El editor personalizado explica la función de cada término; todo campo
+vacío usa el término genérico correspondiente. Esto incluye los estados de actividad y recorrido:
+por ejemplo, `En curso`/`Repitiendo` se presentan como `Jugando`/`Rejugando`,
+`Leyendo`/`Releyendo`, `Cursando`/`Repasando` o `En ejecución`/`Iterando` según el perfil. Los
+perfiles solamente cambian la presentación.
+
+Apariencia permite editar por separado el fondo exterior, el contenedor principal y la barra
+lateral, además de los colores de paneles, texto, bordes y estados.
+
 Todas las preferencias deben tener un efecto observable: perfiles de franjas, tamaño de Inicio, posición al aplazar, semanas, inicio de semana, vista compacta, tooltips, privacidad, confirmaciones, presentación de propiedades, temas e importación/exportación.
 
 La vista compacta reduce relleno y separación vertical en tarjetas de Inicio y Biblioteca, bloques de misión y filas de Lista. No debe ocultar contenido, cambiar relaciones ni alterar el orden de los datos.
 
 Cada término de propiedad puede ocultarse en las etiquetas rápidas o presentarse con un texto configurable de hasta 24 caracteres. La regla solo afecta la presentación; el valor funcional del catálogo no cambia.
 
+Las formas de acceso se pueden agregar, renombrar y eliminar. Al eliminar una opción, las
+modalidades existentes conservan su texto histórico, pero los presets asociados dejan de aparecer
+en el agregado rápido y la opción no puede asignarse a nuevas modalidades. Si no queda ninguna
+opción, los formularios usan `Por definir`.
+
+Las secciones de formas de acceso y canales reutilizan el módulo visual de catálogo editable. Cada
+una conserva su política de referencias: las formas de acceso permiten eliminación histórica,
+mientras que un canal referenciado debe fusionarse antes de eliminarse.
+
 Las plataformas pueden agregarse, renombrarse, desactivarse y eliminarse cuando no tienen referencias. Guardar dos con el mismo nombre las fusiona y reasigna copias y presets al ID conservado.
+
+Datos de ejemplo ofrece seis respaldos segmentados con al menos 15 actividades cada uno. Probar un
+ejemplo inicia una sesión temporal: el primer estado real queda respaldado y no se sustituye al
+cambiar entre ejemplos. La sesión sobrevive a una recarga. Restaurar recupera exactamente ese
+estado; conservar la demostración elimina el respaldo sólo mediante confirmación explícita.
 
 ## Biblioteca y Lista
 

@@ -1,33 +1,31 @@
 import type {
-  BacklogData,
-  CopyPlatform,
-  Game,
-  GameCopy,
-  Platform,
-} from "../../../shared/kernel/backlog";
+  QuestData,
+  Channel,
+  Activity,
+  ActivityVariant,
+  Resource,
+} from "../../../shared/kernel/quest";
 import {
   copyDeviceIds,
   deviceLabel,
   deviceName,
   mergeQuickCopyPresets,
   normalize,
+  normalizeOwnershipDisplayRules,
   quickCopyKey,
   resolveCopyPlatform,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
+import type { OwnershipDisplayRules } from "../../../shared/kernel/quest";
 
 const UNKNOWN_DEVICE = "Por confirmar";
-const updatedMeta = (data: BacklogData) => ({ ...data.meta, updatedAt: new Date().toISOString() });
+const updatedMeta = (data: QuestData) => ({ ...data.meta, updatedAt: new Date().toISOString() });
 
-function preferredDevice(data: BacklogData, copy?: GameCopy) {
+function preferredDevice(data: QuestData, copy?: ActivityVariant) {
   const deviceId = copy ? copyDeviceIds(data, copy)[0] : undefined;
   return { deviceId, label: deviceId ? deviceName(data, deviceId) : (copy?.device ?? "") };
 }
 
-export function removeGameContent(
-  data: BacklogData,
-  gameId: string,
-  contentId: string
-): BacklogData {
+export function removeGameContent(data: QuestData, gameId: string, contentId: string): QuestData {
   const game = data.games.find(item => item.id === gameId);
   const content = game?.contents.find(item => item.id === contentId);
   if (!game || !content) return data;
@@ -68,10 +66,10 @@ export function removeGameContent(
 export type MissionRelation = { kind: "copy"; id: string } | { kind: "playthrough"; id: string };
 
 export function linkMissionRelation(
-  data: BacklogData,
+  data: QuestData,
   missionId: string,
   relation: MissionRelation
-): BacklogData {
+): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   const game = data.games.find(item => item.id === mission?.gameId);
   if (!mission || !game) return data;
@@ -131,7 +129,7 @@ export function linkMissionRelation(
   };
 }
 
-export function replaceGame(data: BacklogData, updated: Game): BacklogData {
+export function replaceGame(data: QuestData, updated: Activity): QuestData {
   const firstCopy = updated.copies[0];
   const fallback = preferredDevice(data, firstCopy);
   const validCopyIds = new Set(updated.copies.map(copy => copy.id));
@@ -188,7 +186,7 @@ export function replaceGame(data: BacklogData, updated: Game): BacklogData {
   };
 }
 
-export function appendGame(data: BacklogData, game: Game): BacklogData {
+export function appendGame(data: QuestData, game: Activity): QuestData {
   const firstCopy = game.copies[0];
   const fallback = preferredDevice(data, firstCopy);
   return {
@@ -226,10 +224,10 @@ export function appendGame(data: BacklogData, game: Game): BacklogData {
 }
 
 export function removePlaythrough(
-  data: BacklogData,
+  data: QuestData,
   gameId: string,
   playthroughId: string
-): BacklogData {
+): QuestData {
   const game = data.games.find(item => item.id === gameId);
   if (!game?.playthroughs.some(play => play.id === playthroughId)) return data;
   return {
@@ -251,7 +249,7 @@ export function removePlaythrough(
   };
 }
 
-export function removeCopy(data: BacklogData, gameId: string, copyId: string): BacklogData {
+export function removeCopy(data: QuestData, gameId: string, copyId: string): QuestData {
   const game = data.games.find(item => item.id === gameId);
   if (!game?.copies.some(copy => copy.id === copyId)) return data;
   return {
@@ -284,10 +282,10 @@ export function removeCopy(data: BacklogData, gameId: string, copyId: string): B
   };
 }
 
-export function replacePlatforms(data: BacklogData, platforms: Platform[]): BacklogData {
+export function replacePlatforms(data: QuestData, platforms: Resource[]): QuestData {
   const nextData = { ...data, platforms };
   const validIds = new Set(platforms.map(platform => platform.id));
-  const syncCopy = (copy: GameCopy): GameCopy => {
+  const syncCopy = (copy: ActivityVariant): ActivityVariant => {
     const deviceIds = copyDeviceIds(nextData, copy).filter(id => validIds.has(id));
     return { ...copy, deviceIds, device: deviceLabel(nextData, deviceIds) };
   };
@@ -351,10 +349,7 @@ export function replacePlatforms(data: BacklogData, platforms: Platform[]): Back
   };
 }
 
-export function replaceCopyPlatforms(
-  data: BacklogData,
-  platformDraft: CopyPlatform[]
-): BacklogData {
+export function replaceCopyPlatforms(data: QuestData, platformDraft: Channel[]): QuestData {
   const referencedIds = new Set([
     ...data.games.flatMap(game => game.copies.map(copy => copy.platformId).filter(Boolean)),
     ...data.preferences.quickCopyPresets.map(preset => preset.platformId).filter(Boolean),
@@ -366,8 +361,8 @@ export function replaceCopyPlatforms(
       platform => referencedIds.has(platform.id) && !draftIds.has(platform.id)
     ),
   ];
-  const platforms: CopyPlatform[] = [];
-  const canonicalByName = new Map<string, CopyPlatform>();
+  const platforms: Channel[] = [];
+  const canonicalByName = new Map<string, Channel>();
   const idMap = new Map<string, string>();
 
   for (const item of safeDraft) {
@@ -385,7 +380,7 @@ export function replaceCopyPlatforms(
     idMap.set(item.id, item.id);
   }
 
-  function syncCopy(copy: GameCopy): GameCopy {
+  function syncCopy(copy: ActivityVariant): ActivityVariant {
     const previous = resolveCopyPlatform(data.catalogs.platforms, copy.platformId, copy.library);
     const platformId = previous ? idMap.get(previous.id) : undefined;
     const platform = platforms.find(item => item.id === platformId);
@@ -426,5 +421,36 @@ export function replaceCopyPlatforms(
     catalogs: { ...data.catalogs, platforms },
     games,
     preferences: { ...data.preferences, quickCopyPresets },
+  };
+}
+
+export function replaceOwnershipCatalog(
+  data: QuestData,
+  ownershipDraft: string[],
+  displayRules: OwnershipDisplayRules
+): QuestData {
+  const seen = new Set<string>();
+  const ownership = ownershipDraft
+    .map(item => item.trim())
+    .filter(item => {
+      const key = normalize(item);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  const allowed = new Set(ownership.map(normalize));
+  const ownershipDisplayRules = normalizeOwnershipDisplayRules(ownership, displayRules);
+
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    catalogs: { ...data.catalogs, ownership },
+    preferences: {
+      ...data.preferences,
+      ownershipDisplayRules,
+      quickCopyPresets: data.preferences.quickCopyPresets.filter(preset =>
+        allowed.has(normalize(preset.ownership))
+      ),
+    },
   };
 }

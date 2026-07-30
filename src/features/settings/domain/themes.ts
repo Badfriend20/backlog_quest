@@ -1,4 +1,4 @@
-import type { ThemeColors, ThemeId } from "../../../shared/kernel/backlog";
+import type { ThemeColors, ThemeId } from "../../../shared/kernel/quest";
 
 export interface ThemeDefinition {
   id: Exclude<ThemeId, "custom">;
@@ -14,6 +14,8 @@ export const THEMES: ThemeDefinition[] = [
     description: "Oscuro con acentos violeta y cian.",
     colors: {
       background: "#0d0a17",
+      container: "#0d0a17",
+      sidebar: "#0d0a17",
       panel: "#171126",
       panelAlt: "#211a35",
       border: "#443762",
@@ -32,6 +34,8 @@ export const THEMES: ThemeDefinition[] = [
     description: "Neutro, sobrio y de alto contraste.",
     colors: {
       background: "#111315",
+      container: "#111315",
+      sidebar: "#15191d",
       panel: "#1b1f23",
       panelAlt: "#252b31",
       border: "#47515b",
@@ -50,6 +54,8 @@ export const THEMES: ThemeDefinition[] = [
     description: "Oscuro con verdes naturales.",
     colors: {
       background: "#0b1512",
+      container: "#0b1512",
+      sidebar: "#0e1b17",
       panel: "#12231d",
       panelAlt: "#1a3028",
       border: "#355c4d",
@@ -68,13 +74,15 @@ export const THEMES: ThemeDefinition[] = [
     description: "Fondos claros y controles definidos.",
     colors: {
       background: "#f4f6fb",
+      container: "#f4f6fb",
+      sidebar: "#ffffff",
       panel: "#ffffff",
       panelAlt: "#e9edf5",
       border: "#b7c0d0",
       text: "#18202b",
       muted: "#5f6b7a",
       primary: "#7357c8",
-      accent: "#087f9c",
+      accent: "#076f89",
       success: "#16834b",
       warning: "#a76600",
       danger: "#bd3343",
@@ -84,6 +92,6 @@ export const THEMES: ThemeDefinition[] = [
 
 export function getThemeColors(theme: ThemeId, customTheme: ThemeColors): ThemeColors {
   return theme === "custom"
-    ? customTheme
+    ? { ...THEMES[0].colors, ...customTheme }
     : (THEMES.find(candidate => candidate.id === theme)?.colors ?? THEMES[0].colors);
 }

@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  copyDeviceIds,
-  missionLinkState,
-  normalize,
-} from "../../../shared/kernel/backlogSelectors";
+import { copyDeviceIds, missionLinkState, normalize } from "../../../shared/kernel/questSelectors";
 import { createBacklogFixture } from "../../../shared/testing/backlogFixture";
 import {
   linkMissionRelation,
@@ -12,6 +8,7 @@ import {
   removePlaythrough,
   replaceGame,
   replaceCopyPlatforms,
+  replaceOwnershipCatalog,
   replacePlatforms,
 } from "./backlogMutations";
 
@@ -192,7 +189,7 @@ describe("copias vinculadas", () => {
 });
 
 describe("partidas vinculadas", () => {
-  it("elimina la partida y conserva la misiÃ³n desacoplada", () => {
+  it("elimina la partida y conserva la misión desacoplada", () => {
     const data = createBacklogFixture();
     const mission = data.missions[0];
 
@@ -272,5 +269,52 @@ describe("configuración de plataformas", () => {
     expect(updatedMergedCopies.length).toBeGreaterThan(0);
     expect(updatedMergedCopies.every(copy => copy.platformId === steamPlatforms[0].id)).toBe(true);
     expect(updatedMergedCopies.every(copy => copy.library === "Steam")).toBe(true);
+  });
+});
+
+describe("catálogo de formas de acceso", () => {
+  it("elimina una opción sin reescribir el historial ni permitir nuevos agregados con ella", () => {
+    const data = createBacklogFixture();
+    const historicalOwnership = data.games[0].copies[0].ownership;
+    const key = historicalOwnership
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    const withPreset = {
+      ...data,
+      preferences: {
+        ...data.preferences,
+        ownershipDisplayRules: {
+          ...data.preferences.ownershipDisplayRules,
+          [key]: { hidden: false, label: "Suscripción" },
+        },
+        quickCopyPresets: [
+          {
+            key: `platform-test::${key}`,
+            library: "Canal de prueba",
+            ownership: historicalOwnership,
+            deviceIds: [],
+            status: "Disponible",
+            priority: "Media",
+            idealSession: "Flexible",
+            crossCopyProgress: "unknown" as const,
+            notes: "",
+            updatedAt: "2026-01-01T00:00:00.000Z",
+          },
+        ],
+      },
+    };
+
+    const updated = replaceOwnershipCatalog(
+      withPreset,
+      data.catalogs.ownership.filter(item => item !== historicalOwnership),
+      withPreset.preferences.ownershipDisplayRules
+    );
+
+    expect(updated.catalogs.ownership).not.toContain(historicalOwnership);
+    expect(updated.games[0].copies[0].ownership).toBe(historicalOwnership);
+    expect(updated.preferences.quickCopyPresets).toEqual([]);
+    expect(updated.preferences.ownershipDisplayRules[key]).toBeUndefined();
   });
 });

@@ -1,14 +1,15 @@
 import { useState } from "react";
-import type { BacklogData, CompletionFormValue, Mission } from "../../../shared/kernel/backlog";
+import type { QuestData, CompletionFormValue, Mission } from "../../../shared/kernel/quest";
 import {
   copyDeviceIds,
   copyDeviceLabel,
   deviceName,
   inferDeviceIds,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { DeviceSelect } from "../../devices";
 import { Button, FormGrid, Modal, ModalActions, RelationSummary } from "../../../shared/ui";
 import { MissionsScope } from "./MissionsStyles";
+import { activityStatusLabel, capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function CompletionModal({
   data,
@@ -16,11 +17,12 @@ export function CompletionModal({
   onClose,
   onComplete,
 }: {
-  data: BacklogData;
+  data: QuestData;
   mission: Mission;
   onClose: () => void;
   onComplete: (form: CompletionFormValue) => void;
 }) {
+  const terms = useVocabulary();
   const game = data.games.find(item => item.id === mission.gameId)!;
   const linkedPlaythrough = game.playthroughs.find(play => play.id === mission.playthroughId);
   const missionCopy = game.copies.find(copy => copy.id === mission.copyId);
@@ -55,21 +57,21 @@ export function CompletionModal({
       >
         <RelationSummary>
           <div>
-            <span>Partida vinculada</span>
+            <span>{capitalizeTerm(terms.journey)} vinculado</span>
             <strong>
               {linkedPlaythrough
-                ? `#${linkedPlaythrough.number} · ${linkedPlaythrough.status}`
+                ? `#${linkedPlaythrough.number} · ${activityStatusLabel(linkedPlaythrough.status, terms)}`
                 : "Se creará al cerrar"}
             </strong>
           </div>
           <div>
-            <span>Copia actual</span>
+            <span>{capitalizeTerm(terms.variant)} actual</span>
             <strong>
               {missionCopy ? `${missionCopy.library} · ${missionCopy.ownership}` : "Por confirmar"}
             </strong>
           </div>
           <div>
-            <span>Dispositivo actual</span>
+            <span>{capitalizeTerm(terms.resource)} actual</span>
             <strong>
               {mission.activeDeviceId
                 ? deviceName(data, mission.activeDeviceId)
@@ -84,10 +86,13 @@ export function CompletionModal({
               value={result}
               onChange={event => setResult(event.target.value as CompletionFormValue["result"])}
             >
-              <option>Terminado</option>
-              <option>Completado</option>
+              <option value="Terminado">{terms.statusFinished}</option>
+              <option value="Completado">{terms.statusCompleted}</option>
             </select>
-            <small>Terminado: objetivo principal. Completado: hiciste todo lo que querías.</small>
+            <small>
+              {terms.statusFinished}: objetivo principal. {terms.statusCompleted}: hiciste todo lo
+              que querías.
+            </small>
           </label>
           <label>
             <span>Qué estás cerrando</span>
@@ -96,36 +101,39 @@ export function CompletionModal({
               onChange={event => setScope(event.target.value as CompletionFormValue["scope"])}
             >
               <option value="content">Solo {mission.contentTitle}</option>
-              <option value="game">Todo el juego</option>
+              <option value="game">Toda la {terms.activity}</option>
             </select>
           </label>
           <label>
-            <span>¿Lo rejugarías?</span>
+            <span>¿Quieres repetir esta {terms.activity}?</span>
             <select
               value={replayIntent}
               onChange={event =>
                 setReplayIntent(event.target.value as CompletionFormValue["replayIntent"])
               }
             >
-              <option value="yes">Sí, mandarlo a la mitad</option>
-              <option value="maybe">Quizá, último tercio</option>
-              <option value="no">No, mandarlo al final</option>
+              <option value="yes">Sí, conservar como {terms.repetition} futura</option>
+              <option value="maybe">Quizá, dejar para más adelante</option>
+              <option value="no">No, archivar al final</option>
             </select>
           </label>
           <label>
-            <span>Copia utilizada</span>
+            <span>{capitalizeTerm(terms.variant)} utilizada</span>
             <select value={copyId} onChange={event => selectCopy(event.target.value)}>
-              <option value="">Sin copia vinculada</option>
+              <option value="">Sin {terms.variant} vinculada</option>
               {game.copies.map(copy => (
                 <option key={copy.id} value={copy.id}>
                   {copy.library} · {copyDeviceLabel(data, copy)} · {copy.ownership}
                 </option>
               ))}
             </select>
-            <small>Si eliges una copia, quedará registrada en la partida y en el historial.</small>
+            <small>
+              Si eliges una {terms.variant}, quedará registrada en el {terms.journey} y en el
+              historial.
+            </small>
           </label>
           <label htmlFor="completion-device">
-            <span>Dispositivo final</span>
+            <span>{capitalizeTerm(terms.resource)} final</span>
             <DeviceSelect
               id="completion-device"
               data={data}
@@ -140,7 +148,7 @@ export function CompletionModal({
               rows={3}
               value={notes}
               onChange={event => setNotes(event.target.value)}
-              placeholder="Jefe final, dificultad, opinión…"
+              placeholder="Resultado, dificultad, opinión…"
             />
           </label>
         </FormGrid>

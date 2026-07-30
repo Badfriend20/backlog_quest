@@ -1,10 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { Game } from "../../../shared/kernel/backlog";
+import type { Activity } from "../../../shared/kernel/quest";
 
 export type GameEditorTab = "general" | "copies" | "playthroughs";
 
 export interface GameDraftController {
-  draft: Game;
-  setDraft: Dispatch<SetStateAction<Game>>;
+  draft: Activity;
+  setDraft: Dispatch<SetStateAction<Activity>>;
   setTab: Dispatch<SetStateAction<GameEditorTab>>;
 }

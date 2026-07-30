@@ -1,4 +1,4 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { SettingsCard } from "./SettingsStyles";
@@ -7,7 +7,7 @@ export function InterfaceSettingsSection({
   data,
   onChange,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onChange: SettingsChangeHandler;
 }) {
   return (
@@ -30,8 +30,8 @@ export function InterfaceSettingsSection({
             <span>Vista compacta de tarjetas y lista</span>
           </label>
           <small>
-            Reduce el relleno y los espacios verticales en Inicio, Biblioteca y Lista; no oculta
-            informaciÃ³n.
+            Reduce el relleno y los espacios verticales en Inicio, Colección y Lista; no oculta
+            información.
           </small>
         </div>
         <label className="check-row">
@@ -55,7 +55,7 @@ export function InterfaceSettingsSection({
               )
             }
           />
-          <span>Ocultar juegos privados por defecto</span>
+          <span>Ocultar actividades privadas por defecto</span>
         </label>
         <label className="check-row">
           <input

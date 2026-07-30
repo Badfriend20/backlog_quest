@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
+import type { QuestData, Resource } from "../../../shared/kernel/quest";
 import {
   Button,
   CardActions,
@@ -11,10 +11,10 @@ import {
 import { deviceUsageCount, removeUnusedDevice, saveDevice } from "../domain/deviceCatalog";
 
 interface DeviceEditorModalProps {
-  data: BacklogData;
-  device: Platform;
+  data: QuestData;
+  device: Resource;
   isNew: boolean;
-  onChange(platforms: Platform[]): void;
+  onChange(platforms: Resource[]): void;
   onClose(): void;
 }
 
@@ -25,7 +25,7 @@ export function DeviceEditorModal({
   onChange,
   onClose,
 }: DeviceEditorModalProps) {
-  const [draft, setDraft] = useState<Platform>(() => structuredClone(device));
+  const [draft, setDraft] = useState<Resource>(() => structuredClone(device));
   const [confirmingRemoval, setConfirmingRemoval] = useState(false);
   const usageCount = isNew ? 0 : deviceUsageCount(data, device.id);
   const priorityOptions = data.catalogs.priorities.map(priority => priority.label);
@@ -33,7 +33,7 @@ export function DeviceEditorModal({
     ? priorityOptions
     : [draft.priority, ...priorityOptions];
 
-  function update(patch: Partial<Platform>) {
+  function update(patch: Partial<Resource>) {
     setDraft(current => ({ ...current, ...patch }));
   }
 
@@ -53,8 +53,8 @@ export function DeviceEditorModal({
   return (
     <>
       <Modal
-        eyebrow="DISPOSITIVOS"
-        title={isNew ? "Nuevo dispositivo" : `Editar ${device.name}`}
+        eyebrow="RECURSOS"
+        title={isNew ? "Nuevo recurso" : `Editar ${device.name}`}
         onClose={onClose}
       >
         <form onSubmit={submit}>
@@ -118,8 +118,8 @@ export function DeviceEditorModal({
               <strong>{usageCount} referencias activas</strong>
               <span>
                 {usageCount
-                  ? "Reasigna sus copias, partidas o misiones antes de eliminarlo."
-                  : "Este dispositivo puede eliminarse sin romper relaciones."}
+                  ? "Reasigna sus modalidades, recorridos o misiones antes de eliminarlo."
+                  : "Este recurso puede eliminarse sin romper relaciones."}
               </span>
             </div>
           )}
@@ -139,7 +139,7 @@ export function DeviceEditorModal({
             <CardActions>
               <Button onClick={onClose}>Cancelar</Button>
               <Button type="submit" variant="primary">
-                {isNew ? "Agregar dispositivo" : "Guardar cambios"}
+                {isNew ? "Agregar recurso" : "Guardar cambios"}
               </Button>
             </CardActions>
           </ModalActions>
@@ -147,9 +147,9 @@ export function DeviceEditorModal({
       </Modal>
       {confirmingRemoval && (
         <ConfirmationModal
-          title="Eliminar dispositivo"
-          message={`Se eliminará ${device.name} del catálogo de dispositivos.`}
-          confirmLabel="Eliminar dispositivo"
+          title="Eliminar recurso"
+          message={`Se eliminará ${device.name} del catálogo de recursos.`}
+          confirmLabel="Eliminar recurso"
           onConfirm={remove}
           onClose={() => setConfirmingRemoval(false)}
         />

@@ -7,6 +7,12 @@
 - La navegación y los textos visibles usan **Lista** en lugar del término anterior.
 - El selector nativo de archivos permanece oculto y la importación se abre desde el botón propio.
 - Las actualizaciones del service worker quedan en espera hasta que el usuario pulse **Actualizar**.
+- Historial usa el color de texto temático en todas sus celdas y conserva contraste en Claro.
+- Configuración incorpora seis JSON de ejemplo con 15 actividades cada uno y una sesión de
+  demostración persistente, reversible y separada de los datos reales.
+- Los JSON de demostración forman parte del precache offline.
+- Temas, vocabulario y franjas comparten la misma superficie de selección derivada de
+  `CardSurface`.
 
 ### Documentación
 

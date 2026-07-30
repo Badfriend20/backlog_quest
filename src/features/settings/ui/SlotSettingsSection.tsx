@@ -1,6 +1,12 @@
 import { useState } from "react";
-import type { BacklogData, SlotProfile } from "../../../shared/kernel/backlog";
-import { Button, ConfirmationModal, Eyebrow, FormGrid } from "../../../shared/ui";
+import type { QuestData, SlotProfile } from "../../../shared/kernel/quest";
+import {
+  Button,
+  ConfirmationModal,
+  Eyebrow,
+  FormGrid,
+  SelectableCardSurface,
+} from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { SettingsCard } from "./SettingsStyles";
 
@@ -8,7 +14,7 @@ export function SlotSettingsSection({
   data,
   onChange,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onChange: SettingsChangeHandler;
 }) {
   const [firstLabel, setFirstLabel] = useState("");
@@ -57,12 +63,9 @@ export function SlotSettingsSection({
       </p>
       <div className="profile-grid">
         {data.preferences.slotProfiles.map(profile => (
-          <article
-            className={
-              profile.id === data.preferences.activeSlotProfileId
-                ? "profile-option selected"
-                : "profile-option"
-            }
+          <SelectableCardSurface
+            className="profile-option"
+            $selected={profile.id === data.preferences.activeSlotProfileId}
             key={profile.id}
           >
             <button
@@ -89,7 +92,7 @@ export function SlotSettingsSection({
                 ×
               </button>
             )}
-          </article>
+          </SelectableCardSurface>
         ))}
       </div>
       <div className="custom-pair">

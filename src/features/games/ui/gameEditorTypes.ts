@@ -1,4 +1,4 @@
-import type { BacklogData, Game, Mission } from "../../../shared/kernel/backlog";
+import type { QuestData, Activity, Mission } from "../../../shared/kernel/quest";
 
 export interface GameEditorMissionIntent {
   kind: "copy" | "playthrough";
@@ -11,12 +11,16 @@ export interface SavedMissionRelation {
 }
 
 export interface GameEditorProps {
-  game: Game | null;
-  data: BacklogData;
+  game: Activity | null;
+  data: QuestData;
   missionIntent?: GameEditorMissionIntent;
   onClose: () => void;
-  onSave: (game: Game, closeEditor: boolean) => void;
-  onResolveMissionRelation: (game: Game, missionId: string, relation: SavedMissionRelation) => void;
+  onSave: (game: Activity, closeEditor: boolean) => void;
+  onResolveMissionRelation: (
+    game: Activity,
+    missionId: string,
+    relation: SavedMissionRelation
+  ) => void;
   onRemoveContent: (gameId: string, contentId: string) => void;
   onRemoveCopy: (gameId: string, copyId: string) => void;
   onRemovePlaythrough: (gameId: string, playthroughId: string) => void;

@@ -1,4 +1,4 @@
-import type { BacklogData, Game } from "../kernel/backlog";
+import type { QuestData, Activity } from "../kernel/quest";
 
 const PRIMARY_DEVICE_ID = "device-primary";
 const SECONDARY_DEVICE_ID = "device-secondary";
@@ -6,7 +6,7 @@ const PRIMARY_DEVICE_NAME = "Equipo principal";
 const SECONDARY_DEVICE_NAME = "Equipo secundario";
 const FIXTURE_DATE = "2026-01-01T00:00:00.000Z";
 
-const EMPTY_BACKLOG_FIXTURE: BacklogData = {
+const EMPTY_BACKLOG_FIXTURE: QuestData = {
   schemaVersion: 2,
   meta: {
     title: "Fixture de Backlog Quest",
@@ -19,6 +19,8 @@ const EMPTY_BACKLOG_FIXTURE: BacklogData = {
     theme: "midnight",
     customTheme: {
       background: "#101018",
+      container: "#101018",
+      sidebar: "#181824",
       panel: "#181824",
       panelAlt: "#202030",
       border: "#36364a",
@@ -30,6 +32,8 @@ const EMPTY_BACKLOG_FIXTURE: BacklogData = {
       warning: "#ffd166",
       danger: "#ff6f7d",
     },
+    vocabularyProfile: "generic",
+    customVocabulary: {},
     hidePrivateByDefault: true,
     activeView: "dashboard",
     activeSlotProfileId: "test-profile",
@@ -85,7 +89,7 @@ function game(
   deviceId: string,
   device: string,
   withActivePlaythrough = false
-): Game {
+): Activity {
   return {
     id,
     title,
@@ -97,7 +101,7 @@ function game(
     notes: "",
     tags: [],
     progress: {
-      chapter: withActivePlaythrough ? "CapÃ­tulo de prueba" : "",
+      chapter: withActivePlaythrough ? "Capítulo de prueba" : "",
       completions: 0,
       replays: 0,
       lastPlayedAt: null,
@@ -137,7 +141,7 @@ function game(
     contents: [
       {
         id: "main-campaign",
-        title: "CampaÃ±a principal",
+        title: "Campaña principal",
         type: "campaign",
         status: withActivePlaythrough ? "active" : "not-started",
         notes: "",
@@ -148,7 +152,7 @@ function game(
   };
 }
 
-export function withBacklogFixture(base: BacklogData): BacklogData {
+export function withBacklogFixture(base: QuestData): QuestData {
   const data = structuredClone(base);
   const primaryGame = game(
     "game-1",
@@ -237,7 +241,7 @@ export function withBacklogFixture(base: BacklogData): BacklogData {
         id: "mission-1",
         gameId: primaryGame.id,
         contentId: "main-campaign",
-        contentTitle: "CampaÃ±a principal",
+        contentTitle: "Campaña principal",
         contentType: "campaign",
         copyId: "copy-1",
         activeDevice: PRIMARY_DEVICE_NAME,
@@ -266,6 +270,6 @@ export function withBacklogFixture(base: BacklogData): BacklogData {
   };
 }
 
-export function createBacklogFixture(): BacklogData {
+export function createBacklogFixture(): QuestData {
   return withBacklogFixture(EMPTY_BACKLOG_FIXTURE);
 }

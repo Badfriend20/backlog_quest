@@ -1,23 +1,25 @@
-import type { BacklogData, Mission } from "../../../shared/kernel/backlog";
+import type { QuestData, Mission } from "../../../shared/kernel/quest";
 import {
   copyDeviceLabel,
   crossCopyProgressLabel,
   deviceName,
   missionLinkState,
   statusClass,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { Button, CardActions, CardTopline, ChipList, GameCard } from "../../../shared/ui";
 import { TooltipChip } from "./TooltipChip";
 import type { MissionActions } from "./MissionActions";
 import { MissionActionMenu } from "./MissionActionMenu";
 import { MissionLinkActions } from "./MissionLinkActions";
 import { MissionsScope } from "./MissionsStyles";
+import { activityStatusLabel, useVocabulary } from "../../../shared/vocabulary";
 
 export function MissionCard({
   data,
   mission,
   ...actions
-}: { data: BacklogData; mission: Mission } & MissionActions) {
+}: { data: QuestData; mission: Mission } & MissionActions) {
+  const terms = useVocabulary();
   const game = data.games.find(item => item.id === mission.gameId);
   if (!game) return null;
   const activeCopy = game.copies.find(copy => copy.id === mission.copyId);
@@ -33,7 +35,7 @@ export function MissionCard({
             className={`status-pill ${statusClass(game.status)}`}
             tooltip={statusInfo?.description ?? game.status}
           >
-            {game.status}
+            {activityStatusLabel(game.status, terms)}
           </TooltipChip>
           <TooltipChip
             enabled={data.preferences.showTooltips}
@@ -60,7 +62,7 @@ export function MissionCard({
         <div className="active-version">
           <span>En uso</span>
           <strong>
-            {activeCopy?.library ?? "Copia por confirmar"} ·{" "}
+            {activeCopy?.library ?? "Modalidad por confirmar"} ·{" "}
             {mission.activeDeviceId
               ? deviceName(data, mission.activeDeviceId)
               : mission.activeDevice}
@@ -74,7 +76,7 @@ export function MissionCard({
                 key={copy.id}
                 enabled={data.preferences.showTooltips}
                 className={isActive ? "copy-chip active-copy" : "copy-chip"}
-                tooltip={`${copy.ownership}. Progreso entre copias: ${crossCopyProgressLabel(copy.crossCopyProgress)}. ${copy.notes || ""}`}
+                tooltip={`${copy.ownership}. Progreso entre modalidades: ${crossCopyProgressLabel(copy.crossCopyProgress)}. ${copy.notes || ""}`}
               >
                 {copy.library} · {copyDeviceLabel(data, copy)}
                 {isActive ? " · EN USO" : ""}
@@ -87,7 +89,7 @@ export function MissionCard({
             Editar misión
           </Button>
           <Button size="compact" onClick={() => actions.onEditGame(game.id)}>
-            Editar juego
+            Editar actividad
           </Button>
           <Button variant="primary" size="compact" onClick={() => actions.onFinish(mission.id)}>
             Terminar

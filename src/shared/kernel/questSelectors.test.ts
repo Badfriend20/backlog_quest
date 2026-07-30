@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createBacklogFixture } from "../testing/backlogFixture";
-import type { BacklogData, Game, QuickCopyPreset } from "./backlog";
+import type { QuestData, Activity, QuickVariantPreset } from "./quest";
 import {
+  accessMethodOptions,
   mergeQuickCopyPresets,
   generateSchedule,
   normalizeOwnershipDisplayRules,
@@ -9,14 +10,14 @@ import {
   quickCopyLabel,
   selectExistingQuickCopyKeys,
   selectGlobalQuickCopyPresets,
-} from "./backlogSelectors";
+} from "./questSelectors";
 
-const GAME_PASS = "Game Pass";
+const GAME_PASS = "Plan Plus";
 const NINTENDO_SWITCH = "Nintendo Switch";
 const FAMILY_LIBRARY = "Biblioteca familiar";
 const SUBSCRIPTION = "Suscripción";
 
-function preset(library: string, ownership: string, deviceIds: string[] = []): QuickCopyPreset {
+function preset(library: string, ownership: string, deviceIds: string[] = []): QuickVariantPreset {
   return {
     key: `${library}::${ownership}`,
     library,
@@ -42,8 +43,8 @@ describe("etiquetas de agregado rápido", () => {
     expect(quickCopyLabel({ library: NINTENDO_SWITCH, ownership: "Propio" }, rules)).toBe(
       NINTENDO_SWITCH
     );
-    expect(quickCopyLabel({ library: "Xbox Game Pass", ownership: GAME_PASS }, rules)).toBe(
-      "Xbox Game Pass"
+    expect(quickCopyLabel({ library: "Canal Plan Plus", ownership: GAME_PASS }, rules)).toBe(
+      "Canal Plan Plus"
     );
     expect(quickCopyLabel({ library: "Steam", ownership: FAMILY_LIBRARY }, rules)).toBe(
       "Steam Familiar"
@@ -68,6 +69,14 @@ describe("etiquetas de agregado rápido", () => {
     expect(quickCopyLabel({ library: "Steam", ownership: FAMILY_LIBRARY }, {})).toBe(
       "Steam Biblioteca familiar"
     );
+  });
+
+  it("usa Por definir cuando no existe un catálogo y conserva valores históricos al editar", () => {
+    expect(accessMethodOptions([])).toEqual(["Por definir"]);
+    expect(accessMethodOptions(["Propio"], "Suscripción anterior")).toEqual([
+      "Suscripción anterior",
+      "Propio",
+    ]);
   });
 });
 
@@ -105,22 +114,25 @@ describe("selección global de agregado rápido", () => {
     const steam = preset("Steam", FAMILY_LIBRARY);
     const game = {
       copies: [{ id: "C1", library: "Xbox", ownership: GAME_PASS }],
-    } as Game;
+    } as Activity;
     const data = {
       platforms: [],
       games: [game],
+      catalogs: {
+        ownership: [GAME_PASS, "Propio", FAMILY_LIBRARY],
+      },
       preferences: {
         quickCopyPresetsReady: false,
         quickCopyPresets: [xbox, nintendo, steam],
       },
-    } as unknown as BacklogData;
+    } as unknown as QuestData;
 
     expect(selectGlobalQuickCopyPresets(data).map(item => item.library)).toEqual([
       "Xbox",
       NINTENDO_SWITCH,
       "Steam",
     ]);
-    expect(selectExistingQuickCopyKeys(game)).toEqual(new Set(["xbox::game-pass"]));
+    expect(selectExistingQuickCopyKeys(game)).toEqual(new Set(["xbox::plan-plus"]));
   });
 
   it("conserva primero la configuración más reciente para una combinación repetida", () => {
@@ -139,7 +151,7 @@ describe("selección global de agregado rápido", () => {
     };
 
     const merged = mergeQuickCopyPresets(
-      { platforms: [{ id: "D2", name: "Dispositivo 2" }] } as BacklogData,
+      { platforms: [{ id: "D2", name: "Dispositivo 2" }] } as QuestData,
       [older],
       [incomingCopy]
     );

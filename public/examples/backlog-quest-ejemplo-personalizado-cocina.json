@@ -1,0 +1,1509 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "title": "Ejemplos · Cocina personalizada",
+    "createdAt": "2026-07-29T12:00:00.000Z",
+    "updatedAt": "2026-07-29T12:00:00.000Z",
+    "source": "Backlog Quest · datos de demostración",
+    "notes": "Conjunto ficticio y reversible para explorar las funciones de la aplicación."
+  },
+  "preferences": {
+    "theme": "midnight",
+    "vocabularyProfile": "custom",
+    "customVocabulary": {
+      "activity": "receta",
+      "activities": "recetas",
+      "collection": "recetario",
+      "variant": "versión",
+      "variants": "versiones",
+      "channel": "fuente",
+      "channels": "fuentes",
+      "accessMethod": "disponibilidad",
+      "resource": "equipo",
+      "resources": "equipos",
+      "journey": "preparación",
+      "journeys": "preparaciones",
+      "repetition": "repetición",
+      "repetitions": "repeticiones",
+      "content": "parte",
+      "contents": "partes",
+      "mission": "menú activo",
+      "missions": "menús activos",
+      "statusPending": "Por conseguir",
+      "statusActive": "Cocinando",
+      "statusSecondary": "Preparación secundaria",
+      "statusRepeating": "Repitiendo receta",
+      "statusPaused": "En pausa",
+      "statusFinished": "Preparada",
+      "statusCompleted": "Dominada",
+      "statusAbandoned": "Descartada"
+    },
+    "hidePrivateByDefault": true,
+    "activeView": "dashboard",
+    "activeSlotProfileId": "day-night",
+    "slotProfiles": [
+      {
+        "id": "day-night",
+        "label": "Día / Noche",
+        "custom": false,
+        "slots": [
+          { "id": "first", "label": "Día" },
+          { "id": "second", "label": "Noche" }
+        ]
+      },
+      {
+        "id": "early-late",
+        "label": "Temprano / Tarde",
+        "custom": false,
+        "slots": [
+          { "id": "first", "label": "Temprano" },
+          { "id": "second", "label": "Tarde" }
+        ]
+      },
+      {
+        "id": "morning-night",
+        "label": "Mañana / Noche",
+        "custom": false,
+        "slots": [
+          { "id": "first", "label": "Mañana" },
+          { "id": "second", "label": "Noche" }
+        ]
+      },
+      {
+        "id": "work-home",
+        "label": "Oficina / Casa",
+        "custom": false,
+        "slots": [
+          { "id": "first", "label": "Oficina" },
+          { "id": "second", "label": "Casa" }
+        ]
+      }
+    ],
+    "secondarySlotLabel": "Secundario",
+    "flexibleSlotLabel": "Flexible",
+    "queueDisplayCount": 10,
+    "deferPosition": 2,
+    "scheduleWeeks": 4,
+    "weekStartsOn": 1,
+    "compactCards": false,
+    "showTooltips": true,
+    "confirmDestructiveActions": true,
+    "autoSuggestNext": true,
+    "rules": [],
+    "quickCopyPresets": [],
+    "quickCopyPresetsReady": false,
+    "ownershipDisplayRules": {}
+  },
+  "catalogs": {
+    "statuses": [
+      {
+        "id": "wishlist",
+        "label": "Pendiente de acceso",
+        "color": "pink",
+        "description": "Actividad que todavía no está disponible en tu colección."
+      },
+      {
+        "id": "next-release",
+        "label": "Próxima disponibilidad",
+        "color": "cyan",
+        "description": "Todavía no puede realizarse; permanece en espera hasta su fecha de disponibilidad."
+      },
+      {
+        "id": "available",
+        "label": "Disponible",
+        "color": "yellow",
+        "description": "Tienes acceso a la actividad, pero no hay una misión activa."
+      },
+      {
+        "id": "queued",
+        "label": "En lista",
+        "color": "slate",
+        "description": "Está considerada para realizarse más adelante."
+      },
+      {
+        "id": "queued-now",
+        "label": "En lista prioritaria",
+        "color": "purple",
+        "description": "Es uno de los siguientes candidatos para convertirse en misión."
+      },
+      {
+        "id": "playing",
+        "label": "En curso",
+        "color": "green",
+        "description": "Recorrido principal activo."
+      },
+      {
+        "id": "playing-secondary",
+        "label": "En curso secundario",
+        "color": "blue",
+        "description": "Misión activa con menor frecuencia que el recorrido principal."
+      },
+      {
+        "id": "replaying",
+        "label": "Repitiendo",
+        "color": "pink",
+        "description": "Nuevo recorrido de una actividad que ya terminaste antes."
+      },
+      {
+        "id": "paused",
+        "label": "Pausado",
+        "color": "orange",
+        "description": "Conserva su progreso, pero no ocupa una franja activa."
+      },
+      {
+        "id": "finished",
+        "label": "Terminado",
+        "color": "emerald",
+        "description": "Llegaste a los créditos o cumpliste el objetivo principal."
+      },
+      {
+        "id": "completed",
+        "label": "Completado",
+        "color": "emerald",
+        "description": "Terminaste todo lo que personalmente querías hacer en ese contenido."
+      },
+      {
+        "id": "abandoned",
+        "label": "Abandonado",
+        "color": "red",
+        "description": "El recorrido se cerró sin intención actual de continuarlo."
+      },
+      {
+        "id": "unlikely",
+        "label": "Al final",
+        "color": "gray",
+        "description": "Permanece en la colección, pero está al final de las prioridades."
+      },
+      {
+        "id": "watching",
+        "label": "En consideración",
+        "color": "violet",
+        "description": "Te interesa, aunque todavía no forma parte de la lista prioritaria."
+      }
+    ],
+    "priorities": [
+      { "id": "s", "label": "S", "description": "Prioridad máxima o con fecha importante." },
+      {
+        "id": "high",
+        "label": "Alta",
+        "description": "Interés fuerte; debe aparecer antes que la prioridad media."
+      },
+      { "id": "medium", "label": "Media", "description": "Interés normal, sin urgencia." },
+      {
+        "id": "low",
+        "label": "Baja",
+        "description": "Curiosidad, regalo o título sin interés inmediato."
+      }
+    ],
+    "platforms": [
+      { "id": "custom-cooking-channel-1", "name": "Recetario", "active": true },
+      { "id": "custom-cooking-channel-2", "name": "Curso en línea", "active": true },
+      { "id": "custom-cooking-channel-3", "name": "Taller presencial", "active": true }
+    ],
+    "ownership": [
+      "Acceso propio",
+      "Acceso compartido",
+      "Suscripción",
+      "Gratuito/regalo",
+      "Pendiente de acceso"
+    ],
+    "deviceKinds": ["handheld", "console", "console-handheld", "computer", "emulation"],
+    "queueStates": [
+      { "id": "active", "label": "Activo", "description": "Actualmente ocupa una misión." },
+      {
+        "id": "queued",
+        "label": "En lista",
+        "description": "Disponible para convertirse en misión."
+      },
+      { "id": "paused", "label": "Pausado", "description": "Conserva su posición y progreso." },
+      {
+        "id": "deferred",
+        "label": "Aplazado",
+        "description": "Se movió temporalmente fuera de los próximos lugares."
+      },
+      {
+        "id": "replay",
+        "label": "Repetición futura",
+        "description": "Terminado y con intención clara de repetirlo."
+      },
+      {
+        "id": "replay-later",
+        "label": "Quizá repetir",
+        "description": "Podría volver a jugarse, pero no pronto."
+      },
+      {
+        "id": "archived",
+        "label": "Archivado",
+        "description": "Terminado sin intención actual de repetirlo."
+      },
+      {
+        "id": "low-interest",
+        "label": "Al final",
+        "description": "No interesa actualmente, aunque sigue en la colección."
+      },
+      {
+        "id": "blocked",
+        "label": "Bloqueado",
+        "description": "Conviene completar otro título antes."
+      },
+      { "id": "wishlist", "label": "Wishlist", "description": "No está disponible todavía." }
+    ]
+  },
+  "platforms": [
+    {
+      "id": "custom-cooking-resource-1",
+      "name": "Cocina principal",
+      "kind": "computer",
+      "active": true,
+      "priority": "Alta",
+      "currentRole": "Principal",
+      "notes": "Recurso 1 del conjunto de demostración."
+    },
+    {
+      "id": "custom-cooking-resource-2",
+      "name": "Horno portátil",
+      "kind": "handheld",
+      "active": true,
+      "priority": "Media",
+      "currentRole": "Móvil",
+      "notes": "Recurso 2 del conjunto de demostración."
+    },
+    {
+      "id": "custom-cooking-resource-3",
+      "name": "Mesa de preparación",
+      "kind": "custom",
+      "active": true,
+      "priority": "Baja",
+      "currentRole": "Compartido",
+      "notes": "Recurso 3 del conjunto de demostración."
+    }
+  ],
+  "queue": [
+    {
+      "gameId": "custom-cooking-activity-1",
+      "position": 1,
+      "state": "active",
+      "preferredCopyId": "custom-cooking-activity-1-variant-main",
+      "preferredDevice": "Cocina principal",
+      "preferredDeviceId": "custom-cooking-resource-1",
+      "preferredSlotId": "first",
+      "replayIntent": "unknown",
+      "availableFrom": null,
+      "pinned": true,
+      "pinnedPosition": 1,
+      "deferredAt": null,
+      "reason": "Caso 1 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-2",
+      "position": 2,
+      "state": "active",
+      "preferredCopyId": "custom-cooking-activity-2-variant-main",
+      "preferredDevice": "Horno portátil",
+      "preferredDeviceId": "custom-cooking-resource-2",
+      "preferredSlotId": "second",
+      "replayIntent": "yes",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 2 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-3",
+      "position": 3,
+      "state": "active",
+      "preferredCopyId": "custom-cooking-activity-3-variant-main",
+      "preferredDevice": "Mesa de preparación",
+      "preferredDeviceId": "custom-cooking-resource-3",
+      "preferredSlotId": "flexible",
+      "replayIntent": "maybe",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 3 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-4",
+      "position": 4,
+      "state": "queued",
+      "preferredCopyId": "custom-cooking-activity-4-variant-main",
+      "preferredDevice": "Cocina principal",
+      "preferredDeviceId": "custom-cooking-resource-1",
+      "preferredSlotId": "first",
+      "replayIntent": "no",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 4 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-5",
+      "position": 5,
+      "state": "paused",
+      "preferredCopyId": "custom-cooking-activity-5-variant-main",
+      "preferredDevice": "Horno portátil",
+      "preferredDeviceId": "custom-cooking-resource-2",
+      "preferredSlotId": "second",
+      "replayIntent": "unknown",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 5 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-6",
+      "position": 6,
+      "state": "deferred",
+      "preferredCopyId": "custom-cooking-activity-6-variant-main",
+      "preferredDevice": "Mesa de preparación",
+      "preferredDeviceId": "custom-cooking-resource-3",
+      "preferredSlotId": "flexible",
+      "replayIntent": "yes",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": "2026-07-20",
+      "reason": "Caso 6 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-7",
+      "position": 7,
+      "state": "replay",
+      "preferredCopyId": "custom-cooking-activity-7-variant-main",
+      "preferredDevice": "Cocina principal",
+      "preferredDeviceId": "custom-cooking-resource-1",
+      "preferredSlotId": "first",
+      "replayIntent": "maybe",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 7 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-8",
+      "position": 8,
+      "state": "archived",
+      "preferredCopyId": "custom-cooking-activity-8-variant-main",
+      "preferredDevice": "Horno portátil",
+      "preferredDeviceId": "custom-cooking-resource-2",
+      "preferredSlotId": "second",
+      "replayIntent": "no",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 8 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-9",
+      "position": 9,
+      "state": "low-interest",
+      "preferredCopyId": "custom-cooking-activity-9-variant-main",
+      "preferredDevice": "Mesa de preparación",
+      "preferredDeviceId": "custom-cooking-resource-3",
+      "preferredSlotId": "flexible",
+      "replayIntent": "unknown",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 9 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-10",
+      "position": 10,
+      "state": "wishlist",
+      "preferredCopyId": "custom-cooking-activity-10-variant-main",
+      "preferredDevice": "Cocina principal",
+      "preferredDeviceId": "custom-cooking-resource-1",
+      "preferredSlotId": "first",
+      "replayIntent": "yes",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 10 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-11",
+      "position": 11,
+      "state": "blocked",
+      "preferredCopyId": "custom-cooking-activity-11-variant-main",
+      "preferredDevice": "Horno portátil",
+      "preferredDeviceId": "custom-cooking-resource-2",
+      "preferredSlotId": "second",
+      "replayIntent": "maybe",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 11 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-12",
+      "position": 12,
+      "state": "replay-later",
+      "preferredCopyId": "custom-cooking-activity-12-variant-main",
+      "preferredDevice": "Mesa de preparación",
+      "preferredDeviceId": "custom-cooking-resource-3",
+      "preferredSlotId": "flexible",
+      "replayIntent": "no",
+      "availableFrom": "2026-10-01",
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 12 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-13",
+      "position": 13,
+      "state": "queued",
+      "preferredCopyId": "custom-cooking-activity-13-variant-main",
+      "preferredDevice": "Cocina principal",
+      "preferredDeviceId": "custom-cooking-resource-1",
+      "preferredSlotId": "first",
+      "replayIntent": "unknown",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 13 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-14",
+      "position": 14,
+      "state": "deferred",
+      "preferredCopyId": "custom-cooking-activity-14-variant-main",
+      "preferredDevice": "Horno portátil",
+      "preferredDeviceId": "custom-cooking-resource-2",
+      "preferredSlotId": "second",
+      "replayIntent": "yes",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": "2026-07-20",
+      "reason": "Caso 14 de la demostración."
+    },
+    {
+      "gameId": "custom-cooking-activity-15",
+      "position": 15,
+      "state": "archived",
+      "preferredCopyId": "custom-cooking-activity-15-variant-main",
+      "preferredDevice": "Mesa de preparación",
+      "preferredDeviceId": "custom-cooking-resource-3",
+      "preferredSlotId": "flexible",
+      "replayIntent": "maybe",
+      "availableFrom": null,
+      "pinned": false,
+      "pinnedPosition": null,
+      "deferredAt": null,
+      "reason": "Caso 15 de la demostración."
+    }
+  ],
+  "missions": [
+    {
+      "id": "custom-cooking-mission-1",
+      "gameId": "custom-cooking-activity-1",
+      "contentId": "custom-cooking-activity-1-content-main",
+      "contentTitle": "Preparación base",
+      "contentType": "campaign",
+      "copyId": "custom-cooking-activity-1-variant-main",
+      "activeDevice": "Cocina principal",
+      "activeDeviceId": "custom-cooking-resource-1",
+      "slotId": "first",
+      "status": "active",
+      "playthroughId": "custom-cooking-activity-1-journey-1",
+      "scheduleRuleId": "custom-cooking-schedule-1",
+      "startedAt": "2026-07-01",
+      "finishedAt": null,
+      "notes": "Misión activa incluida en la demostración."
+    },
+    {
+      "id": "custom-cooking-mission-2",
+      "gameId": "custom-cooking-activity-2",
+      "contentId": "custom-cooking-activity-2-content-main",
+      "contentTitle": "Preparación base",
+      "contentType": "campaign",
+      "copyId": "custom-cooking-activity-2-variant-main",
+      "activeDevice": "Horno portátil",
+      "activeDeviceId": "custom-cooking-resource-2",
+      "slotId": "second",
+      "status": "active",
+      "playthroughId": "custom-cooking-activity-2-journey-1",
+      "scheduleRuleId": "custom-cooking-schedule-2",
+      "startedAt": "2026-07-02",
+      "finishedAt": null,
+      "notes": "Misión activa incluida en la demostración."
+    },
+    {
+      "id": "custom-cooking-mission-3",
+      "gameId": "custom-cooking-activity-3",
+      "contentId": "custom-cooking-activity-3-content-main",
+      "contentTitle": "Preparación base",
+      "contentType": "campaign",
+      "copyId": "custom-cooking-activity-3-variant-main",
+      "activeDevice": "Mesa de preparación",
+      "activeDeviceId": "custom-cooking-resource-3",
+      "slotId": "flexible",
+      "status": "active",
+      "playthroughId": "custom-cooking-activity-3-journey-1",
+      "scheduleRuleId": "custom-cooking-schedule-3",
+      "startedAt": "2026-07-03",
+      "finishedAt": null,
+      "notes": "Misión activa incluida en la demostración."
+    }
+  ],
+  "scheduleRules": [
+    {
+      "id": "custom-cooking-schedule-1",
+      "missionId": "custom-cooking-mission-1",
+      "sessions": [
+        { "weekday": 1, "slotId": "first" },
+        { "weekday": 4, "slotId": "first" }
+      ],
+      "durationMin": 30,
+      "durationMax": 60,
+      "enabled": true
+    },
+    {
+      "id": "custom-cooking-schedule-2",
+      "missionId": "custom-cooking-mission-2",
+      "sessions": [
+        { "weekday": 2, "slotId": "second" },
+        { "weekday": 5, "slotId": "second" }
+      ],
+      "durationMin": 45,
+      "durationMax": 75,
+      "enabled": true
+    },
+    {
+      "id": "custom-cooking-schedule-3",
+      "missionId": "custom-cooking-mission-3",
+      "sessions": [
+        { "weekday": 3, "slotId": "flexible" },
+        { "weekday": 6, "slotId": "flexible" }
+      ],
+      "durationMin": 60,
+      "durationMax": 90,
+      "enabled": true
+    }
+  ],
+  "scheduleOverrides": [
+    {
+      "id": "custom-cooking-override-1",
+      "date": "2026-08-03",
+      "missionId": "custom-cooking-mission-1",
+      "action": "skip",
+      "notes": "Ejemplo de excepción de calendario."
+    }
+  ],
+  "activityLog": [
+    {
+      "id": "custom-cooking-log-1",
+      "type": "example",
+      "gameId": "custom-cooking-activity-1",
+      "missionId": "custom-cooking-mission-1",
+      "at": "2026-07-20T12:00:00.000Z",
+      "description": "Actividad de demostración registrada para Pan rústico de fermentación lenta."
+    },
+    {
+      "id": "custom-cooking-log-2",
+      "type": "example",
+      "gameId": "custom-cooking-activity-2",
+      "missionId": "custom-cooking-mission-2",
+      "at": "2026-07-21T12:00:00.000Z",
+      "description": "Actividad de demostración registrada para Sopa de tomate asado."
+    },
+    {
+      "id": "custom-cooking-log-3",
+      "type": "example",
+      "gameId": "custom-cooking-activity-3",
+      "missionId": "custom-cooking-mission-3",
+      "at": "2026-07-22T12:00:00.000Z",
+      "description": "Actividad de demostración registrada para Tacos de setas al pastor."
+    },
+    {
+      "id": "custom-cooking-log-4",
+      "type": "example",
+      "gameId": "custom-cooking-activity-4",
+      "missionId": null,
+      "at": "2026-07-23T12:00:00.000Z",
+      "description": "Actividad de demostración registrada para Pasta fresca con hierbas."
+    },
+    {
+      "id": "custom-cooking-log-5",
+      "type": "example",
+      "gameId": "custom-cooking-activity-5",
+      "missionId": null,
+      "at": "2026-07-24T12:00:00.000Z",
+      "description": "Actividad de demostración registrada para Curry suave de garbanzos."
+    }
+  ],
+  "games": [
+    {
+      "id": "custom-cooking-activity-1",
+      "title": "Pan rústico de fermentación lenta",
+      "type": "custom",
+      "status": "En curso",
+      "priority": "S",
+      "suggestedSession": "first",
+      "private": false,
+      "notes": "Ejemplo 1: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "corto"],
+      "progress": {
+        "chapter": "Etapa 1",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-10"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-1-variant-main",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Acceso propio",
+          "status": "Disponible",
+          "priority": "Alta",
+          "idealSession": "first",
+          "crossCopyProgress": "shared",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-1-journey-1",
+          "number": 1,
+          "platform": "Recetario",
+          "device": "Cocina principal",
+          "deviceId": "custom-cooking-resource-1",
+          "status": "En curso",
+          "startedAt": "2026-07-01",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-1-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-1-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-1-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-2",
+      "title": "Sopa de tomate asado",
+      "type": "custom",
+      "status": "Repitiendo",
+      "priority": "Alta",
+      "suggestedSession": "second",
+      "private": false,
+      "notes": "Ejemplo 2: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "medio"],
+      "progress": {
+        "chapter": "Etapa 2",
+        "completions": 0,
+        "replays": 1,
+        "lastPlayedAt": "2026-07-11"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-2-variant-main",
+          "platformId": "custom-cooking-channel-2",
+          "library": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceIds": ["custom-cooking-resource-2"],
+          "ownership": "Acceso compartido",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "second",
+          "crossCopyProgress": "separate",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-2-journey-1",
+          "number": 1,
+          "platform": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceId": "custom-cooking-resource-2",
+          "status": "Repitiendo",
+          "startedAt": "2026-07-02",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-2-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-2-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-2-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-3",
+      "title": "Tacos de setas al pastor",
+      "type": "custom",
+      "status": "En curso secundario",
+      "priority": "Media",
+      "suggestedSession": "flexible",
+      "private": false,
+      "notes": "Ejemplo 3: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "largo"],
+      "progress": {
+        "chapter": "Etapa 3",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-12"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-3-variant-main",
+          "platformId": "custom-cooking-channel-3",
+          "library": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceIds": ["custom-cooking-resource-3"],
+          "ownership": "Suscripción",
+          "status": "Disponible",
+          "priority": "Baja",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Modalidad principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-3-variant-alt",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Gratuito/regalo",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Alternativa para demostrar varias modalidades."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-3-journey-1",
+          "number": 1,
+          "platform": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceId": "custom-cooking-resource-3",
+          "status": "En curso secundario",
+          "startedAt": "2026-07-03",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-3-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-3-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-3-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-4",
+      "title": "Pasta fresca con hierbas",
+      "type": "custom",
+      "status": "Disponible",
+      "priority": "Baja",
+      "suggestedSession": "first",
+      "private": false,
+      "notes": "Ejemplo 4: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "corto"],
+      "progress": {
+        "chapter": "Etapa 4",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-13"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-4-variant-main",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Gratuito/regalo",
+          "status": "Disponible",
+          "priority": "Alta",
+          "idealSession": "first",
+          "crossCopyProgress": "unknown",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-4-journey-1",
+          "number": 1,
+          "platform": "Recetario",
+          "device": "Cocina principal",
+          "deviceId": "custom-cooking-resource-1",
+          "status": "Terminado",
+          "startedAt": "2026-07-04",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-4-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-4-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-4-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-4-content-extra",
+          "title": "Acompañamiento",
+          "type": "custom",
+          "status": "not-started",
+          "notes": "Contenido adicional para mostrar combinaciones."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-5",
+      "title": "Curry suave de garbanzos",
+      "type": "custom",
+      "status": "En lista",
+      "priority": "S",
+      "suggestedSession": "second",
+      "private": false,
+      "notes": "Ejemplo 5: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "medio"],
+      "progress": { "chapter": "", "completions": 0, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-5-variant-main",
+          "platformId": "custom-cooking-channel-2",
+          "library": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceIds": ["custom-cooking-resource-2"],
+          "ownership": "Pendiente de acceso",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "second",
+          "crossCopyProgress": "shared",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-5-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "not-started",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": ["custom-cooking-activity-4"],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-6",
+      "title": "Tarta de cítricos",
+      "type": "custom",
+      "status": "Pausado",
+      "priority": "Alta",
+      "suggestedSession": "flexible",
+      "private": false,
+      "notes": "Ejemplo 6: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "largo"],
+      "progress": {
+        "chapter": "Etapa 5",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-15"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-6-variant-main",
+          "platformId": "custom-cooking-channel-3",
+          "library": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceIds": ["custom-cooking-resource-3"],
+          "ownership": "Acceso propio",
+          "status": "Disponible",
+          "priority": "Baja",
+          "idealSession": "flexible",
+          "crossCopyProgress": "separate",
+          "notes": "Modalidad principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-6-variant-alt",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Acceso compartido",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Alternativa para demostrar varias modalidades."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-6-journey-1",
+          "number": 1,
+          "platform": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceId": "custom-cooking-resource-3",
+          "status": "Terminado",
+          "startedAt": "2026-07-06",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-6-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-6-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-6-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-7",
+      "title": "Ensalada templada de granos",
+      "type": "custom",
+      "status": "Terminado",
+      "priority": "Media",
+      "suggestedSession": "first",
+      "private": true,
+      "notes": "Ejemplo 7: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "corto"],
+      "progress": { "chapter": "", "completions": 1, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-7-variant-main",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Acceso compartido",
+          "status": "Disponible",
+          "priority": "Alta",
+          "idealSession": "first",
+          "crossCopyProgress": "partial",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-7-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "finished",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-8",
+      "title": "Galletas de avena y cacao",
+      "type": "custom",
+      "status": "Completado",
+      "priority": "Baja",
+      "suggestedSession": "second",
+      "private": false,
+      "notes": "Ejemplo 8: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "medio"],
+      "progress": {
+        "chapter": "Etapa 5",
+        "completions": 1,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-17"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-8-variant-main",
+          "platformId": "custom-cooking-channel-2",
+          "library": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceIds": ["custom-cooking-resource-2"],
+          "ownership": "Suscripción",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "second",
+          "crossCopyProgress": "unknown",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-8-journey-1",
+          "number": 1,
+          "platform": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceId": "custom-cooking-resource-2",
+          "status": "Completado",
+          "startedAt": "2026-07-08",
+          "finishedAt": "2026-07-22",
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-8-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-8-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-8-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "finished",
+          "notes": "Contenido principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-8-content-extra",
+          "title": "Acompañamiento",
+          "type": "custom",
+          "status": "not-started",
+          "notes": "Contenido adicional para mostrar combinaciones."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-9",
+      "title": "Caldo vegetal concentrado",
+      "type": "custom",
+      "status": "Abandonado",
+      "priority": "S",
+      "suggestedSession": "flexible",
+      "private": false,
+      "notes": "Ejemplo 9: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "largo"],
+      "progress": { "chapter": "", "completions": 1, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-9-variant-main",
+          "platformId": "custom-cooking-channel-3",
+          "library": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceIds": ["custom-cooking-resource-3"],
+          "ownership": "Gratuito/regalo",
+          "status": "Disponible",
+          "priority": "Baja",
+          "idealSession": "flexible",
+          "crossCopyProgress": "shared",
+          "notes": "Modalidad principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-9-variant-alt",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Pendiente de acceso",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Alternativa para demostrar varias modalidades."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-9-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "finished",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-10",
+      "title": "Pizza de masa integral",
+      "type": "custom",
+      "status": "Al final",
+      "priority": "Alta",
+      "suggestedSession": "first",
+      "private": false,
+      "notes": "Ejemplo 10: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "corto"],
+      "progress": {
+        "chapter": "Etapa 5",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-19"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-10-variant-main",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Pendiente de acceso",
+          "status": "Disponible",
+          "priority": "Alta",
+          "idealSession": "first",
+          "crossCopyProgress": "separate",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-10-journey-1",
+          "number": 1,
+          "platform": "Recetario",
+          "device": "Cocina principal",
+          "deviceId": "custom-cooking-resource-1",
+          "status": "Terminado",
+          "startedAt": "2026-07-01",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-10-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-10-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-10-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": ["custom-cooking-activity-9"],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-11",
+      "title": "Arroz especiado con verduras",
+      "type": "custom",
+      "status": "En consideración",
+      "priority": "Media",
+      "suggestedSession": "second",
+      "private": false,
+      "notes": "Ejemplo 11: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "medio"],
+      "progress": { "chapter": "", "completions": 0, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-11-variant-main",
+          "platformId": "custom-cooking-channel-2",
+          "library": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceIds": ["custom-cooking-resource-2"],
+          "ownership": "Acceso propio",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "second",
+          "crossCopyProgress": "partial",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-11-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "not-started",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-12",
+      "title": "Helado de fruta sin lácteos",
+      "type": "custom",
+      "status": "Pendiente de acceso",
+      "priority": "Baja",
+      "suggestedSession": "flexible",
+      "private": false,
+      "notes": "Ejemplo 12: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "largo"],
+      "progress": {
+        "chapter": "Etapa 5",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-21"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-12-variant-main",
+          "platformId": "custom-cooking-channel-3",
+          "library": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceIds": ["custom-cooking-resource-3"],
+          "ownership": "Acceso compartido",
+          "status": "Disponible",
+          "priority": "Baja",
+          "idealSession": "flexible",
+          "crossCopyProgress": "unknown",
+          "notes": "Modalidad principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-12-variant-alt",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Suscripción",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Alternativa para demostrar varias modalidades."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-12-journey-1",
+          "number": 1,
+          "platform": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceId": "custom-cooking-resource-3",
+          "status": "Terminado",
+          "startedAt": "2026-07-03",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-12-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-12-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-12-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-12-content-extra",
+          "title": "Acompañamiento",
+          "type": "custom",
+          "status": "not-started",
+          "notes": "Contenido adicional para mostrar combinaciones."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": "2026-10-01"
+    },
+    {
+      "id": "custom-cooking-activity-13",
+      "title": "Empanadas horneadas",
+      "type": "custom",
+      "status": "Terminado",
+      "priority": "S",
+      "suggestedSession": "first",
+      "private": false,
+      "notes": "Ejemplo 13: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "corto"],
+      "progress": { "chapter": "", "completions": 1, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-13-variant-main",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Suscripción",
+          "status": "Disponible",
+          "priority": "Alta",
+          "idealSession": "first",
+          "crossCopyProgress": "shared",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-13-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "finished",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-14",
+      "title": "Salsa picante fermentada",
+      "type": "custom",
+      "status": "Disponible",
+      "priority": "Alta",
+      "suggestedSession": "second",
+      "private": true,
+      "notes": "Ejemplo 14: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "medio"],
+      "progress": {
+        "chapter": "Etapa 5",
+        "completions": 0,
+        "replays": 0,
+        "lastPlayedAt": "2026-07-23"
+      },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-14-variant-main",
+          "platformId": "custom-cooking-channel-2",
+          "library": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceIds": ["custom-cooking-resource-2"],
+          "ownership": "Gratuito/regalo",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "second",
+          "crossCopyProgress": "separate",
+          "notes": "Modalidad principal del ejemplo."
+        }
+      ],
+      "playthroughs": [
+        {
+          "id": "custom-cooking-activity-14-journey-1",
+          "number": 1,
+          "platform": "Curso en línea",
+          "device": "Horno portátil",
+          "deviceId": "custom-cooking-resource-2",
+          "status": "Terminado",
+          "startedAt": "2026-07-05",
+          "finishedAt": null,
+          "notes": "Recorrido incluido para demostrar el historial.",
+          "contentId": "custom-cooking-activity-14-content-main",
+          "contentTitle": "Preparación base",
+          "contentType": "campaign",
+          "copyId": "custom-cooking-activity-14-variant-main"
+        }
+      ],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-14-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "active",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": [],
+      "availableFrom": null
+    },
+    {
+      "id": "custom-cooking-activity-15",
+      "title": "Desayuno de temporada",
+      "type": "custom",
+      "status": "Completado",
+      "priority": "Media",
+      "suggestedSession": "flexible",
+      "private": false,
+      "notes": "Ejemplo 15: combina estado, prioridad, modalidad, contenido y recurso.",
+      "tags": ["ejemplo-custom-cooking", "largo"],
+      "progress": { "chapter": "", "completions": 1, "replays": 0, "lastPlayedAt": null },
+      "copies": [
+        {
+          "id": "custom-cooking-activity-15-variant-main",
+          "platformId": "custom-cooking-channel-3",
+          "library": "Taller presencial",
+          "device": "Mesa de preparación",
+          "deviceIds": ["custom-cooking-resource-3"],
+          "ownership": "Pendiente de acceso",
+          "status": "Disponible",
+          "priority": "Baja",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Modalidad principal del ejemplo."
+        },
+        {
+          "id": "custom-cooking-activity-15-variant-alt",
+          "platformId": "custom-cooking-channel-1",
+          "library": "Recetario",
+          "device": "Cocina principal",
+          "deviceIds": ["custom-cooking-resource-1"],
+          "ownership": "Acceso propio",
+          "status": "Disponible",
+          "priority": "Media",
+          "idealSession": "flexible",
+          "crossCopyProgress": "partial",
+          "notes": "Alternativa para demostrar varias modalidades."
+        }
+      ],
+      "playthroughs": [],
+      "contents": [
+        {
+          "id": "custom-cooking-activity-15-content-main",
+          "title": "Preparación base",
+          "type": "campaign",
+          "status": "finished",
+          "notes": "Contenido principal del ejemplo."
+        }
+      ],
+      "dependencies": ["custom-cooking-activity-14"],
+      "availableFrom": null
+    }
+  ]
+}

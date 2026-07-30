@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Mission, ScheduleRule } from "./backlog";
+import type { Mission, ScheduleRule } from "./quest";
 import {
   groupScheduleSessions,
   normalizeScheduleSessions,

@@ -8,10 +8,11 @@ export function Metric({
   note: string;
 }) {
   return (
-    <article className="metric-card">
+    <CardSurface className="metric-card">
       <span>{label}</span>
       <strong>{value}</strong>
       <small>{note}</small>
-    </article>
+    </CardSurface>
   );
 }
+import { CardSurface } from "../../../shared/ui";

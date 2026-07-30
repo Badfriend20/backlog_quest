@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Game, GameCopy, QuickCopyPreset } from "../../../shared/kernel/backlog";
+import type { Activity, ActivityVariant, QuickVariantPreset } from "../../../shared/kernel/quest";
 import {
   deviceLabel,
   deviceName,
@@ -7,7 +7,7 @@ import {
   nextGeneratedId,
   selectExistingQuickCopyKeys,
   selectQuickCopyPresets,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { createGameCopyFromPreset } from "../domain/quickCopy";
 import type { GameDraftController } from "./gameEditorControllerTypes";
 import { createBlankCopy, UNKNOWN_GAME_RELATION } from "./gameEditorDraft";
@@ -30,14 +30,14 @@ export function useGameCopiesController({
     "data" | "missionIntent" | "onSave" | "onResolveMissionRelation" | "onRemoveCopy"
   > & {
     initialEditingCopyId: string | null;
-    initialSnapshot?: Pick<Game, "copies" | "playthroughs">;
+    initialSnapshot?: Pick<Activity, "copies" | "playthroughs">;
   }) {
   const [editingCopyId, setEditingCopyId] = useState<string | null>(initialEditingCopyId);
   const [copyEditSnapshot, setCopyEditSnapshot] = useState<
-    Pick<Game, "copies" | "playthroughs"> | undefined
+    Pick<Activity, "copies" | "playthroughs"> | undefined
   >(initialSnapshot);
   const [showQuickOptions, setShowQuickOptions] = useState(false);
-  const [sessionPresets, setSessionPresets] = useState<QuickCopyPreset[]>([]);
+  const [sessionPresets, setSessionPresets] = useState<QuickVariantPreset[]>([]);
   const missionCopyIds = useMemo(
     () =>
       new Set(
@@ -68,7 +68,7 @@ export function useGameCopiesController({
     ]);
   }
 
-  function beginCopy(copy: GameCopy) {
+  function beginCopy(copy: ActivityVariant) {
     setCopyEditSnapshot(
       structuredClone({ copies: draft.copies, playthroughs: draft.playthroughs })
     );
@@ -81,13 +81,13 @@ export function useGameCopiesController({
     beginCopy(createBlankCopy(data, nextCopyId()));
   }
 
-  function addCopyFromPreset(preset: QuickCopyPreset) {
+  function addCopyFromPreset(preset: QuickVariantPreset) {
     beginCopy(createGameCopyFromPreset(preset, nextCopyId(), getSlotLabel(data, "flexible")));
     setSessionPresets(current => [preset, ...current.filter(item => item.key !== preset.key)]);
     setShowQuickOptions(false);
   }
 
-  function updateCopy(copyId: string, patch: Partial<GameCopy>) {
+  function updateCopy(copyId: string, patch: Partial<ActivityVariant>) {
     setDraft(current => ({
       ...current,
       copies: current.copies.map(copy => (copy.id === copyId ? { ...copy, ...patch } : copy)),

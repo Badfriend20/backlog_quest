@@ -2,7 +2,7 @@
 
 El único punto de entrada de la aplicación es `src/app/composition/main.tsx`. No deben recrearse implementaciones paralelas como `src/main.tsx` o `src/App.tsx`; toda funcionalidad nueva pertenece a una feature o a un módulo compartido justificado.
 
-La infraestructura offline se divide en dos seams: `vite.config.ts` genera el manifiesto, el service worker y el precache de Workbox; `app/composition/PwaUpdatePrompt.tsx` registra el worker y presenta la actualización pendiente. React no implementa un service worker propio y `public/` solo conserva los iconos estáticos.
+La infraestructura offline se divide en dos seams: `vite.config.ts` genera el manifiesto, el service worker y el precache de Workbox; `app/composition/PwaUpdatePrompt.tsx` registra el worker y presenta la actualización pendiente. React no implementa un service worker propio y `public/` conserva iconos y JSON de demostración estáticos.
 
 ## Objetivo
 
@@ -44,11 +44,27 @@ No todas las features necesitan todas las capas. Agregar carpetas vacías está 
 
 ## Política de shared
 
+El kernel transversal expone `QuestData`, `Activity`, `ActivityVariant`, `ActivityContent`,
+`ActivityProgress`, `Journey`, `Resource` y `Channel`. Las claves históricas del JSON v2 se
+conservan como contrato de portabilidad y la migración actúa como adaptador; no deben volver a ser
+el lenguaje canónico del código.
+
+`shared/vocabulary` es un módulo profundo compartido por las vistas. Su interfaz resuelve un perfil
+completo y aplica el vocabulario genérico cuando un término personalizado está vacío. Cambiar un
+perfil afecta solamente la presentación y nunca los identificadores o relaciones persistidas.
+
+`settings/ui/EditableCatalogSection` concentra la edición visual de catálogos: borrador, alta,
+descarte, guardado, conteo de referencias y confirmación de eliminación. Formas de acceso y canales
+son dos adapters de esa seam; aportan sus campos y política de referencias sin duplicar el flujo.
+
 Un módulo entra en `shared` solamente si tiene consumidores reales en más de una feature y semántica transversal estable. Si solo lo utiliza una feature, vive junto a ella.
 
 Ejemplos actuales:
 
 - `Button` es el átomo compartido del sistema de diseño para acciones primarias, secundarias, destructivas y de texto.
+- `CardSurface` es la seam de superficie consumida por Dashboard, Games, Missions, Devices y
+  Settings. `GameCard`, `LibraryCard` y `RelationCard` son adapters visuales, no implementaciones
+  paralelas.
 - `Modal` es compartido por Games y Missions.
 - Los contratos `BacklogData`, `Game`, `Mission` y sus selectores son transversales.
 - `Metric` y `EmptyCard` pertenecen a Dashboard.
@@ -68,6 +84,10 @@ La feature `games` es propietaria del catálogo de contenidos. `Mission` y `Play
 `shared/kernel/schedule.ts` concentra el lenguaje transversal de agenda: normalización de sesiones recurrentes, detección de conflictos y etiquetas. Missions edita esas sesiones, Backlog las persiste y Schedule las proyecta; ninguna de esas features reimplementa la regla.
 
 `backlog/application/useBacklogCommands.ts` es la fachada que posee el estado persistente, el snapshot de deshacer, las notificaciones y las operaciones de importar, restaurar y exportar. `BacklogQuestApp` conserva únicamente estado efímero de navegación y modales.
+
+`backlog/application/demoSession.ts` concentra la transición pura entre datos reales, ejemplo y
+respaldo original. `BacklogStorage` persiste ese respaldo en una clave separada y Settings aporta
+los JSON y la interacción; ningún componente accede directamente a `localStorage`.
 
 `useGameEditor` mantiene una interfaz estable para `GameEditor`, pero compone controladores internos independientes para Contenidos, Copias y Partidas. Cada controlador concentra su edición, snapshot y sincronización; agregar una operación de una relación no exige modificar las demás.
 

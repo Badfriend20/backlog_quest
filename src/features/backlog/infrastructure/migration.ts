@@ -1,10 +1,10 @@
 import type {
-  BacklogData,
-  Game,
-  GameContent,
+  QuestData,
+  Activity,
+  ActivityContent,
   Mission,
   PriorityCatalogItem,
-  QuickCopyPreset,
+  QuickVariantPreset,
   QueueItem,
   QueueState,
   ScheduleRule,
@@ -12,7 +12,7 @@ import type {
   SlotProfile,
   StatusCatalogItem,
   ThemeColors,
-} from "../../../shared/kernel/backlog";
+} from "../../../shared/kernel/quest";
 import {
   deviceLabel,
   inferDeviceIds,
@@ -24,25 +24,28 @@ import {
   ownershipDisplayKey,
   quickCopyKey,
   resolveCopyPlatform,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { normalizeScheduleSessions } from "../../../shared/kernel/schedule";
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
-  Wishlist: "Juego que todavía no tienes o no está disponible en tu biblioteca.",
+  Wishlist: "Actividad que todavía no está disponible en tu colección.",
+  "Pendiente de acceso": "Actividad que todavía no está disponible en tu colección.",
   "Próximo lanzamiento":
     "Todavía no se puede jugar; permanece en espera hasta su fecha de disponibilidad.",
-  Disponible: "Tienes acceso al juego, pero no hay una misión activa.",
+  Disponible: "Tienes acceso a la actividad, pero no hay una misión activa.",
   "En lista": "Está considerado para jugarse más adelante.",
   "En lista prioritaria": "Es uno de los siguientes candidatos para convertirse en misión.",
-  Jugando: "Campaña o recorrido principal activo.",
-  "Jugando secundario": "Misión activa con menor frecuencia que la campaña principal.",
-  Rejugando: "Nuevo recorrido de un juego que ya terminaste antes.",
+  Jugando: "Recorrido principal activo.",
+  "En curso": "Recorrido principal activo.",
+  "Jugando secundario": "Misión activa con menor frecuencia que el recorrido principal.",
+  "En curso secundario": "Misión activa con menor frecuencia que el recorrido principal.",
+  Rejugando: "Nuevo recorrido de una actividad que ya terminaste antes.",
+  Repitiendo: "Nuevo recorrido de una actividad que ya terminaste antes.",
   Pausado: "Conserva su progreso, pero no ocupa una franja activa.",
   Terminado: "Llegaste a los créditos o cumpliste el objetivo principal.",
   Completado: "Terminaste todo lo que personalmente querías hacer en ese contenido.",
-  Abandonado: "La partida se cerró sin intención actual de continuarla.",
-  "Probablemente no lo juegue":
-    "Permanece en la biblioteca, pero está al final de las prioridades.",
+  Abandonado: "El recorrido se cerró sin intención actual de continuarlo.",
+  "Probablemente no lo juegue": "Permanece en la colección, pero está al final de las prioridades.",
   "En la mira": "Te interesa, aunque todavía no forma parte de la lista prioritaria.",
 };
 
@@ -98,6 +101,8 @@ const SLOT_PROFILES: SlotProfile[] = [
 
 const DEFAULT_CUSTOM_THEME: ThemeColors = {
   background: "#0d0a17",
+  container: "#0d0a17",
+  sidebar: "#0d0a17",
   panel: "#171126",
   panelAlt: "#211a35",
   border: "#443762",
@@ -121,35 +126,41 @@ const QUEUE_STATE_CATALOG: Array<{ id: QueueState; label: string; description: s
   },
   {
     id: "replay",
-    label: "Rejugada futura",
-    description: "Terminado y con intención clara de rejugarlo.",
+    label: "Repetición futura",
+    description: "Terminado y con intención clara de repetirlo.",
   },
   {
     id: "replay-later",
-    label: "Quizá rejugar",
+    label: "Quizá repetir",
     description: "Podría volver a jugarse, pero no pronto.",
   },
   {
     id: "archived",
     label: "Archivado",
-    description: "Terminado sin intención actual de rejugarlo.",
+    description: "Terminado sin intención actual de repetirlo.",
   },
   {
     id: "low-interest",
     label: "Al final",
-    description: "No interesa actualmente, aunque sigue en la biblioteca.",
+    description: "No interesa actualmente, aunque sigue en la colección.",
   },
   { id: "blocked", label: "Bloqueado", description: "Conviene completar otro título antes." },
   { id: "wishlist", label: "Pendiente de acceso", description: "No está disponible todavía." },
 ];
 
 function descriptionForStatus(label: string): string {
-  return STATUS_DESCRIPTIONS[label] ?? "Estado personalizado del juego.";
+  return STATUS_DESCRIPTIONS[label] ?? "Estado personalizado de la actividad.";
 }
 
-function contentStatus(status: string): GameContent["status"] {
+function contentStatus(status: string): ActivityContent["status"] {
   const normalized = normalize(status);
-  if (normalized.includes("jugando") || normalized.includes("rejugando")) return "active";
+  if (
+    normalized.includes("jugando") ||
+    normalized.includes("rejugando") ||
+    normalized.includes("en curso") ||
+    normalized.includes("repitiendo")
+  )
+    return "active";
   if (normalized.includes("completado")) return "completed";
   if (normalized.includes("terminado")) return "finished";
   if (normalized.includes("pausado")) return "paused";
@@ -157,12 +168,12 @@ function contentStatus(status: string): GameContent["status"] {
   return "not-started";
 }
 
-function defaultContent(game: any): GameContent[] {
+function defaultContent(game: any): ActivityContent[] {
   const baseStatus = contentStatus(String(game.status ?? ""));
   return [
     {
       id: "main-campaign",
-      title: "Campaña principal",
+      title: "Contenido principal",
       type: "campaign",
       status: baseStatus,
       notes: "",
@@ -172,24 +183,6 @@ function defaultContent(game: any): GameContent[] {
 
 function dependenciesFor(): string[] {
   return [];
-  /* Compatibilidad histórica conservada sin aplicarla automáticamente.
-  const map: Record<string, string[]> = {
-    G022: ["G021"],
-    G023: ["G022"],
-    G046: ["G045"],
-    G053: ["G052"],
-    G089: ["G115", "G116"],
-    G060: ["G059"],
-    G057: ["G060"],
-    G063: ["G057"],
-    G039: ["G063"],
-    G040: ["G039"],
-    G064: ["G040"],
-    G065: ["G064"],
-    G066: ["G065"],
-  };
-  return map[gameId] ?? [];
-  */
 }
 
 function availableFromFor(): string | null {
@@ -197,8 +190,8 @@ function availableFromFor(): string | null {
 }
 
 function normalizeMeta(
-  meta: Partial<BacklogData["meta"]> & Record<string, unknown>
-): BacklogData["meta"] {
+  meta: Partial<QuestData["meta"]> & Record<string, unknown>
+): QuestData["meta"] {
   const now = new Date().toISOString();
   return {
     title: typeof meta.title === "string" && meta.title.trim() ? meta.title : "Backlog Quest",
@@ -209,19 +202,19 @@ function normalizeMeta(
   };
 }
 
-function queueStateFor(game: Game): QueueState {
+function queueStateFor(game: Activity): QueueState {
   const status = normalize(game.status);
   if (status.includes("wishlist")) return "wishlist";
-  if (status.includes("jugando")) return "active";
+  if (status.includes("jugando") || status.includes("en curso")) return "active";
   if (status.includes("pausado")) return "paused";
-  if (status.includes("rejugando")) return "replay";
+  if (status.includes("rejugando") || status.includes("repitiendo")) return "replay";
   if (status.includes("terminado") || status.includes("completado")) return "archived";
   if (status.includes("probablemente")) return "low-interest";
   if (game.dependencies.length) return "blocked";
   return "queued";
 }
 
-function selectCopy(game: Game, preferredText = "") {
+function selectCopy(game: Activity, preferredText = "") {
   const normalized = normalize(preferredText);
   return (
     game.copies.find(copy => normalize(`${copy.library} ${copy.device}`).includes(normalized)) ??
@@ -231,112 +224,17 @@ function selectCopy(game: Game, preferredText = "") {
   );
 }
 
-function legacyPreferredSlot(gameId: string): QueueItem["preferredSlotId"] {
-  if (gameId === "G008") return "first";
-  if (gameId === "G006") return "second";
-  if (gameId === "G018") return "secondary";
+function legacyPreferredSlot(): QueueItem["preferredSlotId"] {
   return "flexible";
 }
 
 function buildMissions(): { missions: Mission[]; rules: ScheduleRule[] } {
   return { missions: [], rules: [] };
-  /* La migración ya no inventa misiones a partir de identificadores del archivo.
-  const definitions = [
-    {
-      gameId: "G008",
-      copyId: "C038",
-      device: "ROG Ally X",
-      slotId: "first",
-      contentId: "main-campaign",
-      contentTitle: "Campaña principal",
-      contentType: "campaign" as const,
-      weekdays: [1, 3, 5],
-      min: 30,
-      max: 50,
-    },
-    {
-      gameId: "G006",
-      copyId: "C006",
-      device: "Xbox Series X",
-      slotId: "second",
-      contentId: "revelations",
-      contentTitle: "Revelations",
-      contentType: "dlc" as const,
-      weekdays: [2, 4, 6],
-      min: 60,
-      max: 120,
-    },
-    {
-      gameId: "G018",
-      copyId: "C117",
-      device: "Nintendo Switch",
-      slotId: "secondary",
-      contentId: "ancient-gods",
-      contentTitle: "The Ancient Gods",
-      contentType: "dlc" as const,
-      weekdays: [2],
-      min: 30,
-      max: 45,
-    },
-  ];
-  const missions: Mission[] = [];
-  const rules: ScheduleRule[] = [];
-  definitions.forEach((definition, index) => {
-    const game = games.find(item => item.id === definition.gameId);
-    if (!game) return;
-    const copy = game.copies.find(item => item.id === definition.copyId) ?? game.copies[0];
-    if (!copy) return;
-    const playthrough =
-      game.playthroughs.find(item => normalize(item.status).includes("jugando")) ??
-      game.playthroughs.at(-1);
-    const missionId = `M${String(index + 1).padStart(3, "0")}`;
-    const ruleId = `SR${String(index + 1).padStart(3, "0")}`;
-    if (!game.contents.some(content => content.id === definition.contentId)) {
-      game.contents.push({
-        id: definition.contentId,
-        title: definition.contentTitle,
-        type: definition.contentType,
-        status: "active",
-        notes: game.progress.chapter,
-      });
-    } else {
-      game.contents = game.contents.map(content =>
-        content.id === definition.contentId ? { ...content, status: "active" } : content
-      );
-    }
-    missions.push({
-      id: missionId,
-      gameId: game.id,
-      contentId: definition.contentId,
-      contentTitle: definition.contentTitle,
-      contentType: definition.contentType,
-      copyId: copy.id,
-      activeDevice: definition.device,
-      activeDeviceId: inferDeviceIds({ platforms }, definition.device)[0],
-      slotId: definition.slotId,
-      status: "active",
-      playthroughId: playthrough?.id ?? "",
-      scheduleRuleId: ruleId,
-      startedAt: playthrough?.startedAt ?? "2026-07-21",
-      finishedAt: null,
-      notes: game.progress.chapter || game.notes,
-    });
-    rules.push({
-      id: ruleId,
-      missionId,
-      weekdays: definition.weekdays,
-      durationMin: definition.min,
-      durationMax: definition.max,
-      enabled: true,
-    });
-  });
-  return { missions, rules };
-  */
 }
 
-export function isBacklogV2(value: unknown): value is BacklogData {
+export function isBacklogV2(value: unknown): value is QuestData {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<BacklogData>;
+  const candidate = value as Partial<QuestData>;
   return (
     candidate.schemaVersion === 2 &&
     Array.isArray(candidate.games) &&
@@ -346,7 +244,7 @@ export function isBacklogV2(value: unknown): value is BacklogData {
   );
 }
 
-export function migrateBacklog(value: unknown): BacklogData {
+export function migrateBacklog(value: unknown): QuestData {
   if (isBacklogV2(value)) return normalizeV2(value);
   if (!value || typeof value !== "object")
     throw new Error("El archivo no contiene datos válidos de Backlog Quest.");
@@ -355,7 +253,7 @@ export function migrateBacklog(value: unknown): BacklogData {
     throw new Error("El archivo no corresponde a Backlog Quest v1 o v2.");
   }
 
-  const games: Game[] = old.games.map((game: any) => ({
+  const games: Activity[] = old.games.map((game: any) => ({
     ...game,
     tags: Array.isArray(game.tags) ? game.tags : [],
     copies: Array.isArray(game.copies) ? game.copies : [],
@@ -379,7 +277,7 @@ export function migrateBacklog(value: unknown): BacklogData {
   const orderedGames = [
     ...firstIds.map((id: string) => games.find(game => game.id === id)).filter(Boolean),
     ...remaining,
-  ] as Game[];
+  ] as Activity[];
   const queue: QueueItem[] = orderedGames.map((game, index) => {
     const seed = queueSeed.get(game.id);
     const copy = selectCopy(game, seed?.platform ?? "");
@@ -389,11 +287,11 @@ export function migrateBacklog(value: unknown): BacklogData {
       state: queueStateFor(game),
       preferredCopyId: copy?.id ?? null,
       preferredDevice: seed?.platform ?? copy?.device ?? "",
-      preferredSlotId: legacyPreferredSlot(game.id),
+      preferredSlotId: legacyPreferredSlot(),
       replayIntent: game.progress.replays > 0 ? "maybe" : "unknown",
       availableFrom: availableFromFor(),
-      pinned: game.id === "G121",
-      pinnedPosition: game.id === "G121" ? 5 : null,
+      pinned: seed?.pinned ?? false,
+      pinnedPosition: seed?.pinnedPosition ?? null,
       deferredAt: null,
       reason: seed?.reason ?? game.notes ?? "",
     };
@@ -421,6 +319,8 @@ export function migrateBacklog(value: unknown): BacklogData {
     preferences: {
       theme: "midnight",
       customTheme: DEFAULT_CUSTOM_THEME,
+      vocabularyProfile: "generic",
+      customVocabulary: {},
       hidePrivateByDefault: old.preferences?.hidePrivateByDefault ?? true,
       activeView: "dashboard",
       activeSlotProfileId: "day-night",
@@ -504,7 +404,7 @@ function legacyPlatformName(library: string, ownership: string): string {
   return library.trim();
 }
 
-export function normalizeV2(data: BacklogData): BacklogData {
+export function normalizeV2(data: QuestData): QuestData {
   const platformData = { platforms: data.platforms ?? [] };
   const copyPlatforms = normalizeCopyPlatforms(data.catalogs.platforms ?? [], [
     ...data.games.flatMap(game =>
@@ -631,7 +531,7 @@ export function normalizeV2(data: BacklogData): BacklogData {
     };
   });
   const existingPresets = data.preferences.quickCopyPresets ?? [];
-  const quickCopyPresets: QuickCopyPreset[] = existingPresets.length
+  const quickCopyPresets: QuickVariantPreset[] = existingPresets.length
     ? existingPresets.map(preset => {
         const legacyLibrary = legacyPlatformName(preset.library, preset.ownership);
         const copyPlatform = resolveCopyPlatform(copyPlatforms, preset.platformId, legacyLibrary);
@@ -705,6 +605,17 @@ export function normalizeV2(data: BacklogData): BacklogData {
         ? data.preferences.theme
         : "midnight",
       customTheme: { ...DEFAULT_CUSTOM_THEME, ...data.preferences.customTheme },
+      vocabularyProfile: [
+        "generic",
+        "gaming",
+        "reading",
+        "learning",
+        "projects",
+        "custom",
+      ].includes(data.preferences.vocabularyProfile)
+        ? data.preferences.vocabularyProfile
+        : "generic",
+      customVocabulary: data.preferences.customVocabulary ?? {},
       hidePrivateByDefault: data.preferences.hidePrivateByDefault ?? true,
       activeView: data.preferences.activeView ?? "dashboard",
       activeSlotProfileId: data.preferences.activeSlotProfileId ?? "day-night",

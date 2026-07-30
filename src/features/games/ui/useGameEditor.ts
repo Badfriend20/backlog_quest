@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type React from "react";
-import type { Game } from "../../../shared/kernel/backlog";
-import { nextGeneratedId } from "../../../shared/kernel/backlogSelectors";
+import type { Activity } from "../../../shared/kernel/quest";
+import { nextGeneratedId } from "../../../shared/kernel/questSelectors";
 import { createPlaythroughDraft } from "../domain/playthroughDraft";
 import type { GameEditorTab } from "./gameEditorControllerTypes";
 import { createBlankCopy, createGameDraft } from "./gameEditorDraft";
@@ -82,7 +82,7 @@ export function useGameEditor({
       playthroughSnapshot: undefined,
     };
   }, [data, initial, missionIntent]);
-  const [draft, setDraft] = useState<Game>(editorInitial.draft);
+  const [draft, setDraft] = useState<Activity>(editorInitial.draft);
   const [tab, setTab] = useState<GameEditorTab>(editorInitial.tab);
   const shared = { draft, setDraft, setTab };
   const contents = useGameContentsController({
@@ -112,7 +112,7 @@ export function useGameEditor({
     initialSnapshot: editorInitial.playthroughSnapshot,
   });
 
-  function patch<K extends keyof Game>(key: K, value: Game[K]) {
+  function patch<K extends keyof Activity>(key: K, value: Activity[K]) {
     setDraft(current => ({ ...current, [key]: value }));
   }
 

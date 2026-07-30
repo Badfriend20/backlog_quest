@@ -1,15 +1,17 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
-import { deviceName, formatDate, statusClass } from "../../../shared/kernel/backlogSelectors";
+import type { QuestData } from "../../../shared/kernel/quest";
+import { deviceName, formatDate, statusClass } from "../../../shared/kernel/questSelectors";
 import { Button, StatusChip } from "../../../shared/ui";
 import { HistoryScope } from "./HistoryStyles";
+import { activityStatusLabel, capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function HistoryView({
   data,
   onSelectGame,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onSelectGame: (id: string) => void;
 }) {
+  const terms = useVocabulary();
   const rows = data.games
     .flatMap(game => game.playthroughs.map(play => ({ game, play })))
     .sort(
@@ -25,12 +27,12 @@ export function HistoryView({
         <table>
           <thead>
             <tr>
-              <th>Juego</th>
-              <th>Partida</th>
-              <th>Contenido</th>
-              <th>Copia</th>
+              <th>{capitalizeTerm(terms.activity)}</th>
+              <th>{capitalizeTerm(terms.journey)}</th>
+              <th>{capitalizeTerm(terms.content)}</th>
+              <th>{capitalizeTerm(terms.variant)}</th>
               <th>Estado</th>
-              <th>Dispositivo</th>
+              <th>{capitalizeTerm(terms.resource)}</th>
               <th>Final</th>
               <th>Notas</th>
               <th />
@@ -53,7 +55,7 @@ export function HistoryView({
                   <td>#{play.number}</td>
                   <td>
                     {game.contents.find(content => content.id === play.contentId)?.title ??
-                      "Campaña"}
+                      "Principal"}
                   </td>
                   <td>
                     {copy
@@ -61,7 +63,9 @@ export function HistoryView({
                       : play.platform || "Por confirmar"}
                   </td>
                   <td>
-                    <StatusChip tone={statusClass(play.status)}>{play.status}</StatusChip>
+                    <StatusChip tone={statusClass(play.status)}>
+                      {activityStatusLabel(play.status, terms)}
+                    </StatusChip>
                   </td>
                   <td>
                     {play.deviceId

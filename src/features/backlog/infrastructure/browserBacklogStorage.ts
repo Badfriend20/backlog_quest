@@ -1,11 +1,12 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import type { BacklogStorage } from "../application/ports";
 import { isBacklogV2, migrateBacklog } from "./migration";
 
 const STORAGE_KEY = "backlog-quest:data:v2";
 const LEGACY_STORAGE_KEY = "backlog-quest:data:v1";
+const DEMO_SNAPSHOT_KEY = "backlog-quest:demo-snapshot:v2";
 
-function loadBacklog(fallback: BacklogData): BacklogData {
+function loadBacklog(fallback: QuestData): QuestData {
   for (const key of [STORAGE_KEY, LEGACY_STORAGE_KEY]) {
     try {
       const raw = localStorage.getItem(key);
@@ -20,7 +21,7 @@ function loadBacklog(fallback: BacklogData): BacklogData {
   return fallback;
 }
 
-function saveBacklog(data: BacklogData): void {
+function saveBacklog(data: QuestData): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -29,12 +30,30 @@ function clearBacklog(): void {
   localStorage.removeItem(LEGACY_STORAGE_KEY);
 }
 
-function parseBacklogJson(text: string): BacklogData {
+function loadDemoSnapshot(): QuestData | null {
+  try {
+    const raw = localStorage.getItem(DEMO_SNAPSHOT_KEY);
+    return raw ? migrateBacklog(JSON.parse(raw)) : null;
+  } catch {
+    localStorage.removeItem(DEMO_SNAPSHOT_KEY);
+    return null;
+  }
+}
+
+function saveDemoSnapshot(data: QuestData): void {
+  localStorage.setItem(DEMO_SNAPSHOT_KEY, JSON.stringify(data));
+}
+
+function clearDemoSnapshot(): void {
+  localStorage.removeItem(DEMO_SNAPSHOT_KEY);
+}
+
+function parseBacklogJson(text: string): QuestData {
   return migrateBacklog(JSON.parse(text) as unknown);
 }
 
-function exportBacklog(data: BacklogData): void {
-  const updated: BacklogData = {
+function exportBacklog(data: QuestData): void {
+  const updated: QuestData = {
     ...data,
     meta: { ...data.meta, updatedAt: new Date().toISOString() },
   };
@@ -54,6 +73,9 @@ export const browserBacklogStorage: BacklogStorage = {
   load: loadBacklog,
   save: saveBacklog,
   clear: clearBacklog,
+  loadDemoSnapshot,
+  saveDemoSnapshot,
+  clearDemoSnapshot,
   parse: parseBacklogJson,
   export: exportBacklog,
 };

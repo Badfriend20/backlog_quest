@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { Callout, SectionHeading, Stack } from "../../../shared/ui";
 import {
   formatDate,
@@ -7,7 +7,7 @@ import {
   getActiveSlotProfile,
   getWeekLabel,
   missionLinkState,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { MissionLinkActions } from "../../missions";
 import { ActiveMissionList } from "./ActiveMissionList";
 import { ScheduleScope } from "./ScheduleStyles";
@@ -19,7 +19,7 @@ export function ScheduleView({
   onAddCopyForMission,
   onAddPlaythroughForMission,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onEditMission: (missionId: string) => void;
   onManageContentsForMission: (missionId: string) => void;
   onAddCopyForMission: (missionId: string) => void;

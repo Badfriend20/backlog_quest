@@ -1,24 +1,32 @@
-import type { BacklogData, Playthrough } from "../../../shared/kernel/backlog";
+import type { QuestData, Journey } from "../../../shared/kernel/quest";
 import {
   copyDeviceIds,
   copyDeviceLabel,
   deviceName,
   inferDeviceIds,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { FormGrid, RelationSummaryGrid } from "../../../shared/ui";
 import { DeviceSelect } from "../../devices";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
+import {
+  activityStatusLabel,
+  activityStatusOptions,
+  canonicalActivityStatus,
+  capitalizeTerm,
+  useVocabulary,
+} from "../../../shared/vocabulary";
 
 export function GamePlaythroughCard({
   data,
   play,
   editor,
 }: {
-  data: BacklogData;
-  play: Playthrough;
+  data: QuestData;
+  play: Journey;
   editor: GameEditorController;
 }) {
+  const terms = useVocabulary();
   const {
     draft,
     editingPlaythroughId,
@@ -44,18 +52,18 @@ export function GamePlaythroughCard({
     <EditableRelationCard
       editing={editing}
       identifier={play.id}
-      title={`Partida #${play.number}`}
+      title={`${capitalizeTerm(terms.journey)} #${play.number}`}
       badges={
         <>
           {linkedMission && <span>MISIÓN {linkedMission.status.toUpperCase()}</span>}
-          <span>{play.status}</span>
+          <span>{activityStatusLabel(play.status, terms)}</span>
         </>
       }
-      itemLabel="partida"
+      itemLabel={terms.journey}
       deleteMessage={
         linkedMission
-          ? `Se eliminará la partida #${play.number} y su historial editable. La misión ${linkedMission.id} permanecerá sin partida hasta que la edites y guardes nuevamente.`
-          : `Se eliminará la partida #${play.number} y su historial editable.`
+          ? `Se eliminará el ${terms.journey} #${play.number} y su historial editable. La ${terms.mission} ${linkedMission.id} permanecerá sin ${terms.journey} hasta que la edites y guardes nuevamente.`
+          : `Se eliminará el ${terms.journey} #${play.number} y su historial editable.`
       }
       onEdit={() => beginPlaythroughEdit(play.id)}
       onRemove={() => removePlaythrough(play.id)}
@@ -65,15 +73,15 @@ export function GamePlaythroughCard({
         <>
           <RelationSummaryGrid>
             <div>
-              <dt>Contenido</dt>
+              <dt>{capitalizeTerm(terms.content)}</dt>
               <dd>{selectedContent?.title ?? play.contentTitle ?? "Contenido no disponible"}</dd>
             </div>
             <div>
-              <dt>Copia utilizada</dt>
+              <dt>{capitalizeTerm(terms.variant)} utilizada</dt>
               <dd>{copyLabel}</dd>
             </div>
             <div>
-              <dt>Dispositivo</dt>
+              <dt>{capitalizeTerm(terms.resource)}</dt>
               <dd>{selectedDeviceId ? deviceName(data, selectedDeviceId) : "Por confirmar"}</dd>
             </div>
             <div>
@@ -103,7 +111,7 @@ export function GamePlaythroughCard({
               />
             </label>
             <label>
-              <span>Contenido</span>
+              <span>{capitalizeTerm(terms.content)}</span>
               <select
                 value={play.contentId ?? ""}
                 onChange={event => {
@@ -126,7 +134,7 @@ export function GamePlaythroughCard({
               </select>
             </label>
             <label className="wide-field">
-              <span>Copia utilizada</span>
+              <span>{capitalizeTerm(terms.variant)} utilizada</span>
               <select
                 value={play.copyId ?? ""}
                 onChange={event =>
@@ -136,11 +144,11 @@ export function GamePlaythroughCard({
                 }
               >
                 <option value="" disabled>
-                  Selecciona una copia
+                  Selecciona una {terms.variant}
                 </option>
                 {draft.copies.map(copy => (
                   <option key={copy.id} value={copy.id}>
-                    {copy.library || "Sin biblioteca"} · {copyDeviceLabel(data, copy)} ·{" "}
+                    {copy.library || `Sin ${terms.collection}`} · {copyDeviceLabel(data, copy)} ·{" "}
                     {copy.ownership}
                   </option>
                 ))}
@@ -148,11 +156,11 @@ export function GamePlaythroughCard({
               <small>
                 {selectedCopy
                   ? `Se guardará como ${selectedCopy.library}.`
-                  : "Selecciona una copia para vincular esta partida."}
+                  : `Selecciona una ${terms.variant} para vincular este ${terms.journey}.`}
               </small>
             </label>
             <label htmlFor={`playthrough-device-${play.id}`}>
-              <span>Dispositivo usado</span>
+              <span>{capitalizeTerm(terms.resource)} usado</span>
               <DeviceSelect
                 id={`playthrough-device-${play.id}`}
                 data={data}
@@ -164,15 +172,14 @@ export function GamePlaythroughCard({
             <label>
               <span>Estado</span>
               <select
-                value={play.status}
+                value={canonicalActivityStatus(play.status)}
                 onChange={event => updatePlaythrough(play.id, { status: event.target.value })}
               >
-                <option>Pendiente</option>
-                <option>Jugando</option>
-                <option>Pausado</option>
-                <option>Terminado</option>
-                <option>Completado</option>
-                <option>Abandonado</option>
+                {activityStatusOptions(terms).map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </label>
             <label>
@@ -210,10 +217,10 @@ export function GamePlaythroughCard({
           </FormGrid>
           <div className="playthrough-link-summary">
             <span>
-              Copia registrada: <strong>{copyLabel}</strong>
+              {capitalizeTerm(terms.variant)} registrada: <strong>{copyLabel}</strong>
             </span>
             <span>
-              Dispositivo:{" "}
+              {capitalizeTerm(terms.resource)}:{" "}
               <strong>
                 {selectedDeviceId ? deviceName(data, selectedDeviceId) : "Por confirmar"}
               </strong>

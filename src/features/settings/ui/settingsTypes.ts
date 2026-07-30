@@ -1,3 +1,3 @@
-import type { AppPreferences } from "../../../shared/kernel/backlog";
+import type { AppPreferences } from "../../../shared/kernel/quest";
 
 export type SettingsChangeHandler = (patch: Partial<AppPreferences>, message: string) => void;

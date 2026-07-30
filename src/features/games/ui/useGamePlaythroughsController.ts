@@ -1,10 +1,6 @@
 import { useState } from "react";
-import type { Playthrough } from "../../../shared/kernel/backlog";
-import {
-  copyDeviceIds,
-  deviceName,
-  nextGeneratedId,
-} from "../../../shared/kernel/backlogSelectors";
+import type { Journey } from "../../../shared/kernel/quest";
+import { copyDeviceIds, deviceName, nextGeneratedId } from "../../../shared/kernel/questSelectors";
 import { createPlaythroughDraft } from "../domain/playthroughDraft";
 import type { GameDraftController } from "./gameEditorControllerTypes";
 import { UNKNOWN_GAME_RELATION } from "./gameEditorDraft";
@@ -27,12 +23,12 @@ export function useGamePlaythroughsController({
     "data" | "missionIntent" | "onSave" | "onResolveMissionRelation" | "onRemovePlaythrough"
   > & {
     initialEditingPlaythroughId: string | null;
-    initialSnapshot?: Playthrough[];
+    initialSnapshot?: Journey[];
   }) {
   const [editingPlaythroughId, setEditingPlaythroughId] = useState<string | null>(
     initialEditingPlaythroughId
   );
-  const [playthroughEditSnapshot, setPlaythroughEditSnapshot] = useState<Playthrough[] | undefined>(
+  const [playthroughEditSnapshot, setPlaythroughEditSnapshot] = useState<Journey[] | undefined>(
     initialSnapshot
   );
 
@@ -52,7 +48,7 @@ export function useGamePlaythroughsController({
     setTab("playthroughs");
   }
 
-  function updatePlaythrough(playthroughId: string, patch: Partial<Playthrough>) {
+  function updatePlaythrough(playthroughId: string, patch: Partial<Journey>) {
     setDraft(current => ({
       ...current,
       playthroughs: current.playthroughs.map(playthrough => {

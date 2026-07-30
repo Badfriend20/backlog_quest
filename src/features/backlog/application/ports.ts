@@ -1,9 +1,12 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 
 export interface BacklogStorage {
-  load(fallback: BacklogData): BacklogData;
-  save(data: BacklogData): void;
+  load(fallback: QuestData): QuestData;
+  save(data: QuestData): void;
   clear(): void;
-  parse(text: string): BacklogData;
-  export(data: BacklogData): void;
+  loadDemoSnapshot(): QuestData | null;
+  saveDemoSnapshot(data: QuestData): void;
+  clearDemoSnapshot(): void;
+  parse(text: string): QuestData;
+  export(data: QuestData): void;
 }

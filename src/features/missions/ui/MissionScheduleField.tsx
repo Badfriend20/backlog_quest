@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { BacklogData, ScheduleSession } from "../../../shared/kernel/backlog";
-import { getSlotLabel } from "../../../shared/kernel/backlogSelectors";
+import type { QuestData, ScheduleSession } from "../../../shared/kernel/quest";
+import { getSlotLabel } from "../../../shared/kernel/questSelectors";
 import {
   groupScheduleSessions,
   MISSION_SLOT_IDS,
@@ -15,11 +15,11 @@ export function MissionScheduleField({
   data,
   sessions,
   onChange,
-}: {
-  data: BacklogData;
+}: Readonly<{
+  data: QuestData;
   sessions: ScheduleSession[];
   onChange(sessions: ScheduleSession[]): void;
-}) {
+}>) {
   const [groups, setGroups] = useState<ScheduleGroup[]>(() => groupScheduleSessions(sessions));
   const availableSlot = MISSION_SLOT_IDS.find(
     slotId => !groups.some(group => group.slotId === slotId)

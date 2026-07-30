@@ -1,28 +1,32 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
-import { quickCopyKey, quickCopyLabel } from "../../../shared/kernel/backlogSelectors";
+import type { QuestData } from "../../../shared/kernel/quest";
+import { quickCopyKey, quickCopyLabel } from "../../../shared/kernel/questSelectors";
 import { Button, EmptyState, Eyebrow, Stack } from "../../../shared/ui";
 import { GameCopyCard } from "./GameCopyCard";
 import type { GameEditorController } from "./useGameEditor";
+import { useVocabulary } from "../../../shared/vocabulary";
 
 export function GameCopiesPanel({
   data,
   editor,
 }: {
-  data: BacklogData;
+  data: QuestData;
   editor: GameEditorController;
 }) {
+  const terms = useVocabulary();
   const { draft, setShowQuickOptions, quickPresets, addBlankCopy, addCopyFromPreset } = editor;
   return (
     <Stack as="section" className="editor-panel">
       <div className="relation-toolbar">
         <div>
-          <Eyebrow>COPIAS Y VERSIONES</Eyebrow>
-          <h3>Copias del juego</h3>
-          <p>Consulta cada copia en resumen y abre su edición solo cuando la necesites.</p>
+          <Eyebrow>{terms.variants.toUpperCase()} Y VERSIONES</Eyebrow>
+          <h3>
+            {terms.variants} de la {terms.activity}
+          </h3>
+          <p>Consulta cada {terms.variant} en resumen y abre su edición cuando la necesites.</p>
         </div>
         <div>
           <Button variant="primary" onClick={addBlankCopy}>
-            + Agregar copia
+            + Agregar {terms.variant}
           </Button>
         </div>
       </div>
@@ -32,8 +36,8 @@ export function GameCopiesPanel({
             <Eyebrow>AGREGADO RÁPIDO</Eyebrow>
             <h3>Configuraciones usadas recientemente</h3>
             <p>
-              Se generan desde plataforma y propiedad. Guardar un juego mueve sus combinaciones al
-              frente.
+              Se generan desde {terms.channel} y {terms.accessMethod}. Guardar una {terms.activity}{" "}
+              mueve sus combinaciones al frente.
             </p>
           </div>
           <Button size="compact" onClick={() => setShowQuickOptions(true)}>
@@ -60,13 +64,16 @@ export function GameCopiesPanel({
           })}
           {!quickPresets.length && (
             <EmptyState>
-              Guarda una copia o configura una opción para crear tus primeros accesos rápidos.
+              Guarda una {terms.variant} o configura una opción para crear tus primeros accesos
+              rápidos.
             </EmptyState>
           )}
         </div>
       </section>
       {!draft.copies.length && (
-        <EmptyState>No hay copias. Agrega al menos una antes de activar una misión.</EmptyState>
+        <EmptyState>
+          No hay {terms.variants}. Agrega al menos una antes de activar una {terms.mission}.
+        </EmptyState>
       )}
       <div className="relation-card-list">
         {draft.copies.map(copy => (

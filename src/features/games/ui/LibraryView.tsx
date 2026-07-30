@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import {
   Button,
   CardOpenButton,
@@ -21,9 +21,10 @@ import {
   gameSearchText,
   normalize,
   statusClass,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { sortLibraryGames, type LibrarySort } from "../domain/librarySort";
 import { GamesScope } from "./GamesStyles";
+import { activityStatusLabel, capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function LibraryView({
   data,
@@ -31,11 +32,12 @@ export function LibraryView({
   onCreateGame,
   onActivate,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onSelectGame: (id: string) => void;
   onCreateGame: () => void;
   onActivate: (id: string) => void;
 }) {
+  const terms = useVocabulary();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("Todos");
   const [priority, setPriority] = useState("Todas");
@@ -83,7 +85,7 @@ export function LibraryView({
             <input
               value={query}
               onChange={event => setQuery(event.target.value)}
-              placeholder="Juego, contenido, dispositivo…"
+              placeholder={`${capitalizeTerm(terms.activity)}, ${terms.content}, ${terms.resource}…`}
             />
           </label>
           <label>
@@ -91,7 +93,9 @@ export function LibraryView({
             <select value={status} onChange={event => setStatus(event.target.value)}>
               <option>Todos</option>
               {statuses.map(item => (
-                <option key={item}>{item}</option>
+                <option key={item} value={item}>
+                  {activityStatusLabel(item, terms)}
+                </option>
               ))}
             </select>
           </label>
@@ -107,7 +111,7 @@ export function LibraryView({
             </select>
           </label>
           <label>
-            <span>Dispositivo</span>
+            <span>{capitalizeTerm(terms.resource)}</span>
             <select value={device} onChange={event => setDevice(event.target.value)}>
               <option>Todos</option>
               {devices.map(item => (
@@ -116,7 +120,7 @@ export function LibraryView({
             </select>
           </label>
           <label>
-            <span>Orden de Biblioteca</span>
+            <span>Orden de {capitalizeTerm(terms.collection)}</span>
             <select value={order} onChange={event => setOrder(event.target.value as LibrarySort)}>
               <option value="unfinished-title">Pendientes primero · A–Z</option>
               <option value="title">Alfabético · A–Z</option>
@@ -139,7 +143,7 @@ export function LibraryView({
             <h2>{filtered.length} resultados</h2>
           </div>
           <Button variant="primary" onClick={onCreateGame}>
-            + Agregar juego
+            + Agregar {terms.activity}
           </Button>
         </SectionHeading>
         <LibraryGrid>
@@ -151,7 +155,9 @@ export function LibraryView({
               <LibraryCard key={game.id}>
                 <CardOpenButton type="button" onClick={() => onSelectGame(game.id)}>
                   <CardTopline>
-                    <StatusChip tone={statusClass(game.status)}>{game.status}</StatusChip>
+                    <StatusChip tone={statusClass(game.status)}>
+                      {activityStatusLabel(game.status, terms)}
+                    </StatusChip>
                     <PriorityChip>{game.priority}</PriorityChip>
                   </CardTopline>
                   <h3>
@@ -161,7 +167,9 @@ export function LibraryView({
                   <p>{game.progress.chapter || game.notes || "Sin notas."}</p>
                   <ProgressRow>
                     <span>{game.progress.completions} terminaciones</span>
-                    <span>{game.progress.replays} rejugadas</span>
+                    <span>
+                      {game.progress.replays} {terms.repetitions}
+                    </span>
                   </ProgressRow>
                   <ChipList>
                     {game.copies.slice(0, 3).map(copy => (

@@ -28,6 +28,20 @@ encapsulación, no como un mecanismo para inyectar antiguas hojas globales.
 Las variantes de acción se expresan con `Button`: `primary`, `ghost`, `danger`, `warning` y `text`;
 `size="compact"` y `fullWidth` son opciones de presentación. No se recrean mediante clases.
 
+`CardSurface` es la seam compartida de tarjetas. Define superficie `var(--panel)`, borde, color y
+transición sin introducir degradados ni colores literales. Inicio, Colección, Recursos,
+Configuración y las relaciones reutilizan esta base mediante adapters pequeños:
+
+- `GameCard` agrega destacado y advertencia;
+- `LibraryCard` agrega interacción;
+- `RelationCard` agrega estados de edición;
+- `SelectableCardSurface` y `SelectableCardButton` agregan un estado de selección temático para
+  temas, vocabulario y perfiles de franjas;
+- las métricas, recursos y catálogos aportan únicamente su contenido y layout local.
+
+No se crea una tarjeta de dominio universal: encabezados, métricas, acciones y relaciones siguen
+perteneciendo a sus respectivas features.
+
 ## Extracción y duplicación
 
 Una regla pertenece a una feature cuando todos sus consumidores están en esa feature. Solo se mueve
@@ -58,6 +72,9 @@ Cada tema define fondo, panel, panel alterno, borde, texto, texto secundario, pr
 Los controles usan específicamente `--input` y `--input-text`; no deben introducir un fondo oscuro
 literal. El tema Claro establece `colorScheme: light` para que los controles nativos conserven
 contraste; los demás usan `dark`.
+
+Las superficies compartidas consumen únicamente tokens. Un degradado de tarjeta no puede mezclar
+un token con un color hexadecimal fijo porque rompería temas claros o personalizados.
 
 El usuario puede editar cada color del contrato. Los valores se guardan en
 `preferences.customTheme` y seleccionar otro tema no los borra. `themeStyle.test.ts` verifica que

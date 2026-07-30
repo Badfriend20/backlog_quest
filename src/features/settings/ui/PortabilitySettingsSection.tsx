@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { Button, Eyebrow } from "../../../shared/ui";
 import type { BacklogStorage } from "../../backlog";
 import { SettingsCard } from "./SettingsStyles";
@@ -9,9 +9,9 @@ export function PortabilitySettingsSection({
   storage,
   onReplaceData,
 }: {
-  data: BacklogData;
+  data: QuestData;
   storage: BacklogStorage;
-  onReplaceData: (data: BacklogData) => void;
+  onReplaceData: (data: QuestData) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
@@ -31,8 +31,8 @@ export function PortabilitySettingsSection({
       <Eyebrow>PORTABILIDAD</Eyebrow>
       <h2>Importar y exportar</h2>
       <p>
-        El navegador guarda una copia local. El JSON v2 contiene catálogo, lista completa, misiones,
-        calendario, configuración y actividad.
+        El navegador guarda un respaldo local. El JSON v2 contiene catálogo, lista completa,
+        misiones, calendario, configuración y actividad.
       </p>
       <div className="button-stack">
         <Button variant="primary" onClick={() => storage.export(data)}>

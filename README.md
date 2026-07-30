@@ -1,6 +1,7 @@
 # Backlog Quest v2.5.0
 
-Aplicación React + TypeScript + Vite para administrar una biblioteca de videojuegos sin servidor ni cuenta.
+Aplicación React + TypeScript + Vite para organizar colecciones de actividades, misiones,
+recorridos y planes sin servidor ni cuenta.
 
 ## Inicio rápido
 
@@ -21,13 +22,16 @@ La carpeta `dist` queda lista para GitHub Pages o cualquier hosting estático.
 
 ## Funciones principales
 
-- Biblioteca y lista completa.
-- Misiones activas vinculadas a contenido, copia y dispositivo.
+- Colección y lista completa.
+- Misiones activas vinculadas a contenido, modalidad y recurso.
 - Calendario dinámico con distintas franjas por día.
-- Historial de partidas y rejugadas.
-- Copias editables por biblioteca y propiedad.
+- Historial de recorridos y repeticiones.
+- Modalidades editables por canal y forma de acceso.
 - Agregado rápido dinámico.
-- Catálogo configurable de dispositivos.
+- Catálogo configurable de recursos.
+- Perfiles de vocabulario genérico, videojuegos, lectura, aprendizaje y proyectos.
+- Vocabulario personalizado con valores genéricos de respaldo.
+- Laboratorio reversible con seis JSON y 15 ejemplos por tipo de actividad.
 - Importación y exportación de un único JSON.
 - Persistencia local y service worker.
 - Despliegue estático compatible con GitHub Pages.
@@ -58,6 +62,7 @@ aplicación normaliza respaldos compatibles de las versiones 1 y 2.
 ```bash
 npm run dev
 npm run test
+npm run generate:examples
 npm run format
 npm run build
 npm run validate

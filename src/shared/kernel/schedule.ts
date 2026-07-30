@@ -1,5 +1,5 @@
-import type { BacklogData, Mission, ScheduleRule, ScheduleSession } from "./backlog";
-import { getSlotLabel } from "./backlogSelectors";
+import type { QuestData, Mission, ScheduleRule, ScheduleSession } from "./quest";
+import { getSlotLabel } from "./questSelectors";
 
 export const WEEKDAY_OPTIONS = [
   { id: 1, label: "L", longLabel: "Lunes" },
@@ -91,7 +91,7 @@ export function scheduleSessionsForRule(
 }
 
 export function findScheduleConflicts(
-  data: BacklogData,
+  data: QuestData,
   sessions: ScheduleSession[],
   excludedMissionId?: string
 ): Mission[] {
@@ -111,7 +111,7 @@ export function findScheduleConflicts(
   });
 }
 
-export function missionScheduleLabel(data: BacklogData, mission: Mission): string {
+export function missionScheduleLabel(data: QuestData, mission: Mission): string {
   const rule = data.scheduleRules.find(item => item.missionId === mission.id && item.enabled);
   if (!rule) return "Sin agenda fija";
   const sessions = scheduleSessionsForRule(rule, mission);

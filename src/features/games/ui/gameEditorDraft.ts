@@ -1,17 +1,21 @@
-import type { Game, GameCopy } from "../../../shared/kernel/backlog";
-import { getSlotLabel, nextGeneratedId } from "../../../shared/kernel/backlogSelectors";
+import type { Activity, ActivityVariant } from "../../../shared/kernel/quest";
+import {
+  accessMethodOptions,
+  getSlotLabel,
+  nextGeneratedId,
+} from "../../../shared/kernel/questSelectors";
 import type { GameEditorProps } from "./gameEditorTypes";
 
 export const UNKNOWN_GAME_RELATION = "Por confirmar";
 
-export function createBlankCopy(data: GameEditorProps["data"], id: string): GameCopy {
+export function createBlankCopy(data: GameEditorProps["data"], id: string): ActivityVariant {
   return {
     id,
     platformId: undefined,
     library: "",
     device: UNKNOWN_GAME_RELATION,
     deviceIds: [],
-    ownership: "Propio",
+    ownership: accessMethodOptions(data.catalogs.ownership)[0],
     status: "Disponible",
     priority: "Media",
     idealSession: getSlotLabel(data, "flexible"),
@@ -20,7 +24,7 @@ export function createBlankCopy(data: GameEditorProps["data"], id: string): Game
   };
 }
 
-export function createGameDraft(data: GameEditorProps["data"], game?: Game | null): Game {
+export function createGameDraft(data: GameEditorProps["data"], game?: Activity | null): Activity {
   if (game) return structuredClone(game);
   return {
     id: nextGeneratedId(

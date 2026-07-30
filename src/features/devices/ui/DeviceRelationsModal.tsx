@@ -1,17 +1,17 @@
 import type {
-  BacklogData,
-  Game,
-  GameCopy,
+  QuestData,
+  Activity,
+  ActivityVariant,
   Mission,
-  Platform,
-} from "../../../shared/kernel/backlog";
+  Resource,
+} from "../../../shared/kernel/quest";
 import {
   deviceName,
   formatDate,
   getSlotLabel,
   missionLinkState,
   statusClass,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import {
   Button,
   CardOpenButton,
@@ -31,6 +31,7 @@ import {
   RelationSummaryGrid,
   StatusChip,
 } from "../../../shared/ui";
+import { activityStatusLabel, useVocabulary } from "../../../shared/vocabulary";
 
 export function DeviceRelationsModal({
   data,
@@ -42,15 +43,16 @@ export function DeviceRelationsModal({
   onSelectGame,
   onEditMission,
 }: {
-  data: BacklogData;
-  device: Platform;
+  data: QuestData;
+  device: Resource;
   view: "games" | "missions";
-  games: Array<{ game: Game; copies: GameCopy[] }>;
+  games: Array<{ game: Activity; copies: ActivityVariant[] }>;
   missions: Mission[];
   onClose(): void;
   onSelectGame(id: string): void;
   onEditMission(id: string): void;
 }) {
+  const terms = useVocabulary();
   function selectGame(gameId: string) {
     onClose();
     onSelectGame(gameId);
@@ -67,7 +69,9 @@ export function DeviceRelationsModal({
         <LibraryCard key={game.id}>
           <CardOpenButton type="button" onClick={() => selectGame(game.id)}>
             <CardTopline>
-              <StatusChip tone={statusClass(game.status)}>{game.status}</StatusChip>
+              <StatusChip tone={statusClass(game.status)}>
+                {activityStatusLabel(game.status, terms)}
+              </StatusChip>
               <PriorityChip>{game.priority}</PriorityChip>
             </CardTopline>
             <h3>
@@ -76,7 +80,7 @@ export function DeviceRelationsModal({
             </h3>
             <ProgressRow>
               <span>{game.progress.completions} terminaciones</span>
-              <span>{game.progress.replays} rejugadas</span>
+              <span>{game.progress.replays} repeticiones</span>
             </ProgressRow>
             <ChipList>
               {copies.map(copy => (
@@ -90,7 +94,7 @@ export function DeviceRelationsModal({
       ))}
     </LibraryGrid>
   ) : (
-    <EmptyState>Este dispositivo no está habilitado en ningún juego.</EmptyState>
+    <EmptyState>Este recurso no está habilitado en ninguna actividad.</EmptyState>
   );
 
   const missionsContent = missions.length ? (
@@ -104,7 +108,7 @@ export function DeviceRelationsModal({
             <RelationHeader>
               <div>
                 <RelationId>{mission.id}</RelationId>
-                <strong>{game?.title ?? "Juego no disponible"}</strong>
+                <strong>{game?.title ?? "Actividad no disponible"}</strong>
               </div>
               <RelationBadges>
                 <span>{mission.status}</span>
@@ -117,10 +121,10 @@ export function DeviceRelationsModal({
                   <span className="mission-link-warning">Sin contenido vinculado</span>
                 )}
                 {!links.hasCopy && (
-                  <span className="mission-link-warning">Sin copia vinculada</span>
+                  <span className="mission-link-warning">Sin modalidad vinculada</span>
                 )}
                 {!links.hasPlaythrough && (
-                  <span className="mission-link-warning">Sin partida vinculada</span>
+                  <span className="mission-link-warning">Sin recorrido vinculado</span>
                 )}
               </div>
             )}
@@ -130,11 +134,11 @@ export function DeviceRelationsModal({
                 <dd>{mission.contentTitle}</dd>
               </div>
               <div>
-                <dt>Copia</dt>
+                <dt>Modalidad</dt>
                 <dd>{copy?.library ?? "Por confirmar"}</dd>
               </div>
               <div>
-                <dt>Dispositivo</dt>
+                <dt>Recurso</dt>
                 <dd>
                   {mission.activeDeviceId
                     ? deviceName(data, mission.activeDeviceId)
@@ -156,17 +160,17 @@ export function DeviceRelationsModal({
       })}
     </section>
   ) : (
-    <EmptyState>Este dispositivo no tiene misiones activas.</EmptyState>
+    <EmptyState>Este recurso no tiene misiones activas.</EmptyState>
   );
 
   const isGamesView = view === "games";
   const count = isGamesView ? games.length : missions.length;
-  const label = isGamesView ? "juegos" : "misiones";
+  const label = isGamesView ? "actividades" : "misiones";
 
   return (
     <Modal
       size={isGamesView ? "large" : "default"}
-      eyebrow={isGamesView ? "JUEGOS HABILITADOS" : "MISIONES ACTIVAS"}
+      eyebrow={isGamesView ? "ACTIVIDADES HABILITADAS" : "MISIONES ACTIVAS"}
       title={`${device.name} · ${count} ${label}`}
       onClose={onClose}
     >

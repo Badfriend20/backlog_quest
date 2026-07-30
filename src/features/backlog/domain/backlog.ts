@@ -1,14 +1,14 @@
 import type {
   ActivityItem,
-  BacklogData,
+  QuestData,
   CompletionFormValue,
   ContentType,
-  Game,
+  Activity,
   MissionFormValue,
   QueueItem,
   QueueState,
-} from "../../../shared/kernel/backlog";
-import { nextGeneratedId } from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/quest";
+import { nextGeneratedId } from "../../../shared/kernel/questSelectors";
 import { findScheduleConflicts, normalizeScheduleSessions } from "../../../shared/kernel/schedule";
 
 function nowIso(): string {
@@ -19,7 +19,7 @@ function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function touch(data: BacklogData): BacklogData {
+function touch(data: QuestData): QuestData {
   const queue = data.queue.map(item => {
     if (!["queued", "blocked"].includes(item.state)) return item;
     const game = data.games.find(candidate => candidate.id === item.gameId);
@@ -34,7 +34,7 @@ function touch(data: BacklogData): BacklogData {
   return { ...data, queue, meta: { ...data.meta, updatedAt: nowIso() } };
 }
 
-function withActivity(data: BacklogData, item: Omit<ActivityItem, "id" | "at">): BacklogData {
+function withActivity(data: QuestData, item: Omit<ActivityItem, "id" | "at">): QuestData {
   const activity: ActivityItem = {
     id: nextGeneratedId(
       "A",
@@ -81,11 +81,15 @@ function moveQueue(
   return applyPinnedPositions(without.map((item, index) => ({ ...item, position: index + 1 })));
 }
 
-function updateGame(data: BacklogData, gameId: string, updater: (game: Game) => Game): BacklogData {
+function updateGame(
+  data: QuestData,
+  gameId: string,
+  updater: (game: Activity) => Activity
+): QuestData {
   return { ...data, games: data.games.map(game => (game.id === gameId ? updater(game) : game)) };
 }
 
-function queuePosition(data: BacklogData, gameId: string): number {
+function queuePosition(data: QuestData, gameId: string): number {
   return data.queue.find(item => item.gameId === gameId)?.position ?? data.queue.length;
 }
 
@@ -102,26 +106,26 @@ function replayTarget(intent: CompletionFormValue["replayIntent"], length: numbe
 }
 
 function replayReason(intent: CompletionFormValue["replayIntent"]): string {
-  if (intent === "yes") return "Terminado; marcado para rejugada futura.";
-  if (intent === "maybe") return "Terminado; quizá se rejuegue más adelante.";
-  return "Terminado; sin intención actual de rejugarlo.";
+  if (intent === "yes") return "Terminado; marcado para repetición futura.";
+  if (intent === "maybe") return "Terminado; quizá se repita más adelante.";
+  return "Terminado; sin intención actual de repetirlo.";
 }
 
 function activeGameStatus(contentType: ContentType, slotId: string): string {
-  if (contentType === "replay") return "Rejugando";
-  if (slotId === "secondary") return "Jugando secundario";
-  return "Jugando";
+  if (contentType === "replay") return "Repitiendo";
+  if (slotId === "secondary") return "En curso secundario";
+  return "En curso";
 }
 
 function setMissionPausedState(
-  data: BacklogData,
+  data: QuestData,
   missionId: string,
   missionStatus: "paused" | "deferred" | "abandoned",
   gameStatus: string,
   queueState: QueueState,
   targetPosition: number,
   description: string
-): BacklogData {
+): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -179,7 +183,7 @@ function setMissionPausedState(
   return touch(next);
 }
 
-export function pauseMission(data: BacklogData, missionId: string): BacklogData {
+export function pauseMission(data: QuestData, missionId: string): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -194,7 +198,7 @@ export function pauseMission(data: BacklogData, missionId: string): BacklogData 
   );
 }
 
-export function deferMission(data: BacklogData, missionId: string): BacklogData {
+export function deferMission(data: QuestData, missionId: string): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -209,7 +213,7 @@ export function deferMission(data: BacklogData, missionId: string): BacklogData 
   );
 }
 
-export function sendMissionToEnd(data: BacklogData, missionId: string): BacklogData {
+export function sendMissionToEnd(data: QuestData, missionId: string): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -224,7 +228,7 @@ export function sendMissionToEnd(data: BacklogData, missionId: string): BacklogD
   );
 }
 
-export function abandonMission(data: BacklogData, missionId: string): BacklogData {
+export function abandonMission(data: QuestData, missionId: string): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -240,10 +244,10 @@ export function abandonMission(data: BacklogData, missionId: string): BacklogDat
 }
 
 export function finishMission(
-  data: BacklogData,
+  data: QuestData,
   missionId: string,
   form: CompletionFormValue
-): BacklogData {
+): QuestData {
   const mission = data.missions.find(item => item.id === missionId);
   if (!mission) return data;
   const game = data.games.find(item => item.id === mission.gameId);
@@ -263,7 +267,7 @@ export function finishMission(
         "P",
         data.games.flatMap(item => item.playthroughs.map(play => play.id))
       );
-  let next: BacklogData = {
+  let next: QuestData = {
     ...data,
     missions: data.missions.map(item =>
       item.id === missionId
@@ -362,12 +366,12 @@ export function finishMission(
 }
 
 function updateOrCreatePlaythrough(
-  data: BacklogData,
-  game: Game,
+  data: QuestData,
+  game: Activity,
   missionId: string | null,
   form: MissionFormValue,
   contentId: string
-): { playthroughId: string; game: Game } {
+): { playthroughId: string; game: Activity } {
   const content = game.contents.find(item => item.id === contentId);
   if (!content) throw new Error(`Contenido inexistente: ${contentId}`);
   const existingMission = missionId
@@ -395,7 +399,7 @@ function updateOrCreatePlaythrough(
                 contentId,
                 contentTitle: content.title,
                 contentType: content.type,
-                status: "Jugando",
+                status: "En curso",
                 finishedAt: null,
               }
             : play
@@ -423,7 +427,7 @@ function updateOrCreatePlaythrough(
           contentId,
           contentTitle: content.title,
           contentType: content.type,
-          status: "Jugando",
+          status: "En curso",
           startedAt: today(),
           finishedAt: null,
           notes: form.notes,
@@ -434,10 +438,10 @@ function updateOrCreatePlaythrough(
 }
 
 export function activateMission(
-  original: BacklogData,
+  original: QuestData,
   form: MissionFormValue,
   existingMissionId: string | null = null
-): BacklogData {
+): QuestData {
   let data = original;
   const sessions = normalizeScheduleSessions(form.sessions);
   const conflicts = findScheduleConflicts(data, sessions, existingMissionId ?? undefined);
@@ -490,7 +494,7 @@ export function activateMission(
     notes: form.notes,
   };
 
-  let next: BacklogData = {
+  let next: QuestData = {
     ...data,
     missions: existingMission
       ? data.missions.map(item => (item.id === existingMission.id ? mission : item))
@@ -530,7 +534,7 @@ export function activateMission(
             notes: form.notes || item.notes,
             progress: { ...item.progress, chapter: content.title, lastPlayedAt: today() },
             copies: item.copies.map(currentCopy =>
-              currentCopy.id === form.copyId ? { ...currentCopy, status: "Jugando" } : currentCopy
+              currentCopy.id === form.copyId ? { ...currentCopy, status: "En uso" } : currentCopy
             ),
             contents: item.contents.map(current =>
               current.id === contentId
@@ -554,11 +558,7 @@ export function activateMission(
   return touch(next);
 }
 
-export function moveQueueOneStep(
-  data: BacklogData,
-  gameId: string,
-  direction: -1 | 1
-): BacklogData {
+export function moveQueueOneStep(data: QuestData, gameId: string, direction: -1 | 1): QuestData {
   const current = data.queue.find(item => item.gameId === gameId);
   if (!current || current.pinned) return data;
   const queue = moveQueue(data.queue, gameId, current.position + direction, current.state);
@@ -576,8 +576,8 @@ export function moveQueueOneStep(
 }
 
 export function updatePreferences(
-  data: BacklogData,
-  patch: Partial<BacklogData["preferences"]>
-): BacklogData {
+  data: QuestData,
+  patch: Partial<QuestData["preferences"]>
+): QuestData {
   return touch({ ...data, preferences: { ...data.preferences, ...patch } });
 }

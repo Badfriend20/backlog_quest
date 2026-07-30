@@ -1,4 +1,4 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { DevicesScope } from "./DevicesStyles";
 
 export function DeviceMultiSelect({
@@ -6,7 +6,7 @@ export function DeviceMultiSelect({
   selectedIds,
   onChange,
 }: {
-  data: BacklogData;
+  data: QuestData;
   selectedIds: string[];
   onChange: (ids: string[]) => void;
 }) {
@@ -16,7 +16,7 @@ export function DeviceMultiSelect({
   return (
     <DevicesScope>
       <fieldset className="device-selector">
-        <legend className="visually-hidden">Dispositivos disponibles</legend>
+        <legend className="visually-hidden">Recursos disponibles</legend>
         {platforms.map(platform => (
           <label
             className={
@@ -38,7 +38,7 @@ export function DeviceMultiSelect({
             <span>{platform.name}</span>
           </label>
         ))}
-        {!platforms.length && <small>No hay dispositivos activos en Configuración.</small>}
+        {!platforms.length && <small>No hay recursos activos en Configuración.</small>}
       </fieldset>
     </DevicesScope>
   );

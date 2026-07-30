@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { AppView } from "../../../shared/kernel/backlog";
-import { NavigationItems, NAV_ITEMS } from "./NavigationItems";
+import type { AppView } from "../../../shared/kernel/quest";
+import { useVocabulary } from "../../../shared/vocabulary";
+import { NavigationItems, navigationItems } from "./NavigationItems";
 
 interface AppNavigationProps {
   activeView: AppView;
@@ -8,6 +9,7 @@ interface AppNavigationProps {
 }
 
 export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigationProps>) {
+  const terms = useVocabulary();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigationId = useId();
   const headerRef = useRef<HTMLElement>(null);
@@ -72,7 +74,7 @@ export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigation
             </span>
             <div>
               <strong>Backlog Quest</strong>
-              <small>{NAV_ITEMS.find(item => item.id === activeView)?.label}</small>
+              <small>{navigationItems(terms).find(item => item.id === activeView)?.label}</small>
             </div>
           </div>
           <button

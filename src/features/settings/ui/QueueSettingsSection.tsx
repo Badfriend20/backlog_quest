@@ -1,4 +1,4 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { SettingsCard } from "./SettingsStyles";
@@ -7,7 +7,7 @@ export function QueueSettingsSection({
   data,
   onChange,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onChange: SettingsChangeHandler;
 }) {
   return (

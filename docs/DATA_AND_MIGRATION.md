@@ -2,6 +2,22 @@
 
 ## Estado inicial y privacidad
 
+Las preferencias incluyen `vocabularyProfile` y `customVocabulary`. Los respaldos anteriores que no
+los contienen se normalizan al perfil `generic`; un término personalizado vacío usa el valor
+genérico de respaldo.
+
+Los estados de actividad se conservan como valores compatibles en los respaldos. La presentación
+reconoce tanto los estados neutrales actuales (`En curso`, `Repitiendo`) como los alias históricos
+(`Jugando`, `Rejugando`) y muestra la etiqueta del perfil activo sin reescribir el dato importado.
+
+`catalogs.ownership` es un catálogo de opciones nuevas, no una tabla referenciada por ID. Al quitar
+una forma de acceso, las modalidades existentes conservan su campo `ownership`; las reglas visuales
+y presets que dependían de la opción eliminada se descartan. Un catálogo vacío es válido y usa
+`Por definir` en formularios nuevos.
+
+`customTheme` incorpora colores independientes para `background`, `container` y `sidebar`. Los
+respaldos anteriores reciben valores compatibles durante la normalización.
+
 El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y preferencias estructurales. Juegos, lista, misiones, dispositivos, plataformas de copia, actividad y presets rápidos comienzan vacíos.
 
 `meta.owner` dejó de formar parte del modelo. Los respaldos antiguos que lo incluyan siguen siendo válidos, pero la normalización lo descarta para que no vuelva a persistirse ni exportarse.
@@ -20,9 +36,24 @@ Cada regla de agenda guarda `sessions`: una lista de combinaciones `{ weekday, s
 
 - `backlog-quest:data:v2` como clave actual;
 - `backlog-quest:data:v1` como fallback heredado;
+- `backlog-quest:demo-snapshot:v2` como respaldo aislado de una sesión de demostración;
 - el JSON incluido si no hay respaldo local válido.
 
 La UI recibe el adaptador desde `app/composition`; no accede directamente a localStorage.
+
+## Datos de demostración
+
+`public/examples` contiene seis respaldos v2 segmentados: genérico, videojuegos, lectura,
+aprendizaje, proyectos y personalizado/cocina. Cada archivo tiene 15 actividades ficticias y
+combina modalidades, formas de acceso, recursos, contenidos, recorridos, estados de lista,
+misiones y reglas de calendario. `npm run generate:examples` los regenera de forma determinista y
+las pruebas los recorren por el mismo adaptador de migración usado por la importación.
+
+Iniciar una demostración guarda una copia estructural del estado actual en
+`backlog-quest:demo-snapshot:v2`. Cargar otro ejemplo reutiliza ese primer respaldo. La sesión
+persiste al recargar la aplicación; **Restaurar mis datos** recupera el respaldo y elimina la clave
+temporal. **Conservar demo como mis datos** mantiene el ejemplo actual y elimina el respaldo sólo
+después de una confirmación.
 
 ## Importación
 

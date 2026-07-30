@@ -1,4 +1,5 @@
 import { Button, WarningList } from "../../../shared/ui";
+import { useVocabulary } from "../../../shared/vocabulary";
 
 export function MissionLinkActions({
   hasContent,
@@ -17,6 +18,7 @@ export function MissionLinkActions({
   onAddCopy(): void;
   onAddPlaythrough(): void;
 }) {
+  const terms = useVocabulary();
   if (hasContent && hasCopy && hasPlaythrough) return null;
 
   return (
@@ -28,7 +30,7 @@ export function MissionLinkActions({
           className="mission-link-warning"
           onClick={onManageContents}
         >
-          Sin contenido · administrar contenidos
+          Sin {terms.content} · administrar {terms.contents}
         </Button>
       )}
       {!hasCopy && (
@@ -38,7 +40,7 @@ export function MissionLinkActions({
           className="mission-link-warning"
           onClick={onAddCopy}
         >
-          Sin copia · agregar copia
+          Sin {terms.variant} · agregar {terms.variant}
         </Button>
       )}
       {!hasPlaythrough && (
@@ -49,12 +51,12 @@ export function MissionLinkActions({
           disabled={!canCreatePlaythrough}
           title={
             canCreatePlaythrough
-              ? "Agregar y vincular una partida"
-              : "Agrega una copia y un contenido antes de crear una partida."
+              ? `Agregar y vincular un ${terms.journey}`
+              : `Agrega una ${terms.variant} y un ${terms.content} antes de crear un ${terms.journey}.`
           }
           onClick={onAddPlaythrough}
         >
-          Sin partida · agregar partida
+          Sin {terms.journey} · agregar {terms.journey}
         </Button>
       )}
     </WarningList>

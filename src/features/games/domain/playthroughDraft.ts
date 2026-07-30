@@ -1,11 +1,11 @@
-import type { BacklogData, Game, Playthrough } from "../../../shared/kernel/backlog";
-import { copyDeviceIds, deviceName } from "../../../shared/kernel/backlogSelectors";
+import type { QuestData, Activity, Journey } from "../../../shared/kernel/quest";
+import { copyDeviceIds, deviceName } from "../../../shared/kernel/questSelectors";
 
 const UNKNOWN_LABEL = "Por confirmar";
 
 export function createPlaythroughDraft(
-  data: BacklogData,
-  game: Game,
+  data: QuestData,
+  game: Activity,
   {
     id,
     preferredCopyId,
@@ -17,7 +17,7 @@ export function createPlaythroughDraft(
     contentId?: string;
     startedAt?: string | null;
   }
-): Playthrough | undefined {
+): Journey | undefined {
   const copy = game.copies.find(item => item.id === preferredCopyId) ?? game.copies[0];
   const content = game.contents.find(item => item.id === contentId) ?? game.contents[0];
   if (!copy || !content) return undefined;
@@ -28,7 +28,7 @@ export function createPlaythroughDraft(
     platform: copy.library || UNKNOWN_LABEL,
     device: deviceId ? deviceName(data, deviceId) : UNKNOWN_LABEL,
     deviceId,
-    status: contentId ? "Jugando" : "Pendiente",
+    status: contentId ? "En curso" : "Pendiente",
     startedAt,
     finishedAt: null,
     notes: "",

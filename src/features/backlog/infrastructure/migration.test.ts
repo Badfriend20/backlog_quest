@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import defaultBacklogJson from "../../../data/backlog.json";
-import { quickCopyKey } from "../../../shared/kernel/backlogSelectors";
+import { quickCopyKey } from "../../../shared/kernel/questSelectors";
 import { withBacklogFixture } from "../../../shared/testing/backlogFixture";
 import { migrateBacklog } from "./migration";
 
-describe("normalizaciÃ³n del estado inicial", () => {
-  it("mantiene un estado anÃ³nimo y sin actividad personal", () => {
+describe("normalización del estado inicial", () => {
+  it("mantiene un estado anónimo y sin actividad personal", () => {
     const migrated = migrateBacklog(defaultBacklogJson);
 
     expect(migrated.games).toEqual([]);
@@ -16,9 +16,26 @@ describe("normalizaciÃ³n del estado inicial", () => {
     expect(migrated.preferences.quickCopyPresets).toEqual([]);
     expect(migrated.preferences.quickCopyPresetsReady).toBe(false);
     expect("owner" in migrated.meta).toBe(false);
+    expect(migrated.preferences.vocabularyProfile).toBe("generic");
+    expect(migrated.preferences.customVocabulary).toEqual({});
+    expect(migrated.preferences.customTheme.container).toBeTruthy();
+    expect(migrated.preferences.customTheme.sidebar).toBeTruthy();
   });
 
-  it("conserva presets globales configurados explÃ­citamente", () => {
+  it("no aplica posiciones personales a identificadores heredados", () => {
+    const backup = withBacklogFixture(migrateBacklog(defaultBacklogJson));
+    backup.games[0].id = "G121";
+    backup.queue = backup.queue.filter(item => item.gameId !== "G121");
+
+    const migrated = migrateBacklog(backup);
+    const item = migrated.queue.find(candidate => candidate.gameId === "G121");
+
+    expect(item?.pinned).toBe(false);
+    expect(item?.pinnedPosition).toBeNull();
+    expect(item?.preferredSlotId).toBe("flexible");
+  });
+
+  it("conserva presets globales configurados explícitamente", () => {
     const backup = migrateBacklog(defaultBacklogJson);
     backup.catalogs.platforms = [{ id: "platform-steam", name: "Steam", active: true }];
     backup.preferences.quickCopyPresets = [

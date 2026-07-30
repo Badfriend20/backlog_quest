@@ -1,9 +1,9 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { Eyebrow } from "../../../shared/ui";
 import { SettingsCard } from "./SettingsStyles";
-import { activeMissions } from "../../../shared/kernel/backlogSelectors";
+import { activeMissions } from "../../../shared/kernel/questSelectors";
 
-export function StorageSettingsSection({ data }: { data: BacklogData }) {
+export function StorageSettingsSection({ data }: { data: QuestData }) {
   return (
     <SettingsCard>
       <Eyebrow>ALMACENAMIENTO</Eyebrow>
@@ -14,7 +14,7 @@ export function StorageSettingsSection({ data }: { data: BacklogData }) {
           <dd>v{data.schemaVersion}</dd>
         </div>
         <div>
-          <dt>Juegos</dt>
+          <dt>Actividades</dt>
           <dd>{data.games.length}</dd>
         </div>
         <div>

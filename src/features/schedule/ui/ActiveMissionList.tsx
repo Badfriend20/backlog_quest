@@ -1,9 +1,9 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import {
   activeMissions,
   deviceName,
   missionLinkState,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { missionScheduleLabel } from "../../../shared/kernel/schedule";
 import { Button, EmptyState, Eyebrow, SectionHeading } from "../../../shared/ui";
 import { MissionLinkActions } from "../../missions";
@@ -15,7 +15,7 @@ export function ActiveMissionList({
   onAddCopyForMission,
   onAddPlaythroughForMission,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onEditMission(missionId: string): void;
   onManageContentsForMission(missionId: string): void;
   onAddCopyForMission(missionId: string): void;
@@ -48,7 +48,7 @@ export function ActiveMissionList({
               key={mission.id}
             >
               <div>
-                <strong>{game?.title ?? "Juego no disponible"}</strong>
+                <strong>{game?.title ?? "Actividad no disponible"}</strong>
                 <span>{mission.contentTitle}</span>
                 <MissionLinkActions
                   hasContent={links.hasContent}

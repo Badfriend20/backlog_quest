@@ -1,8 +1,16 @@
 import { useState } from "react";
-import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
-import { activeMissions, copyDeviceIds, normalize } from "../../../shared/kernel/backlogSelectors";
-import { Button, Callout, CardTopline, PriorityChip, StatusChip } from "../../../shared/ui";
+import type { QuestData, Resource } from "../../../shared/kernel/quest";
+import { activeMissions, copyDeviceIds, normalize } from "../../../shared/kernel/questSelectors";
+import {
+  Button,
+  Callout,
+  CardSurface,
+  CardTopline,
+  PriorityChip,
+  StatusChip,
+} from "../../../shared/ui";
 import { DeviceRelationsModal } from "./DeviceRelationsModal";
+import { useVocabulary } from "../../../shared/vocabulary";
 
 type RelationView = "games" | "missions" | null;
 
@@ -13,12 +21,13 @@ export function DeviceCard({
   onSelectGame,
   onEditMission,
 }: {
-  data: BacklogData;
-  device: Platform;
+  data: QuestData;
+  device: Resource;
   onEdit(): void;
   onSelectGame(id: string): void;
   onEditMission(id: string): void;
 }) {
+  const terms = useVocabulary();
   const [relationView, setRelationView] = useState<RelationView>(null);
   const games = data.games
     .map(game => ({
@@ -35,7 +44,7 @@ export function DeviceCard({
 
   return (
     <>
-      <article className="platform-card">
+      <CardSurface className="platform-card">
         <CardTopline>
           <StatusChip tone="status-purple">{device.kind}</StatusChip>
           <PriorityChip>{device.priority}</PriorityChip>
@@ -53,10 +62,10 @@ export function DeviceCard({
 
         <div className="platform-metrics">
           <button type="button" aria-haspopup="dialog" onClick={() => setRelationView("games")}>
-            <strong>{games.length}</strong> juegos
+            <strong>{games.length}</strong> {terms.activities}
           </button>
           <button type="button" aria-haspopup="dialog" onClick={() => setRelationView("missions")}>
-            <strong>{missions.length}</strong> misiones
+            <strong>{missions.length}</strong> {terms.missions}
           </button>
         </div>
 
@@ -73,7 +82,7 @@ export function DeviceCard({
         <div className="platform-card-actions">
           <Button onClick={onEdit}>Editar</Button>
         </div>
-      </article>
+      </CardSurface>
 
       {relationView && (
         <DeviceRelationsModal

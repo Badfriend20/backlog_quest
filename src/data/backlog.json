@@ -9,6 +9,8 @@
   },
   "preferences": {
     "theme": "midnight",
+    "vocabularyProfile": "generic",
+    "customVocabulary": {},
     "hidePrivateByDefault": true,
     "activeView": "dashboard",
     "activeSlotProfileId": "day-night",
@@ -93,27 +95,27 @@
     "statuses": [
       {
         "id": "wishlist",
-        "label": "Wishlist",
+        "label": "Pendiente de acceso",
         "color": "pink",
-        "description": "Juego que todavía no tienes o no está disponible en tu biblioteca."
+        "description": "Actividad que todavía no está disponible en tu colección."
       },
       {
         "id": "next-release",
-        "label": "Próximo lanzamiento",
+        "label": "Próxima disponibilidad",
         "color": "cyan",
-        "description": "Todavía no se puede jugar; permanece en espera hasta su fecha de disponibilidad."
+        "description": "Todavía no puede realizarse; permanece en espera hasta su fecha de disponibilidad."
       },
       {
         "id": "available",
         "label": "Disponible",
         "color": "yellow",
-        "description": "Tienes acceso al juego, pero no hay una misión activa."
+        "description": "Tienes acceso a la actividad, pero no hay una misión activa."
       },
       {
         "id": "queued",
         "label": "En lista",
         "color": "slate",
-        "description": "Está considerado para jugarse más adelante."
+        "description": "Está considerada para realizarse más adelante."
       },
       {
         "id": "queued-now",
@@ -123,21 +125,21 @@
       },
       {
         "id": "playing",
-        "label": "Jugando",
+        "label": "En curso",
         "color": "green",
-        "description": "Campaña o recorrido principal activo."
+        "description": "Recorrido principal activo."
       },
       {
         "id": "playing-secondary",
-        "label": "Jugando secundario",
+        "label": "En curso secundario",
         "color": "blue",
-        "description": "Misión activa con menor frecuencia que la campaña principal."
+        "description": "Misión activa con menor frecuencia que el recorrido principal."
       },
       {
         "id": "replaying",
-        "label": "Rejugando",
+        "label": "Repitiendo",
         "color": "pink",
-        "description": "Nuevo recorrido de un juego que ya terminaste antes."
+        "description": "Nuevo recorrido de una actividad que ya terminaste antes."
       },
       {
         "id": "paused",
@@ -161,17 +163,17 @@
         "id": "abandoned",
         "label": "Abandonado",
         "color": "red",
-        "description": "La partida se cerró sin intención actual de continuarla."
+        "description": "El recorrido se cerró sin intención actual de continuarlo."
       },
       {
         "id": "unlikely",
-        "label": "Probablemente no lo juegue",
+        "label": "Al final",
         "color": "gray",
-        "description": "Permanece en la biblioteca, pero está al final de las prioridades."
+        "description": "Permanece en la colección, pero está al final de las prioridades."
       },
       {
         "id": "watching",
-        "label": "En la mira",
+        "label": "En consideración",
         "color": "violet",
         "description": "Te interesa, aunque todavía no forma parte de la lista prioritaria."
       }
@@ -199,7 +201,13 @@
       }
     ],
     "platforms": [],
-    "ownership": ["Propio", "Biblioteca familiar", "Suscripción", "Gratis/regalo", "Wishlist"],
+    "ownership": [
+      "Acceso propio",
+      "Acceso compartido",
+      "Suscripción",
+      "Gratuito/regalo",
+      "Pendiente de acceso"
+    ],
     "deviceKinds": ["handheld", "console", "console-handheld", "computer", "emulation"],
     "queueStates": [
       {
@@ -224,23 +232,23 @@
       },
       {
         "id": "replay",
-        "label": "Rejugada futura",
-        "description": "Terminado y con intención clara de rejugarlo."
+        "label": "Repetición futura",
+        "description": "Terminado y con intención clara de repetirlo."
       },
       {
         "id": "replay-later",
-        "label": "Quizá rejugar",
+        "label": "Quizá repetir",
         "description": "Podría volver a jugarse, pero no pronto."
       },
       {
         "id": "archived",
         "label": "Archivado",
-        "description": "Terminado sin intención actual de rejugarlo."
+        "description": "Terminado sin intención actual de repetirlo."
       },
       {
         "id": "low-interest",
         "label": "Al final",
-        "description": "No interesa actualmente, aunque sigue en la biblioteca."
+        "description": "No interesa actualmente, aunque sigue en la colección."
       },
       {
         "id": "blocked",

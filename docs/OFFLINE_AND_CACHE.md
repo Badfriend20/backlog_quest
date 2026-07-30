@@ -20,7 +20,9 @@ El plugin usa la estrategia `generateSW` y durante `npm run build` produce:
 
 `registerType: "prompt"` descarga la versión nueva y la deja en espera. `PwaUpdatePrompt` muestra el aviso **Hay una actualización disponible** y el botón **Actualizar**; al pulsarlo, el worker nuevo toma el control y la página se recarga. Workbox elimina las entradas obsoletas.
 
-Las navegaciones usan `index.html` como fallback. Workbox incluye HTML, JavaScript y CSS; el plugin agrega el manifiesto y sus iconos sin duplicarlos. Los sourcemaps se excluyen.
+Las navegaciones usan `index.html` como fallback. Workbox incluye HTML, JavaScript, CSS y los JSON
+de demostración; el plugin agrega el manifiesto y sus iconos sin duplicarlos. Los sourcemaps se
+excluyen.
 
 ## Comandos
 

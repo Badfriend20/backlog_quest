@@ -8,9 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
+    "generate:examples": "node scripts/generate-example-backlogs.mjs",
+    "check:text": "node scripts/check-text-encoding.mjs",
     "check:architecture": "node scripts/check-architecture.mjs",
     "check:pages": "node scripts/check-pages-deployment.mjs",
-    "validate": "npm run format:check && npm run lint && npm run test && npm run check:architecture && npm run build && npm run check:pages",
+    "validate": "npm run format:check && npm run lint && npm run check:text && npm run test && npm run check:architecture && npm run build && npm run check:pages",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

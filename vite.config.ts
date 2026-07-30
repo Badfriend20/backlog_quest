@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: "Backlog Quest",
         short_name: "BacklogQuest",
-        description: "Seguimiento gamer local, portable y sin nube.",
+        description: "Planificación de actividades local, portable y sin nube.",
         lang: "es",
         start_url: "./",
         scope: "./",
@@ -48,7 +48,7 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
-        globPatterns: ["**/*.{html,js,css}"],
+        globPatterns: ["**/*.{html,js,css,json}"],
         globIgnores: ["**/*.map"],
         navigateFallback: "index.html",
         sourcemap: false,

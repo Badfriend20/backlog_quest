@@ -1,12 +1,13 @@
 import { useState } from "react";
-import type { BacklogData, QuickCopyPreset } from "../../../shared/kernel/backlog";
+import type { QuestData, QuickVariantPreset } from "../../../shared/kernel/quest";
 import {
   CROSS_COPY_PROGRESS_HELP,
   CROSS_COPY_PROGRESS_OPTIONS,
+  accessMethodOptions,
   getSlotLabel,
   quickCopyKey,
   quickCopyLabel,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import {
   Button,
   EmptyState,
@@ -25,20 +26,21 @@ export function QuickCopyModal({
   onUse,
   onClose,
 }: {
-  data: BacklogData;
-  presets: QuickCopyPreset[];
+  data: QuestData;
+  presets: QuickVariantPreset[];
   existingKeys: Set<string>;
-  onUse: (preset: QuickCopyPreset) => void;
+  onUse: (preset: QuickVariantPreset) => void;
   onClose: () => void;
 }) {
   const platforms = data.catalogs.platforms.filter(platform => platform.active);
   const [platformId, setPlatformId] = useState(platforms[0]?.id ?? "");
   const library = platforms.find(platform => platform.id === platformId)?.name ?? "";
-  const [ownership, setOwnership] = useState("Propio");
+  const ownershipOptions = accessMethodOptions(data.catalogs.ownership);
+  const [ownership, setOwnership] = useState(ownershipOptions[0]);
   const [priority, setPriority] = useState("Media");
   const [idealSession, setIdealSession] = useState(getSlotLabel(data, "flexible"));
   const [crossCopyProgress, setCrossCopyProgress] =
-    useState<QuickCopyPreset["crossCopyProgress"]>("unknown");
+    useState<QuickVariantPreset["crossCopyProgress"]>("unknown");
   const [notes, setNotes] = useState("");
   function createCustom() {
     if (!library || existingKeys.has(quickCopyKey(library, ownership, platformId))) return;
@@ -56,7 +58,7 @@ export function QuickCopyModal({
     );
   }
   return (
-    <Modal title="Opciones de agregado rápido" eyebrow="BIBLIOTECA + PROPIEDAD" onClose={onClose}>
+    <Modal title="Opciones de agregado rápido" eyebrow="CANAL + FORMA DE ACCESO" onClose={onClose}>
       <div className="quick-option-list">
         {presets.map(preset => {
           const exists = existingKeys.has(preset.key);
@@ -80,7 +82,8 @@ export function QuickCopyModal({
           <Eyebrow>NUEVA COMBINACIÓN</Eyebrow>
           <h3>Configurar y agregar</h3>
           <p>
-            Al guardar el juego, esta combinación aparecerá primero en futuros agregados rápidos.
+            Al guardar la actividad, esta combinación aparecerá primero en futuros agregados
+            rápidos.
           </p>
         </div>
         <FormGrid $compact>
@@ -98,7 +101,7 @@ export function QuickCopyModal({
           <label>
             <span>Propiedad</span>
             <select value={ownership} onChange={event => setOwnership(event.target.value)}>
-              {data.catalogs.ownership.map(item => (
+              {ownershipOptions.map(item => (
                 <option key={item}>{item}</option>
               ))}
             </select>
@@ -121,11 +124,11 @@ export function QuickCopyModal({
             </select>
           </label>
           <label>
-            <HelpTooltip label="Progreso entre copias" tooltip={CROSS_COPY_PROGRESS_HELP} />
+            <HelpTooltip label="Progreso entre modalidades" tooltip={CROSS_COPY_PROGRESS_HELP} />
             <select
               value={crossCopyProgress}
               onChange={event =>
-                setCrossCopyProgress(event.target.value as QuickCopyPreset["crossCopyProgress"])
+                setCrossCopyProgress(event.target.value as QuickVariantPreset["crossCopyProgress"])
               }
             >
               {CROSS_COPY_PROGRESS_OPTIONS.map(option => (
@@ -148,7 +151,7 @@ export function QuickCopyModal({
           disabled={!library || existingKeys.has(quickCopyKey(library, ownership, platformId))}
           onClick={createCustom}
         >
-          Agregar esta copia
+          Agregar esta modalidad
         </Button>
       </ModalActions>
     </Modal>

@@ -33,7 +33,7 @@ export const HistoryScope = styled.div`
     text-transform: uppercase;
   }
   td {
-    color: #ddd6ea;
+    color: var(--text);
     font-size: 0.85rem;
   }
   .mobile-scroll-hint {

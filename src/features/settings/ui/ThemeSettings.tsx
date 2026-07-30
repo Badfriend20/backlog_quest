@@ -1,10 +1,12 @@
-import type { AppPreferences, ThemeColors } from "../../../shared/kernel/backlog";
-import { Eyebrow } from "../../../shared/ui";
+import type { AppPreferences, ThemeColors } from "../../../shared/kernel/quest";
+import { Eyebrow, SelectableCardButton } from "../../../shared/ui";
 import { THEMES } from "../domain/themes";
 import { SettingsCard, SettingsSectionHeading } from "./SettingsStyles";
 
 const COLOR_FIELDS: Array<{ key: keyof ThemeColors; label: string }> = [
-  { key: "background", label: "Fondo" },
+  { key: "background", label: "Fondo exterior" },
+  { key: "container", label: "Contenedor principal" },
+  { key: "sidebar", label: "Barra lateral" },
   { key: "panel", label: "Panel" },
   { key: "panelAlt", label: "Panel secundario" },
   { key: "border", label: "Bordes" },
@@ -41,9 +43,8 @@ export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
       </SettingsSectionHeading>
       <div className="theme-grid">
         {THEMES.map(theme => (
-          <button
-            type="button"
-            className={preferences.theme === theme.id ? "theme-option selected" : "theme-option"}
+          <SelectableCardButton
+            $selected={preferences.theme === theme.id}
             key={theme.id}
             onClick={() => onChange({ theme: theme.id }, `Tema ${theme.label} aplicado.`)}
           >
@@ -54,11 +55,10 @@ export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
             </span>
             <strong>{theme.label}</strong>
             <small>{theme.description}</small>
-          </button>
+          </SelectableCardButton>
         ))}
-        <button
-          type="button"
-          className={preferences.theme === "custom" ? "theme-option selected" : "theme-option"}
+        <SelectableCardButton
+          $selected={preferences.theme === "custom"}
           onClick={() => onChange({ theme: "custom" }, "Tema personalizado aplicado.")}
         >
           <span className="theme-swatches" aria-hidden="true">
@@ -68,7 +68,7 @@ export function ThemeSettings({ preferences, onChange }: ThemeSettingsProps) {
           </span>
           <strong>Personalizado</strong>
           <small>Colores elegidos manualmente.</small>
-        </button>
+        </SelectableCardButton>
       </div>
       {preferences.theme === "custom" && (
         <div className="color-grid">

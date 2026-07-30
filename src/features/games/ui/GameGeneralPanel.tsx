@@ -1,16 +1,18 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { FormGrid } from "../../../shared/ui";
-import { getSlotLabel } from "../../../shared/kernel/backlogSelectors";
+import { getSlotLabel } from "../../../shared/kernel/questSelectors";
 import type { GameEditorController } from "./useGameEditor";
 import { GameContentsSection } from "./GameContentsSection";
+import { activityStatusLabel, capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function GameGeneralPanel({
   data,
   editor,
 }: {
-  data: BacklogData;
+  data: QuestData;
   editor: GameEditorController;
 }) {
+  const terms = useVocabulary();
   const { draft, setDraft, patch } = editor;
   const dependencyOptions = data.games
     .filter(game => game.id !== draft.id)
@@ -43,7 +45,7 @@ export function GameGeneralPanel({
         <select value={draft.status} onChange={event => patch("status", event.target.value)}>
           {data.catalogs.statuses.map(item => (
             <option key={item.id} value={item.label}>
-              {item.label}
+              {activityStatusLabel(item.label, terms)}
             </option>
           ))}
         </select>
@@ -80,7 +82,7 @@ export function GameGeneralPanel({
               progress: { ...current.progress, chapter: event.target.value },
             }))
           }
-          placeholder="Acto, capítulo, DLC…"
+          placeholder="Etapa, capítulo, módulo…"
         />
       </label>
       <label>
@@ -102,7 +104,7 @@ export function GameGeneralPanel({
         />
       </label>
       <label>
-        <span>Rejugadas</span>
+        <span>{capitalizeTerm(terms.repetitions)}</span>
         <input
           type="number"
           min="0"
@@ -121,7 +123,7 @@ export function GameGeneralPanel({
           checked={draft.private}
           onChange={event => patch("private", event.target.checked)}
         />
-        <span>Juego privado</span>
+        <span>{capitalizeTerm(terms.activity)} privada</span>
       </label>
       <label className="wide-field">
         <span>Notas</span>
@@ -147,7 +149,7 @@ export function GameGeneralPanel({
           <label>
             <span>Requiere completar antes</span>
             <select value="" onChange={event => addDependency(event.target.value)}>
-              <option value="">Agregar juego previo…</option>
+              <option value="">Agregar {terms.activity} previa…</option>
               {dependencyOptions.map(game => (
                 <option
                   key={game.id}
@@ -158,7 +160,7 @@ export function GameGeneralPanel({
                 </option>
               ))}
             </select>
-            <small>Las dependencias pendientes bloquean el juego en la lista.</small>
+            <small>Las dependencias pendientes bloquean la {terms.activity} en la lista.</small>
           </label>
         </FormGrid>
         {draft.dependencies.length > 0 && (

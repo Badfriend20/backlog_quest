@@ -1,14 +1,18 @@
 import styled, { css } from "styled-components";
 
+const BORDER_COLOR = "var(--border)";
+
 function gameCardBorderColor(featured?: boolean, warning?: boolean) {
   if (warning) return "var(--warning)";
-  return featured ? "var(--purple)" : "var(--border)";
+  return featured ? "var(--purple)" : BORDER_COLOR;
 }
 
 function relationCardBorderColor(editing?: boolean, warning?: boolean) {
   if (warning) return "var(--warning)";
-  return editing ? "var(--cyan)" : "var(--border)";
+  return editing ? "var(--cyan)" : BORDER_COLOR;
 }
+
+export const CARD_SURFACE_BACKGROUND = "var(--panel)";
 
 export const Stack = styled.div<{ $space?: "lg" | "xl" }>`
   > * + * {
@@ -126,15 +130,42 @@ export const CardTopline = styled.div`
   margin-bottom: 12px;
 `;
 
-export const GameCard = styled.article<{ $featured?: boolean; $warning?: boolean }>`
+export const CardSurface = styled.article`
   min-width: 0;
   padding: 17px;
-  border: 1px solid ${({ $warning }) => ($warning ? "var(--warning)" : "var(--border)")};
+  border: 1px solid var(--border);
+  background: ${CARD_SURFACE_BACKGROUND};
+  color: inherit;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+`;
+
+export const SelectableCardSurface = styled(CardSurface)<{ $selected?: boolean }>`
+  border-color: ${({ $selected }) => ($selected ? "var(--cyan)" : BORDER_COLOR)};
+  background: var(--panel-2);
+  box-shadow: ${({ $selected }) => ($selected ? "inset 0 0 0 1px var(--cyan)" : "none")};
+`;
+
+export const SelectableCardButton = styled(SelectableCardSurface).attrs({
+  as: "button",
+  type: "button",
+})`
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  min-height: 78px;
+  padding: 12px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+`;
+
+export const GameCard = styled(CardSurface)<{ $featured?: boolean; $warning?: boolean }>`
+  border-color: ${({ $warning }) => ($warning ? "var(--warning)" : BORDER_COLOR)};
   border-top-width: ${({ $featured }) => ($featured ? "3px" : "1px")};
   border-top-color: ${({ $featured, $warning }) => gameCardBorderColor($featured, $warning)};
-  background: linear-gradient(145deg, var(--panel), #130f20);
-  box-shadow: ${({ $warning }) =>
-    $warning ? "inset 3px 0 0 var(--warning), var(--shadow)" : "var(--shadow)"};
+  box-shadow: ${({ $warning }) => ($warning ? "inset 3px 0 0 var(--warning)" : "none")};
 
   h3 {
     overflow-wrap: anywhere;
@@ -236,10 +267,9 @@ export const WarningTag = styled.span`
   font-weight: 800;
 `;
 
-export const RelationCard = styled.article<{ $editing?: boolean; $warning?: boolean }>`
+export const RelationCard = styled(CardSurface)<{ $editing?: boolean; $warning?: boolean }>`
   padding: 14px;
-  border: 1px solid ${({ $editing, $warning }) => relationCardBorderColor($editing, $warning)};
-  background: var(--panel);
+  border-color: ${({ $editing, $warning }) => relationCardBorderColor($editing, $warning)};
   box-shadow: ${({ $warning }) => ($warning ? "inset 3px 0 0 var(--warning)" : "none")};
 `;
 

@@ -1,12 +1,12 @@
-import type { ContentType, GameContent } from "../../../shared/kernel/backlog";
+import type { ContentType, ActivityContent } from "../../../shared/kernel/quest";
 import { Button, FormGrid } from "../../../shared/ui";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
 
 const CONTENT_TYPES: Array<{ value: ContentType; label: string }> = [
-  { value: "campaign", label: "Campaña" },
-  { value: "dlc", label: "DLC" },
-  { value: "replay", label: "Rejugada" },
+  { value: "campaign", label: "Principal" },
+  { value: "dlc", label: "Complemento" },
+  { value: "replay", label: "Repetición" },
   { value: "custom", label: "Personalizado" },
 ];
 
@@ -16,7 +16,7 @@ export function GameContentCard({
   total,
   editor,
 }: {
-  content: GameContent;
+  content: ActivityContent;
   index: number;
   total: number;
   editor: GameEditorController;
@@ -46,7 +46,7 @@ export function GameContentCard({
         </>
       }
       itemLabel="contenido"
-      deleteMessage={`Se eliminará ${content.title || content.id} del catálogo. Las misiones y partidas conservarán su descripción histórica sin quedar bloqueadas.`}
+      deleteMessage={`Se eliminará ${content.title || content.id} del catálogo. Las misiones y recorridos conservarán su descripción histórica sin quedar bloqueados.`}
       onEdit={() => beginContentEdit(content.id)}
       onRemove={() => removeContent(content.id)}
       onSave={saveContentEdit}
@@ -79,7 +79,7 @@ export function GameContentCard({
             <input
               required
               value={content.title}
-              placeholder="Campaña, expansión, DLC u objetivo"
+              placeholder="Etapa, módulo, complemento u objetivo"
               onChange={event => updateContent(content.id, { title: event.target.value })}
             />
           </label>

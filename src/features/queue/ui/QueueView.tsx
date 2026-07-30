@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 import {
   Button,
   Callout,
@@ -15,19 +15,21 @@ import {
   sortedQueue,
   statusClass,
   unresolvedDependencies,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { QueueScope } from "./QueueStyles";
+import { useVocabulary } from "../../../shared/vocabulary";
 
 export function QueueView({
   data,
   onActivate,
   onMove,
 }: {
-  data: BacklogData;
+  data: QuestData;
   onActivate: (gameId: string) => void;
   onMove: (gameId: string, direction: -1 | 1) => void;
 }) {
   const [stateFilter, setStateFilter] = useState("Todos");
+  const terms = useVocabulary();
   const items = sortedQueue(data).filter(
     item => stateFilter === "Todos" || item.state === stateFilter
   );
@@ -39,7 +41,7 @@ export function QueueView({
           <p>
             La portada solo muestra los primeros {data.preferences.queueDisplayCount}. Aplazar manda
             a la posición {data.preferences.deferPosition}; terminar reorganiza según tu intención
-            de rejugada.
+            de repetición.
           </p>
         </Callout>
         <div className="queue-toolbar">
@@ -54,7 +56,9 @@ export function QueueView({
               ))}
             </select>
           </label>
-          <span>{items.length} juegos</span>
+          <span>
+            {items.length} {terms.activities}
+          </span>
         </div>
         <section className="full-queue">
           {items.map(item => {
@@ -97,7 +101,7 @@ export function QueueView({
                   <h3>{game.title}</h3>
                   <p>{item.reason || game.notes || "Sin motivo registrado."}</p>
                   <small>
-                    {item.preferredDevice || "Dispositivo por elegir"}
+                    {item.preferredDevice || `${terms.resource} por elegir`}
                     {item.availableFrom ? ` · Disponible ${formatDate(item.availableFrom)}` : ""}
                   </small>
                   {blockers.length > 0 && (

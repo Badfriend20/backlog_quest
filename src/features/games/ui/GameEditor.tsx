@@ -6,6 +6,7 @@ import { GameCopiesPanel } from "./GameCopiesPanel";
 import { GamePlaythroughsPanel } from "./GamePlaythroughsPanel";
 import { useGameEditor } from "./useGameEditor";
 import { GamesScope } from "./GamesStyles";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function GameEditor({
   game,
@@ -18,6 +19,7 @@ export function GameEditor({
   onRemoveCopy,
   onRemovePlaythrough,
 }: GameEditorProps) {
+  const terms = useVocabulary();
   const editor = useGameEditor({
     game,
     data,
@@ -43,12 +45,12 @@ export function GameEditor({
   return (
     <GamesScope>
       <Modal
-        title={isNew ? "Agregar juego" : draft.title}
+        title={isNew ? `Agregar ${terms.activity}` : draft.title}
         eyebrow={isNew ? "NUEVO REGISTRO" : draft.id}
         onClose={onClose}
       >
         <form onSubmit={submit}>
-          <div className="editor-tabs" role="tablist" aria-label="Secciones del juego">
+          <div className="editor-tabs" role="tablist" aria-label={`Secciones de ${terms.activity}`}>
             <button
               type="button"
               className={tab === "general" ? "active" : ""}
@@ -61,14 +63,14 @@ export function GameEditor({
               className={tab === "copies" ? "active" : ""}
               onClick={() => setTab("copies")}
             >
-              Copias ({draft.copies.length})
+              {capitalizeTerm(terms.variants)} ({draft.copies.length})
             </button>
             <button
               type="button"
               className={tab === "playthroughs" ? "active" : ""}
               onClick={() => setTab("playthroughs")}
             >
-              Partidas ({draft.playthroughs.length})
+              {capitalizeTerm(terms.journeys)} ({draft.playthroughs.length})
             </button>
           </div>
           {tab === "general" && <GameGeneralPanel data={data} editor={editor} />}

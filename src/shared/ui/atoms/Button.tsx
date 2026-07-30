@@ -23,7 +23,7 @@ const StyledButton = styled.button<{
     if ($variant === "primary") {
       return css`
         background: var(--purple);
-        color: #140b22;
+        color: var(--primary-text, #140b22);
         box-shadow: 3px 3px 0 #3d236d;
 
         &:hover:not(:disabled) {

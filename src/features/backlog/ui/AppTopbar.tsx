@@ -1,6 +1,7 @@
-import type { AppView } from "../../../shared/kernel/backlog";
+import type { AppView } from "../../../shared/kernel/quest";
 import { Button, Eyebrow } from "../../../shared/ui";
-import { NAV_ITEMS } from "./NavigationItems";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
+import { navigationItems } from "./NavigationItems";
 
 export function AppTopbar({
   view,
@@ -11,16 +12,17 @@ export function AppTopbar({
   onExport(): void;
   onCreateGame(): void;
 }) {
+  const terms = useVocabulary();
   return (
     <header className="topbar">
       <div>
-        <Eyebrow>PARTIDA LOCAL</Eyebrow>
-        <h1>{NAV_ITEMS.find(item => item.id === view)?.label}</h1>
+        <Eyebrow>PROGRESO LOCAL</Eyebrow>
+        <h1>{navigationItems(terms).find(item => item.id === view)?.label}</h1>
       </div>
       <div className="topbar-actions">
         <Button onClick={onExport}>Exportar JSON</Button>
         <Button variant="primary" onClick={onCreateGame}>
-          + Juego
+          + {capitalizeTerm(terms.activity)}
         </Button>
       </div>
     </header>

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { Game } from "../../../shared/kernel/backlog";
+import type { Activity } from "../../../shared/kernel/quest";
 import { sortLibraryGames } from "./librarySort";
 
 const FINISHED_TITLE = "Zeta terminado";
 const BETA_TITLE = "Beta pendiente";
 const ALPHA_TITLE = "Alfa pendiente";
 
-function game(title: string, status: string, priority = "Media"): Game {
+function game(title: string, status: string, priority = "Media"): Activity {
   return {
     id: title,
     title,

@@ -10,8 +10,6 @@ export const DashboardScope = styled.div`
   }
   .metric-card {
     padding: 18px;
-    background: var(--panel);
-    border: 1px solid var(--border);
     border-bottom: 4px solid var(--purple-2);
     box-shadow: var(--shadow);
   }

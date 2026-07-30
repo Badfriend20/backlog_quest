@@ -25,8 +25,6 @@ export const DevicesScope = styled.div`
     color: var(--muted);
   }
   .platform-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
     padding: 18px;
   }
   .platform-card-title {

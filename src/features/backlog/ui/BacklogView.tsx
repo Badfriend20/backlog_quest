@@ -1,10 +1,11 @@
 import type {
   AppPreferences,
   AppView,
-  BacklogData,
-  CopyPlatform,
-  Platform,
-} from "../../../shared/kernel/backlog";
+  QuestData,
+  Channel,
+  OwnershipDisplayRules,
+  Resource,
+} from "../../../shared/kernel/quest";
 import { DashboardView } from "../../dashboard";
 import { PlatformsView } from "../../devices";
 import { HistoryView } from "../../history";
@@ -17,7 +18,7 @@ import type { BacklogStorage } from "../application/ports";
 
 interface BacklogViewProps {
   view: AppView;
-  data: BacklogData;
+  data: QuestData;
   storage: BacklogStorage;
   onOpenView(view: AppView): void;
   onSelectGame(id: string): void;
@@ -26,9 +27,14 @@ interface BacklogViewProps {
   onActivate(gameId: string): void;
   onMove(id: string, direction: -1 | 1): void;
   onPreferencesChange(patch: Partial<AppPreferences>, message: string): void;
-  onPlatformsChange(platforms: Platform[]): void;
-  onCopyPlatformsChange(platforms: CopyPlatform[]): void;
-  onReplaceData(data: BacklogData): void;
+  onPlatformsChange(platforms: Resource[]): void;
+  onCopyPlatformsChange(platforms: Channel[]): void;
+  onOwnershipCatalogChange(ownership: string[], rules: OwnershipDisplayRules): void;
+  onReplaceData(data: QuestData): void;
+  demoActive: boolean;
+  onStartDemo(data: QuestData): void;
+  onRestoreDemo(): void;
+  onKeepDemo(): void;
   onReset(): void;
   missionActions: MissionActions;
 }
@@ -75,7 +81,12 @@ export function BacklogView(props: BacklogViewProps) {
           storage={props.storage}
           onChange={props.onPreferencesChange}
           onCopyPlatformsChange={props.onCopyPlatformsChange}
+          onOwnershipCatalogChange={props.onOwnershipCatalogChange}
           onReplaceData={props.onReplaceData}
+          demoActive={props.demoActive}
+          onStartDemo={props.onStartDemo}
+          onRestoreDemo={props.onRestoreDemo}
+          onKeepDemo={props.onKeepDemo}
           onReset={props.onReset}
         />
       );

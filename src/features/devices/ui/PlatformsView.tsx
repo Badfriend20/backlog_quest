@@ -1,16 +1,17 @@
 import { useState } from "react";
-import type { BacklogData, Platform } from "../../../shared/kernel/backlog";
+import type { QuestData, Resource } from "../../../shared/kernel/quest";
 import { Button, Eyebrow } from "../../../shared/ui";
 import { createDevice } from "../domain/deviceCatalog";
 import { DeviceCard } from "./DeviceCard";
 import { DeviceEditorModal } from "./DeviceEditorModal";
 import { DevicesScope } from "./DevicesStyles";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 interface PlatformsViewProps {
-  data: BacklogData;
+  data: QuestData;
   onSelectGame(id: string): void;
   onEditMission(id: string): void;
-  onPlatformsChange(platforms: Platform[]): void;
+  onPlatformsChange(platforms: Resource[]): void;
 }
 
 export function PlatformsView({
@@ -19,10 +20,11 @@ export function PlatformsView({
   onEditMission,
   onPlatformsChange,
 }: PlatformsViewProps) {
-  const [selectedDevice, setSelectedDevice] = useState<Platform>();
+  const terms = useVocabulary();
+  const [selectedDevice, setSelectedDevice] = useState<Resource>();
   const [isCreating, setIsCreating] = useState(false);
 
-  function openEditor(device: Platform, creating = false) {
+  function openEditor(device: Resource, creating = false) {
     setSelectedDevice(device);
     setIsCreating(creating);
   }
@@ -31,11 +33,11 @@ export function PlatformsView({
     <DevicesScope>
       <div className="device-view-heading">
         <div>
-          <Eyebrow>CATÁLOGO DE DISPOSITIVOS</Eyebrow>
-          <p>Selecciona el título o el botón Editar para modificar un dispositivo.</p>
+          <Eyebrow>CATÁLOGO DE {terms.resources.toUpperCase()}</Eyebrow>
+          <p>Selecciona el título o el botón Editar para modificar un {terms.resource}.</p>
         </div>
         <Button variant="primary" onClick={() => openEditor(createDevice(data.platforms), true)}>
-          + Dispositivo
+          + {capitalizeTerm(terms.resource)}
         </Button>
       </div>
 

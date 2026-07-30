@@ -1,4 +1,4 @@
-import type { BacklogData } from "../../../shared/kernel/backlog";
+import type { QuestData } from "../../../shared/kernel/quest";
 
 export function DeviceSelect({
   id,
@@ -9,7 +9,7 @@ export function DeviceSelect({
   allowUnknown = true,
 }: {
   id?: string;
-  data: BacklogData;
+  data: QuestData;
   selectedId: string;
   allowedIds?: string[];
   onChange: (id: string) => void;

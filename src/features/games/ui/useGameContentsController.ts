@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { GameContent } from "../../../shared/kernel/backlog";
-import { nextGeneratedId } from "../../../shared/kernel/backlogSelectors";
+import type { ActivityContent } from "../../../shared/kernel/quest";
+import { nextGeneratedId } from "../../../shared/kernel/questSelectors";
 import type { GameEditorProps } from "./gameEditorTypes";
 import type { GameDraftController } from "./gameEditorControllerTypes";
 
@@ -13,11 +13,11 @@ export function useGameContentsController({
 }: Omit<GameDraftController, "setTab"> &
   Pick<GameEditorProps, "data" | "onSave" | "onRemoveContent">) {
   const [editingContentId, setEditingContentId] = useState<string | null>(null);
-  const [contentEditSnapshot, setContentEditSnapshot] = useState<GameContent[]>();
+  const [contentEditSnapshot, setContentEditSnapshot] = useState<ActivityContent[]>();
 
   function addContent() {
     setContentEditSnapshot(structuredClone(draft.contents));
-    const content: GameContent = {
+    const content: ActivityContent = {
       id: nextGeneratedId("CT", [
         ...data.games.flatMap(item => item.contents.map(candidate => candidate.id)),
         ...draft.contents.map(candidate => candidate.id),
@@ -31,7 +31,7 @@ export function useGameContentsController({
     setEditingContentId(content.id);
   }
 
-  function updateContent(contentId: string, patch: Partial<GameContent>) {
+  function updateContent(contentId: string, patch: Partial<ActivityContent>) {
     setDraft(current => ({
       ...current,
       contents: current.contents.map(content =>

@@ -1,14 +1,20 @@
-import type { AppView } from "../../../shared/kernel/backlog";
+import type { AppView } from "../../../shared/kernel/quest";
+import type { VocabularyTerms } from "../../../shared/kernel/quest";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
-export const NAV_ITEMS: ReadonlyArray<{ id: AppView; label: string; icon: string }> = [
-  { id: "dashboard", label: "Inicio", icon: "👾" },
-  { id: "queue", label: "Lista", icon: "🎯" },
-  { id: "library", label: "Biblioteca", icon: "🎮" },
-  { id: "schedule", label: "Plan", icon: "📅" },
-  { id: "history", label: "Historial", icon: "🏆" },
-  { id: "platforms", label: "Dispositivos", icon: "🕹️" },
-  { id: "settings", label: "Configuración", icon: "⚙️" },
-];
+export function navigationItems(
+  terms: VocabularyTerms
+): ReadonlyArray<{ id: AppView; label: string; icon: string }> {
+  return [
+    { id: "dashboard", label: "Inicio", icon: "👾" },
+    { id: "queue", label: "Lista", icon: "🎯" },
+    { id: "library", label: capitalizeTerm(terms.collection), icon: "🗂️" },
+    { id: "schedule", label: "Plan", icon: "📅" },
+    { id: "history", label: "Historial", icon: "🏆" },
+    { id: "platforms", label: capitalizeTerm(terms.resources), icon: "🧰" },
+    { id: "settings", label: "Configuración", icon: "⚙️" },
+  ];
+}
 
 interface NavigationItemsProps {
   activeView: AppView;
@@ -16,7 +22,8 @@ interface NavigationItemsProps {
 }
 
 export function NavigationItems({ activeView, onNavigate }: Readonly<NavigationItemsProps>) {
-  return NAV_ITEMS.map(item => (
+  const terms = useVocabulary();
+  return navigationItems(terms).map(item => (
     <button
       type="button"
       key={item.id}

@@ -1,27 +1,35 @@
 import type {
-  BacklogData,
-  CopyPlatform,
+  QuestData,
+  Channel,
   CrossCopyProgress,
-  Game,
-  GameCopy,
+  Activity,
+  ActivityVariant,
   Mission,
   OwnershipDisplayRules,
   QueueItem,
-  QuickCopyPreset,
-} from "./backlog";
+  QuickVariantPreset,
+} from "./quest";
 
-export const ACTIVE_GAME_STATUSES = new Set(["Jugando", "Jugando secundario", "Rejugando"]);
+export const ACTIVE_GAME_STATUSES = new Set([
+  "En curso",
+  "En curso secundario",
+  "Repitiendo",
+  "Jugando",
+  "Jugando secundario",
+  "Rejugando",
+]);
 const UNKNOWN_LABEL = "Por confirmar";
 export const OWNERSHIP_LABEL_MAX_LENGTH = 24;
+export const DEFAULT_ACCESS_METHOD = "Por definir";
 export const CROSS_COPY_PROGRESS_HELP =
-  "Indica si la partida guardada de esta copia puede continuarse en otras copias o plataformas del mismo juego.";
+  "Indica si el progreso de esta modalidad puede continuarse en otras modalidades o canales de la misma actividad.";
 export const CROSS_COPY_PROGRESS_OPTIONS: Array<{
   value: CrossCopyProgress;
   label: string;
 }> = [
   { value: "shared", label: "Sí, comparte progreso" },
   { value: "separate", label: "No comparte progreso" },
-  { value: "partial", label: "Solo con algunas copias" },
+  { value: "partial", label: "Solo con algunas modalidades" },
   { value: "unknown", label: "Por confirmar" },
 ];
 
@@ -71,7 +79,8 @@ export function statusClass(status: string): string {
   if (
     normalized.includes("jugando") ||
     normalized.includes("activo") ||
-    normalized.includes("rejugando")
+    normalized.includes("rejugando") ||
+    normalized.includes("repitiendo")
   )
     return "status-green";
   if (
@@ -97,7 +106,7 @@ export function statusClass(status: string): string {
   return "status-yellow";
 }
 
-export function gameSearchText(game: Game): string {
+export function gameSearchText(game: Activity): string {
   return normalize(
     [
       game.title,
@@ -120,7 +129,7 @@ export function nextGeneratedId(prefix: string, ids: string[]): string {
   return `${prefix}${String(max + 1).padStart(3, "0")}`;
 }
 
-export function getActiveSlotProfile(data: BacklogData) {
+export function getActiveSlotProfile(data: QuestData) {
   return (
     data.preferences.slotProfiles.find(
       profile => profile.id === data.preferences.activeSlotProfileId
@@ -128,7 +137,7 @@ export function getActiveSlotProfile(data: BacklogData) {
   );
 }
 
-export function getSlotLabel(data: BacklogData, slotId: string): string {
+export function getSlotLabel(data: QuestData, slotId: string): string {
   const profile = getActiveSlotProfile(data);
   if (slotId === "first") return profile?.slots[0].label ?? "Primera franja";
   if (slotId === "second") return profile?.slots[1].label ?? "Segunda franja";
@@ -136,7 +145,7 @@ export function getSlotLabel(data: BacklogData, slotId: string): string {
   return data.preferences.flexibleSlotLabel;
 }
 
-export function deviceName(data: BacklogData, deviceId: string | null | undefined): string {
+export function deviceName(data: QuestData, deviceId: string | null | undefined): string {
   if (!deviceId) return UNKNOWN_LABEL;
   return data.platforms.find(platform => platform.id === deviceId)?.name ?? UNKNOWN_LABEL;
 }
@@ -150,10 +159,10 @@ export function copyPlatformKey(value: string): string {
 }
 
 export function normalizeCopyPlatforms(
-  existing: CopyPlatform[] = [],
+  existing: Channel[] = [],
   libraryNames: string[] = []
-): CopyPlatform[] {
-  const result: CopyPlatform[] = [];
+): Channel[] {
+  const result: Channel[] = [];
   const names = new Set<string>();
   const ids = new Set<string>();
 
@@ -185,17 +194,17 @@ export function normalizeCopyPlatforms(
 }
 
 export function resolveCopyPlatform(
-  platforms: CopyPlatform[],
+  platforms: Channel[],
   platformId: string | undefined,
   legacyLibrary: string
-): CopyPlatform | undefined {
+): Channel | undefined {
   return (
     platforms.find(platform => platform.id === platformId) ??
     platforms.find(platform => normalize(platform.name) === normalize(legacyLibrary))
   );
 }
 
-export function inferDeviceIds(data: Pick<BacklogData, "platforms">, text: string): string[] {
+export function inferDeviceIds(data: Pick<QuestData, "platforms">, text: string): string[] {
   const normalizedText = normalize(text || "");
   if (!normalizedText || normalizedText === "por confirmar") return [];
   return data.platforms
@@ -212,8 +221,8 @@ export function inferDeviceIds(data: Pick<BacklogData, "platforms">, text: strin
 }
 
 export function copyDeviceIds(
-  data: Pick<BacklogData, "platforms">,
-  copy: GameCopy | null | undefined
+  data: Pick<QuestData, "platforms">,
+  copy: ActivityVariant | null | undefined
 ): string[] {
   if (!copy) return [];
   const valid = new Set(data.platforms.map(platform => platform.id));
@@ -221,18 +230,18 @@ export function copyDeviceIds(
   return saved.length ? saved : inferDeviceIds(data, copy.device);
 }
 
-export function deviceLabels(data: Pick<BacklogData, "platforms">, ids: string[]): string[] {
+export function deviceLabels(data: Pick<QuestData, "platforms">, ids: string[]): string[] {
   const valid = new Map(data.platforms.map(platform => [platform.id, platform.name]));
   return ids.map(id => valid.get(id)).filter((name): name is string => Boolean(name));
 }
 
-export function deviceLabel(data: Pick<BacklogData, "platforms">, ids: string[]): string {
+export function deviceLabel(data: Pick<QuestData, "platforms">, ids: string[]): string {
   return deviceLabels(data, ids).join(" + ") || UNKNOWN_LABEL;
 }
 
 export function copyDeviceLabel(
-  data: Pick<BacklogData, "platforms">,
-  copy: GameCopy | null | undefined
+  data: Pick<QuestData, "platforms">,
+  copy: ActivityVariant | null | undefined
 ): string {
   if (!copy) return UNKNOWN_LABEL;
   const ids = copyDeviceIds(data, copy);
@@ -264,11 +273,20 @@ export function normalizeOwnershipDisplayRules(
   );
 }
 
+export function accessMethodOptions(ownershipTerms: string[], current?: string): string[] {
+  const terms = ownershipTerms.map(item => item.trim()).filter(Boolean);
+  const available = terms.length ? terms : [DEFAULT_ACCESS_METHOD];
+  if (current && !available.some(item => normalize(item) === normalize(current))) {
+    return [current, ...available];
+  }
+  return available;
+}
+
 export function quickCopyLabel(
-  preset: Pick<QuickCopyPreset, "library" | "ownership">,
+  preset: Pick<QuickVariantPreset, "library" | "ownership">,
   rules: OwnershipDisplayRules = {}
 ): string {
-  const library = preset.library.trim() || "Copia";
+  const library = preset.library.trim() || "Modalidad";
   const ownership = preset.ownership.trim();
   const rule = rules[ownershipDisplayKey(ownership)];
   if (!ownership || rule?.hidden) return library;
@@ -278,10 +296,10 @@ export function quickCopyLabel(
 }
 
 export function quickCopyPresetFromCopy(
-  data: Pick<BacklogData, "platforms">,
-  copy: GameCopy,
+  data: Pick<QuestData, "platforms">,
+  copy: ActivityVariant,
   updatedAt = new Date().toISOString()
-): QuickCopyPreset {
+): QuickVariantPreset {
   return {
     key: quickCopyKey(copy.library, copy.ownership, copy.platformId),
     platformId: copy.platformId,
@@ -298,10 +316,10 @@ export function quickCopyPresetFromCopy(
 }
 
 export function mergeQuickCopyPresets(
-  data: Pick<BacklogData, "platforms">,
-  existing: QuickCopyPreset[],
-  copies: GameCopy[]
-): QuickCopyPreset[] {
+  data: Pick<QuestData, "platforms">,
+  existing: QuickVariantPreset[],
+  copies: ActivityVariant[]
+): QuickVariantPreset[] {
   const now = new Date().toISOString();
   const incoming = copies
     .filter(copy => copy.library.trim())
@@ -317,27 +335,31 @@ export function mergeQuickCopyPresets(
 }
 
 export function selectGlobalQuickCopyPresets(
-  data: Pick<BacklogData, "games" | "platforms" | "preferences">
-): QuickCopyPreset[] {
+  data: Pick<QuestData, "games" | "platforms" | "preferences" | "catalogs">
+): QuickVariantPreset[] {
   const stored = data.preferences.quickCopyPresets ?? [];
-  if (stored.length) return mergeQuickCopyPresets(data, stored, []);
-  return mergeQuickCopyPresets(
-    data,
-    [],
-    data.games.flatMap(game => game.copies)
-  );
+  const presets = stored.length
+    ? mergeQuickCopyPresets(data, stored, [])
+    : mergeQuickCopyPresets(
+        data,
+        [],
+        data.games.flatMap(game => game.copies)
+      );
+  if (!data.catalogs?.ownership) return presets;
+  const allowed = new Set(accessMethodOptions(data.catalogs.ownership).map(normalize));
+  return presets.filter(preset => allowed.has(normalize(preset.ownership)));
 }
 
-export function selectExistingQuickCopyKeys(game: Pick<Game, "copies">): Set<string> {
+export function selectExistingQuickCopyKeys(game: Pick<Activity, "copies">): Set<string> {
   return new Set(
     game.copies.map(copy => quickCopyKey(copy.library, copy.ownership, copy.platformId))
   );
 }
 
 export function selectQuickCopyPresets(
-  data: Pick<BacklogData, "games" | "platforms" | "preferences">,
-  sessionPresets: QuickCopyPreset[]
-): QuickCopyPreset[] {
+  data: Pick<QuestData, "games" | "platforms" | "preferences" | "catalogs">,
+  sessionPresets: QuickVariantPreset[]
+): QuickVariantPreset[] {
   const global = selectGlobalQuickCopyPresets(data);
   const sessionKeys = new Set(
     sessionPresets.map(preset => quickCopyKey(preset.library, preset.ownership, preset.platformId))
@@ -359,11 +381,11 @@ export function splitDevices(device: string): string[] {
     .filter((item, index, all) => all.indexOf(item) === index);
 }
 
-export function gameForMission(data: BacklogData, mission: Mission): Game | null {
+export function gameForMission(data: QuestData, mission: Mission): Activity | null {
   return data.games.find(game => game.id === mission.gameId) ?? null;
 }
 
-export function activeMissions(data: BacklogData): Mission[] {
+export function activeMissions(data: QuestData): Mission[] {
   const slotOrder = new Map([
     ["first", 0],
     ["second", 1],
@@ -375,12 +397,12 @@ export function activeMissions(data: BacklogData): Mission[] {
     .sort((a, b) => (slotOrder.get(a.slotId) ?? 9) - (slotOrder.get(b.slotId) ?? 9));
 }
 
-export function sortedQueue(data: BacklogData): QueueItem[] {
+export function sortedQueue(data: QuestData): QueueItem[] {
   return [...data.queue].sort((a, b) => a.position - b.position);
 }
 
 export function missionLinkState(
-  data: BacklogData,
+  data: QuestData,
   mission: Pick<Mission, "gameId" | "contentId" | "copyId" | "playthroughId">
 ): { hasContent: boolean; hasCopy: boolean; hasPlaythrough: boolean; complete: boolean } {
   const game = data.games.find(item => item.id === mission.gameId);
@@ -395,14 +417,14 @@ export function missionLinkState(
   return { hasContent, hasCopy, hasPlaythrough, complete: hasContent && hasCopy && hasPlaythrough };
 }
 
-export function queueLabel(data: BacklogData, state: QueueItem["state"]): string {
+export function queueLabel(data: QuestData, state: QueueItem["state"]): string {
   return data.catalogs.queueStates.find(item => item.id === state)?.label ?? state;
 }
 
-export function unresolvedDependencies(data: BacklogData, game: Game): Game[] {
+export function unresolvedDependencies(data: QuestData, game: Activity): Activity[] {
   return game.dependencies
     .map(id => data.games.find(candidate => candidate.id === id))
-    .filter((candidate): candidate is Game => Boolean(candidate))
+    .filter((candidate): candidate is Activity => Boolean(candidate))
     .filter(candidate => !["Terminado", "Completado"].includes(candidate.status));
 }
 
@@ -424,7 +446,7 @@ export interface GeneratedScheduleItem {
   day: string;
   missions: Array<{
     mission: Mission;
-    game: Game;
+    game: Activity;
     slotId: string;
     label: string;
     duration: string;
@@ -436,7 +458,7 @@ function durationLabel(min: number, max: number): string {
   return `${min}–${max} min`;
 }
 
-export function generateSchedule(data: BacklogData): GeneratedScheduleItem[] {
+export function generateSchedule(data: QuestData): GeneratedScheduleItem[] {
   const days = Math.max(1, data.preferences.scheduleWeeks) * 7;
   const today = new Date();
   today.setHours(12, 0, 0, 0);

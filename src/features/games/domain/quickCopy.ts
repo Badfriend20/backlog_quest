@@ -1,8 +1,8 @@
-import type { GameCopy, QuickCopyPreset } from "../../../shared/kernel/backlog";
-import { quickCopyKey } from "../../../shared/kernel/backlogSelectors";
+import type { ActivityVariant, QuickVariantPreset } from "../../../shared/kernel/quest";
+import { quickCopyKey } from "../../../shared/kernel/questSelectors";
 
 export type QuickCopyPresetInput = Pick<
-  QuickCopyPreset,
+  QuickVariantPreset,
   | "platformId"
   | "library"
   | "ownership"
@@ -16,7 +16,7 @@ export type QuickCopyPresetInput = Pick<
 export function createQuickCopyPreset(
   input: QuickCopyPresetInput,
   updatedAt = new Date().toISOString()
-): QuickCopyPreset {
+): QuickVariantPreset {
   const library = input.library.trim();
   return {
     ...input,
@@ -28,10 +28,10 @@ export function createQuickCopyPreset(
 }
 
 export function createGameCopyFromPreset(
-  preset: QuickCopyPreset,
+  preset: QuickVariantPreset,
   id: string,
   fallbackSession: string
-): GameCopy {
+): ActivityVariant {
   return {
     id,
     platformId: preset.platformId,

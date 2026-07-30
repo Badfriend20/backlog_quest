@@ -16,7 +16,7 @@ export type CompletionResult = "Terminado" | "Completado";
 export type ReplayIntent = "yes" | "maybe" | "no" | "unknown";
 export type CrossCopyProgress = "shared" | "separate" | "partial" | "unknown";
 
-export interface GameCopy {
+export interface ActivityVariant {
   id: string;
   platformId?: string;
   library: string;
@@ -30,7 +30,7 @@ export interface GameCopy {
   notes: string;
 }
 
-export interface Playthrough {
+export interface Journey {
   id: string;
   number: number;
   platform: string;
@@ -46,14 +46,14 @@ export interface Playthrough {
   copyId?: string;
 }
 
-export interface GameProgress {
+export interface ActivityProgress {
   chapter: string;
   completions: number;
   replays: number;
   lastPlayedAt: string | null;
 }
 
-export interface GameContent {
+export interface ActivityContent {
   id: string;
   title: string;
   type: ContentType;
@@ -61,7 +61,7 @@ export interface GameContent {
   notes: string;
 }
 
-export interface Game {
+export interface Activity {
   id: string;
   title: string;
   type: string;
@@ -71,15 +71,15 @@ export interface Game {
   private: boolean;
   notes: string;
   tags: string[];
-  progress: GameProgress;
-  copies: GameCopy[];
-  playthroughs: Playthrough[];
-  contents: GameContent[];
+  progress: ActivityProgress;
+  copies: ActivityVariant[];
+  playthroughs: Journey[];
+  contents: ActivityContent[];
   dependencies: string[];
   availableFrom: string | null;
 }
 
-export interface Platform {
+export interface Resource {
   id: string;
   name: string;
   kind: string;
@@ -89,7 +89,7 @@ export interface Platform {
   notes: string;
 }
 
-export interface QuickCopyPreset {
+export interface QuickVariantPreset {
   key: string;
   platformId?: string;
   library: string;
@@ -181,7 +181,7 @@ export interface PriorityCatalogItem {
   description: string;
 }
 
-export interface CopyPlatform {
+export interface Channel {
   id: string;
   name: string;
   active: boolean;
@@ -200,6 +200,37 @@ export interface SlotProfile {
 }
 
 export type ThemeId = "midnight" | "graphite" | "forest" | "light" | "custom";
+export type VocabularyProfileId =
+  "generic" | "gaming" | "reading" | "learning" | "projects" | "custom";
+
+export interface VocabularyTerms {
+  activity: string;
+  activities: string;
+  collection: string;
+  variant: string;
+  variants: string;
+  channel: string;
+  channels: string;
+  accessMethod: string;
+  resource: string;
+  resources: string;
+  journey: string;
+  journeys: string;
+  repetition: string;
+  repetitions: string;
+  content: string;
+  contents: string;
+  mission: string;
+  missions: string;
+  statusPending: string;
+  statusActive: string;
+  statusSecondary: string;
+  statusRepeating: string;
+  statusPaused: string;
+  statusFinished: string;
+  statusCompleted: string;
+  statusAbandoned: string;
+}
 
 export interface OwnershipDisplayRule {
   hidden: boolean;
@@ -210,6 +241,8 @@ export type OwnershipDisplayRules = Record<string, OwnershipDisplayRule>;
 
 export interface ThemeColors {
   background: string;
+  container: string;
+  sidebar: string;
   panel: string;
   panelAlt: string;
   border: string;
@@ -225,6 +258,8 @@ export interface ThemeColors {
 export interface AppPreferences {
   theme: ThemeId;
   customTheme: ThemeColors;
+  vocabularyProfile: VocabularyProfileId;
+  customVocabulary: Partial<VocabularyTerms>;
   hidePrivateByDefault: boolean;
   activeView: AppView;
   activeSlotProfileId: string;
@@ -241,11 +276,11 @@ export interface AppPreferences {
   autoSuggestNext: boolean;
   rules: string[];
   quickCopyPresetsReady: boolean;
-  quickCopyPresets: QuickCopyPreset[];
+  quickCopyPresets: QuickVariantPreset[];
   ownershipDisplayRules: OwnershipDisplayRules;
 }
 
-export interface BacklogData {
+export interface QuestData {
   schemaVersion: 2;
   meta: {
     title: string;
@@ -258,18 +293,18 @@ export interface BacklogData {
   catalogs: {
     statuses: StatusCatalogItem[];
     priorities: PriorityCatalogItem[];
-    platforms: CopyPlatform[];
+    platforms: Channel[];
     ownership: string[];
     deviceKinds: string[];
     queueStates: Array<{ id: QueueState; label: string; description: string }>;
   };
-  platforms: Platform[];
+  platforms: Resource[];
   queue: QueueItem[];
   missions: Mission[];
   scheduleRules: ScheduleRule[];
   scheduleOverrides: ScheduleOverride[];
   activityLog: ActivityItem[];
-  games: Game[];
+  games: Activity[];
 }
 
 export type AppView =

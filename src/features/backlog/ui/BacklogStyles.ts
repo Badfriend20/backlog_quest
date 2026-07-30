@@ -7,6 +7,7 @@ export const BacklogScope = styled.div`
     display: grid;
     grid-template-columns: 236px minmax(0, 1fr);
     min-height: 100vh;
+    background: var(--container);
   }
   .sidebar {
     position: sticky;
@@ -14,7 +15,7 @@ export const BacklogScope = styled.div`
     height: 100vh;
     padding: 22px 16px;
     border-right: 1px solid var(--border);
-    background: rgba(13, 10, 23, 0.94);
+    background: color-mix(in srgb, var(--sidebar) 94%, transparent);
     backdrop-filter: blur(18px);
     display: flex;
     flex-direction: column;
@@ -148,7 +149,7 @@ export const BacklogScope = styled.div`
       top: 0;
       width: 100%;
       z-index: 30;
-      background: rgba(13, 10, 23, 0.97);
+      background: color-mix(in srgb, var(--sidebar) 97%, transparent);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(18px);
     }

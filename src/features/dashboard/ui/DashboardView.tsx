@@ -1,4 +1,4 @@
-import type { AppView, BacklogData } from "../../../shared/kernel/backlog";
+import type { AppView, QuestData } from "../../../shared/kernel/quest";
 import { Button, Eyebrow, SectionHeading, Stack } from "../../../shared/ui";
 import {
   activeMissions,
@@ -6,11 +6,12 @@ import {
   normalize,
   queueLabel,
   sortedQueue,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { MissionCard, type MissionActions } from "../../missions";
 import { EmptyCard } from "./EmptyCard";
 import { Metric } from "./Metric";
 import { DashboardScope } from "./DashboardStyles";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function DashboardView({
   data,
@@ -18,10 +19,11 @@ export function DashboardView({
   onActivate,
   ...actions
 }: {
-  data: BacklogData;
+  data: QuestData;
   onOpenView: (view: AppView) => void;
   onActivate: (gameId: string) => void;
 } & MissionActions) {
+  const terms = useVocabulary();
   const missions = activeMissions(data);
   const finished = data.games.filter(game =>
     ["Terminado", "Completado"].includes(game.status)
@@ -34,18 +36,18 @@ export function DashboardView({
       <Stack $space="xl">
         <section className="metric-grid" aria-label="Resumen">
           <Metric
-            label="Juegos"
+            label={capitalizeTerm(terms.activities)}
             value={data.games.length}
-            note={`${data.games.reduce((sum, game) => sum + game.copies.length, 0)} copias`}
+            note={`${data.games.reduce((sum, game) => sum + game.copies.length, 0)} ${terms.variants}`}
           />
           <Metric
-            label="Misiones"
+            label={capitalizeTerm(terms.missions)}
             value={missions.length}
             note="Objetivos activos en seguimiento"
           />
           <Metric label="Terminados" value={finished} note={`${completionRate}% del catálogo`} />
           <Metric
-            label="Rejugadas"
+            label={capitalizeTerm(terms.repetitions)}
             value={data.games.reduce((sum, game) => sum + game.progress.replays, 0)}
             note="Total registrado"
           />
@@ -67,8 +69,8 @@ export function DashboardView({
             ))}
             {!missions.length && (
               <EmptyCard
-                title="No hay misiones activas"
-                text="Activa un juego desde la lista y elige su copia, dispositivo y franja."
+                title={`No hay ${terms.missions} activas`}
+                text={`Activa una ${terms.activity} desde la lista y elige su ${terms.variant}, ${terms.resource} y franja.`}
                 action="Abrir lista"
                 onAction={() => onOpenView("queue")}
               />
@@ -119,7 +121,7 @@ export function DashboardView({
               <SectionHeading>
                 <div>
                   <Eyebrow>BALANCE</Eyebrow>
-                  <h2>Dispositivos</h2>
+                  <h2>{capitalizeTerm(terms.resources)}</h2>
                 </div>
                 <Button variant="text" onClick={() => onOpenView("platforms")}>
                   Detalles →

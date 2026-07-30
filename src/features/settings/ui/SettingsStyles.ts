@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { CardSurface } from "../../../shared/ui";
 
 export const SettingsGrid = styled.div`
   display: grid;
@@ -10,11 +11,13 @@ export const SettingsGrid = styled.div`
   }
 `;
 
-export const SettingsCard = styled.section<{ $wide?: boolean; $danger?: boolean }>`
+export const SettingsCard = styled(CardSurface).attrs({ as: "section" })<{
+  $wide?: boolean;
+  $danger?: boolean;
+}>`
   grid-column: ${({ $wide }) => ($wide ? "1 / -1" : "auto")};
   padding: 20px;
-  border: 1px solid ${({ $danger }) => ($danger ? "rgba(255, 111, 125, 0.45)" : "var(--border)")};
-  background: var(--panel);
+  border-color: ${({ $danger }) => ($danger ? "rgba(255, 111, 125, 0.45)" : "var(--border)")};
 
   > p {
     color: var(--muted);
@@ -45,6 +48,90 @@ export const SettingsSectionHeading = styled.div`
 
   @media (max-width: 760px) {
     flex-direction: column;
+  }
+`;
+
+export const ExampleDatasetGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ExampleActionGuide = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  background: var(--border);
+
+  > div {
+    display: grid;
+    gap: 5px;
+    padding: 12px 14px;
+    background: var(--panel-2);
+  }
+
+  strong {
+    color: var(--text);
+    font-size: 0.86rem;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ExampleDatasetCard = styled(CardSurface)`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--panel-2);
+
+  > div:first-child {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  span,
+  p {
+    color: var(--muted);
+  }
+
+  span {
+    white-space: nowrap;
+    font-size: 0.72rem;
+  }
+
+  p {
+    flex: 1;
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  a {
+    align-self: center;
+    color: var(--cyan);
+    font-size: 0.82rem;
+    font-weight: 700;
   }
 `;
 
@@ -92,7 +179,7 @@ export const SettingsScope = styled.div`
   }
   .rule-list {
     line-height: 1.8;
-    color: #ded6ec;
+    color: var(--text);
   }
   .danger-zone {
     border-color: rgba(255, 111, 125, 0.45);
@@ -117,12 +204,7 @@ export const SettingsScope = styled.div`
   }
   .profile-option {
     position: relative;
-    border: 1px solid var(--border);
-    background: var(--panel-2);
-  }
-  .profile-option.selected {
-    border-color: var(--green);
-    box-shadow: inset 0 -3px 0 var(--green);
+    padding: 0;
   }
   .profile-option > button:first-child {
     width: 100%;
@@ -210,48 +292,28 @@ export const SettingsScope = styled.div`
       grid-template-columns: 1fr;
     }
   }
-  .ownership-rule-list {
-    display: grid;
-    gap: 10px;
-    margin: 16px 0;
-  }
-  .ownership-rule-row {
-    display: grid;
-    grid-template-columns: minmax(130px, 0.8fr) minmax(150px, 0.7fr) minmax(180px, 1fr);
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel-2);
-  }
-  .ownership-rule-row small {
-    text-align: right;
-  }
-  .ownership-rule-row .check-row {
-    padding: 0;
-  }
-  .ownership-rule-row label:not(.check-row) {
-    display: grid;
-    gap: 5px;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-  .device-settings-list {
+  .catalog-settings-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 11px;
+    margin: 16px 0;
   }
-  .device-settings-card {
-    border: 1px solid var(--border);
+  .catalog-settings-card {
     background: var(--panel-2);
     padding: 13px;
   }
-  .device-settings-card .relation-actions {
+  .catalog-settings-card .relation-actions {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-top: 10px;
+    color: var(--muted);
+  }
+  .catalog-empty-state {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 18px;
+    border: 1px dashed var(--border);
     color: var(--muted);
   }
   .inline-actions {
@@ -263,22 +325,7 @@ export const SettingsScope = styled.div`
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
   }
-  .theme-option {
-    display: grid;
-    gap: 7px;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid var(--border);
-    background: var(--panel-2);
-    color: var(--text);
-    text-align: left;
-    cursor: pointer;
-  }
-  .theme-option.selected {
-    border-color: var(--cyan);
-    box-shadow: inset 0 0 0 1px var(--cyan);
-  }
-  .theme-option small {
+  .theme-grid small {
     line-height: 1.35;
   }
   .theme-swatches {
@@ -327,13 +374,7 @@ export const SettingsScope = styled.div`
     .color-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .ownership-rule-row {
-      grid-template-columns: 1fr 1fr;
-    }
-    .ownership-rule-row > strong {
-      grid-column: 1 / -1;
-    }
-    .device-settings-list {
+    .catalog-settings-list {
       grid-template-columns: 1fr;
     }
   }
@@ -343,12 +384,6 @@ export const SettingsScope = styled.div`
     }
     .color-grid {
       grid-template-columns: 1fr;
-    }
-    .ownership-rule-row {
-      grid-template-columns: 1fr;
-    }
-    .ownership-rule-row > strong {
-      grid-column: auto;
     }
   }
 `;

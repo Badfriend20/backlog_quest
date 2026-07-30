@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { BacklogData, Mission, MissionFormValue } from "../../../shared/kernel/backlog";
+import type { QuestData, Mission, MissionFormValue } from "../../../shared/kernel/quest";
 import {
   copyDeviceIds,
   copyDeviceLabel,
@@ -7,12 +7,13 @@ import {
   inferDeviceIds,
   sortedQueue,
   unresolvedDependencies,
-} from "../../../shared/kernel/backlogSelectors";
+} from "../../../shared/kernel/questSelectors";
 import { findScheduleConflicts } from "../../../shared/kernel/schedule";
 import { DeviceSelect } from "../../devices";
 import { Button, FormGrid, Modal, ModalActions } from "../../../shared/ui";
 import { MissionScheduleField } from "./MissionScheduleField";
 import { MissionsScope } from "./MissionsStyles";
+import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
 
 export function MissionEditor({
   data,
@@ -22,13 +23,14 @@ export function MissionEditor({
   onSave,
   onManageContents,
 }: {
-  data: BacklogData;
+  data: QuestData;
   mission: Mission | null;
   initialGameId: string | null;
   onClose: () => void;
   onSave: (form: MissionFormValue) => void;
   onManageContents: (gameId: string) => void;
 }) {
+  const terms = useVocabulary();
   const initialGame =
     data.games.find(game => game.id === (mission?.gameId ?? initialGameId)) ?? data.games[0];
   const [gameId, setGameId] = useState(initialGame.id);
@@ -99,13 +101,19 @@ export function MissionEditor({
   return (
     <MissionsScope>
       <Modal
-        title={mission ? `Editar misión: ${game.title}` : "Activar nueva misión"}
-        eyebrow={mission ? mission.id : "COPIA + DISPOSITIVO + FRANJA"}
+        title={
+          mission ? `Editar ${terms.mission}: ${game.title}` : `Activar nueva ${terms.mission}`
+        }
+        eyebrow={
+          mission
+            ? mission.id
+            : `${terms.variant.toUpperCase()} + ${terms.resource.toUpperCase()} + FRANJA`
+        }
         onClose={onClose}
       >
         <FormGrid>
           <label className="wide-field">
-            <span>Juego</span>
+            <span>{capitalizeTerm(terms.activity)}</span>
             <select
               value={gameId}
               disabled={Boolean(mission)}
@@ -128,9 +136,9 @@ export function MissionEditor({
             </div>
           )}
           <label className="wide-field">
-            <span>Contenido</span>
+            <span>{capitalizeTerm(terms.content)}</span>
             <select value={contentId} onChange={event => setContentId(event.target.value)}>
-              <option value="">Selecciona un contenido</option>
+              <option value="">Selecciona un {terms.content}</option>
               {game.contents.map(content => (
                 <option key={content.id} value={content.id}>
                   {content.title}
@@ -138,18 +146,19 @@ export function MissionEditor({
               ))}
             </select>
             <Button variant="text" onClick={() => onManageContents(game.id)}>
-              Administrar contenidos del juego
+              Administrar {terms.contents} de la {terms.activity}
             </Button>
           </label>
           {!game.contents.length && (
             <div className="dependency-warning wide-field">
-              Este juego aún no tiene contenidos. Agrega al menos uno antes de activar la misión.
+              Esta {terms.activity} aún no tiene {terms.contents}. Agrega al menos uno antes de
+              activar la {terms.mission}.
             </div>
           )}
           <label className="wide-field">
-            <span>Copia o versión</span>
+            <span>{capitalizeTerm(terms.variant)} o versión</span>
             <select value={copyId} onChange={event => selectCopy(event.target.value)}>
-              <option value="">Selecciona una copia</option>
+              <option value="">Selecciona una {terms.variant}</option>
               {game.copies.map(item => (
                 <option key={item.id} value={item.id}>
                   {item.library} · {copyDeviceLabel(data, item)} · {item.ownership}
@@ -158,7 +167,7 @@ export function MissionEditor({
             </select>
           </label>
           <label htmlFor="mission-device">
-            <span>Dispositivo en uso</span>
+            <span>{capitalizeTerm(terms.resource)} en uso</span>
             <DeviceSelect
               id="mission-device"
               data={data}

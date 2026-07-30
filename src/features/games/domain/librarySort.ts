@@ -1,5 +1,5 @@
-import type { Game } from "../../../shared/kernel/backlog";
-import { normalize } from "../../../shared/kernel/backlogSelectors";
+import type { Activity } from "../../../shared/kernel/quest";
+import { normalize } from "../../../shared/kernel/questSelectors";
 
 export type LibrarySort = "unfinished-title" | "title" | "priority" | "recent";
 
@@ -10,11 +10,11 @@ const priorityOrder = new Map([
   ["Baja", 3],
 ]);
 
-function isClosed(game: Game): boolean {
+function isClosed(game: Activity): boolean {
   return ["terminado", "completado", "abandonado"].includes(normalize(game.status));
 }
 
-export function sortLibraryGames(games: Game[], order: LibrarySort): Game[] {
+export function sortLibraryGames(games: Activity[], order: LibrarySort): Activity[] {
   return [...games].sort((left, right) => {
     if (order === "unfinished-title") {
       const closedOrder = Number(isClosed(left)) - Number(isClosed(right));
