@@ -164,7 +164,11 @@ export function LibraryView({
                     {game.private ? "🔒 " : ""}
                     {game.title}
                   </h3>
-                  <p>{game.progress.chapter || game.notes || "Sin notas."}</p>
+                  <p>
+                    {game.progress.chapter
+                      ? `Punto actual: ${game.progress.chapter}`
+                      : game.notes || "Sin notas."}
+                  </p>
                   <ProgressRow>
                     <span>{game.progress.completions} terminaciones</span>
                     <span>

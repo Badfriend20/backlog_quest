@@ -14,12 +14,14 @@ export function ActiveMissionList({
   onManageContentsForMission,
   onAddCopyForMission,
   onAddPlaythroughForMission,
+  onFinish,
 }: {
   data: QuestData;
   onEditMission(missionId: string): void;
   onManageContentsForMission(missionId: string): void;
   onAddCopyForMission(missionId: string): void;
   onAddPlaythroughForMission(missionId: string): void;
+  onFinish(missionId: string): void;
 }) {
   const missions = activeMissions(data);
 
@@ -73,9 +75,14 @@ export function ActiveMissionList({
                   </span>
                 )}
               </div>
-              <Button size="compact" onClick={() => onEditMission(mission.id)}>
-                Editar misión
-              </Button>
+              <div className="plan-mission-actions">
+                <Button size="compact" onClick={() => onEditMission(mission.id)}>
+                  Editar misión
+                </Button>
+                <Button variant="primary" size="compact" onClick={() => onFinish(mission.id)}>
+                  Terminar
+                </Button>
+              </div>
             </article>
           );
         })}

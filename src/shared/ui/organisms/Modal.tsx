@@ -1,6 +1,94 @@
 import type React from "react";
+import { useEffect, useId } from "react";
 import styled from "styled-components";
 import { Eyebrow } from "../layout";
+
+const MODAL_HISTORY_KEY = "backlogQuestModal";
+
+interface ModalHistoryEntry {
+  id: string;
+  marker: string;
+  close(): void;
+  cleanupTimer?: number;
+}
+
+const modalHistoryStack: ModalHistoryEntry[] = [];
+let modalHistoryListening = false;
+
+function currentModalMarker() {
+  const state = window.history.state as Record<string, unknown> | null;
+  return state?.[MODAL_HISTORY_KEY];
+}
+
+function stopModalHistoryListeners() {
+  if (!modalHistoryListening || modalHistoryStack.length) return;
+  window.removeEventListener("popstate", closeTopModalFromHistory);
+  window.removeEventListener("keydown", closeTopModalWithEscape);
+  modalHistoryListening = false;
+}
+
+function closeTopModalFromHistory() {
+  const entry = modalHistoryStack.at(-1);
+  if (!entry || currentModalMarker() === entry.marker) return;
+  modalHistoryStack.pop();
+  entry.close();
+  stopModalHistoryListeners();
+}
+
+function requestModalClose(id: string) {
+  const entry = modalHistoryStack.find(item => item.id === id);
+  if (!entry) return;
+  if (currentModalMarker() === entry.marker) {
+    window.history.back();
+    return;
+  }
+  modalHistoryStack.splice(modalHistoryStack.indexOf(entry), 1);
+  entry.close();
+  stopModalHistoryListeners();
+}
+
+function closeTopModalWithEscape(event: KeyboardEvent) {
+  if (event.key !== "Escape") return;
+  const entry = modalHistoryStack.at(-1);
+  if (entry) requestModalClose(entry.id);
+}
+
+function registerModalHistory(id: string, close: () => void) {
+  const existing = modalHistoryStack.find(entry => entry.id === id);
+  if (existing) {
+    if (existing.cleanupTimer) window.clearTimeout(existing.cleanupTimer);
+    existing.cleanupTimer = undefined;
+    existing.close = close;
+    return;
+  }
+
+  const marker = `${id}-${Date.now()}`;
+  const previousState = window.history.state;
+  const safeState =
+    previousState && typeof previousState === "object"
+      ? (previousState as Record<string, unknown>)
+      : {};
+  window.history.pushState({ ...safeState, [MODAL_HISTORY_KEY]: marker }, "");
+  modalHistoryStack.push({ id, marker, close });
+
+  if (!modalHistoryListening) {
+    window.addEventListener("popstate", closeTopModalFromHistory);
+    window.addEventListener("keydown", closeTopModalWithEscape);
+    modalHistoryListening = true;
+  }
+}
+
+function unregisterModalHistory(id: string) {
+  const entry = modalHistoryStack.find(item => item.id === id);
+  if (!entry) return;
+  entry.cleanupTimer = window.setTimeout(() => {
+    const current = modalHistoryStack.find(item => item.id === id);
+    if (!current) return;
+    modalHistoryStack.splice(modalHistoryStack.indexOf(current), 1);
+    if (currentModalMarker() === current.marker) window.history.back();
+    stopModalHistoryListeners();
+  }, 0);
+}
 
 const Backdrop = styled.div`
   position: fixed;
@@ -93,16 +181,27 @@ export function Modal({
   children: React.ReactNode;
   size?: "default" | "large";
 }>) {
+  const modalId = useId();
+
+  useEffect(() => {
+    registerModalHistory(modalId, onClose);
+    return () => unregisterModalHistory(modalId);
+  }, [modalId, onClose]);
+
   return (
     <Backdrop>
-      <DismissLayer type="button" aria-label="Cerrar modal" onClick={onClose} />
+      <DismissLayer
+        type="button"
+        aria-label="Cerrar modal"
+        onClick={() => requestModalClose(modalId)}
+      />
       <Dialog open $large={size === "large"} aria-modal="true" aria-label={title}>
         <Header>
           <div>
             <Eyebrow>{eyebrow}</Eyebrow>
             <h2>{title}</h2>
           </div>
-          <CloseButton type="button" onClick={onClose} aria-label="Cerrar">
+          <CloseButton type="button" onClick={() => requestModalClose(modalId)} aria-label="Cerrar">
             X
           </CloseButton>
         </Header>

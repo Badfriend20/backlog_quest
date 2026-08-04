@@ -84,6 +84,10 @@ export function GameGeneralPanel({
           }
           placeholder="Etapa, capítulo, módulo…"
         />
+        <small>
+          Se muestra en Colección y en las tarjetas de misión. Es informativo: no modifica el
+          porcentaje, el orden ni el calendario.
+        </small>
       </label>
       <label>
         <span>Terminaciones</span>

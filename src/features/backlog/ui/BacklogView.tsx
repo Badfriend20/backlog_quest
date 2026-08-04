@@ -61,6 +61,7 @@ export function BacklogView(props: BacklogViewProps) {
           onManageContentsForMission={props.missionActions.onManageContentsForMission}
           onAddCopyForMission={props.missionActions.onAddCopyForMission}
           onAddPlaythroughForMission={props.missionActions.onAddPlaythroughForMission}
+          onFinish={props.missionActions.onFinish}
         />
       );
     case "history":

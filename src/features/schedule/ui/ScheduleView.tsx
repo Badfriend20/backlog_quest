@@ -18,12 +18,14 @@ export function ScheduleView({
   onManageContentsForMission,
   onAddCopyForMission,
   onAddPlaythroughForMission,
+  onFinish,
 }: {
   data: QuestData;
   onEditMission: (missionId: string) => void;
   onManageContentsForMission: (missionId: string) => void;
   onAddCopyForMission: (missionId: string) => void;
   onAddPlaythroughForMission: (missionId: string) => void;
+  onFinish: (missionId: string) => void;
 }) {
   const generated = useMemo(() => generateSchedule(data), [data]);
   const grouped = useMemo(() => {
@@ -53,6 +55,7 @@ export function ScheduleView({
           onManageContentsForMission={onManageContentsForMission}
           onAddCopyForMission={onAddCopyForMission}
           onAddPlaythroughForMission={onAddPlaythroughForMission}
+          onFinish={onFinish}
         />
         {grouped.map(([week, items]) => (
           <section key={week}>
@@ -98,6 +101,13 @@ export function ScheduleView({
                             onAddCopy={() => onAddCopyForMission(mission.id)}
                             onAddPlaythrough={() => onAddPlaythroughForMission(mission.id)}
                           />
+                          <button
+                            type="button"
+                            className="schedule-mission-finish"
+                            onClick={() => onFinish(mission.id)}
+                          >
+                            Terminar misión
+                          </button>
                         </article>
                       );
                     })

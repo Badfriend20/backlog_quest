@@ -329,6 +329,7 @@ export function BacklogQuestApp({
                 message={commands.notification.message}
                 canUndo={commands.notification.undo && commands.canUndo}
                 onUndo={commands.undo}
+                onDismiss={commands.dismissNotification}
               />
             )}
           </div>

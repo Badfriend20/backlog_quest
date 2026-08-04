@@ -90,9 +90,18 @@ export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigation
           </button>
         </div>
         {mobileMenuOpen && (
-          <nav id={navigationId} className="mobile-navigation" aria-label="Navegación principal">
-            <NavigationItems activeView={activeView} onNavigate={navigate} />
-          </nav>
+          <>
+            <button
+              type="button"
+              className="mobile-navigation-overlay"
+              data-navigation-overlay
+              aria-label="Cerrar navegación"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <nav id={navigationId} className="mobile-navigation" aria-label="Navegación principal">
+              <NavigationItems activeView={activeView} onNavigate={navigate} />
+            </nav>
+          </>
         )}
       </header>
     </>

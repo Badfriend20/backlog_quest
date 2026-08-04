@@ -64,7 +64,10 @@ export const ScheduleScope = styled.div`
     border-color: var(--orange);
     color: var(--orange);
   }
-  .plan-mission-row > button {
+  .plan-mission-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     align-self: flex-start;
     margin-top: auto;
   }
@@ -171,6 +174,20 @@ export const ScheduleScope = styled.div`
   }
   .schedule-mission small {
     font-size: 0.68rem;
+  }
+  .schedule-mission-finish {
+    justify-self: start;
+    margin-top: 5px;
+    padding: 5px 7px;
+    border: 1px solid var(--purple);
+    background: var(--panel-3);
+    color: var(--text);
+    font:
+      700 0.68rem ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      monospace;
+    cursor: pointer;
   }
   .schedule-rest {
     display: grid;

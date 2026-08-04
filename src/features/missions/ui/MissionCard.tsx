@@ -58,7 +58,11 @@ export function MissionCard({
           onAddCopy={() => actions.onAddCopyForMission(mission.id)}
           onAddPlaythrough={() => actions.onAddPlaythroughForMission(mission.id)}
         />
-        <p>{game.progress.chapter || mission.notes || game.notes || "Sin nota de progreso."}</p>
+        <p>
+          {game.progress.chapter
+            ? `Punto actual: ${game.progress.chapter}`
+            : mission.notes || game.notes || "Sin nota de progreso."}
+        </p>
         <div className="active-version">
           <span>En uso</span>
           <strong>

@@ -39,6 +39,10 @@ export function useBacklogCommands(initialData: QuestData, storage: BacklogStora
     setNotification({ message, undo: false });
   }
 
+  function dismissNotification() {
+    setNotification(null);
+  }
+
   function undo() {
     if (!undoSnapshot) return;
     setData(undoSnapshot);
@@ -95,6 +99,7 @@ export function useBacklogCommands(initialData: QuestData, storage: BacklogStora
     update,
     commit,
     notify,
+    dismissNotification,
     undo,
     replace,
     reset,

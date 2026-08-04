@@ -203,6 +203,11 @@ export const BacklogScope = styled.div`
       border-color: var(--cyan);
     }
     .mobile-navigation {
+      position: fixed;
+      top: 64px;
+      right: 0;
+      left: 0;
+      z-index: 2;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
@@ -210,6 +215,19 @@ export const BacklogScope = styled.div`
       padding: 10px 12px 12px;
       overflow-y: auto;
       border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--sidebar) 98%, transparent);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+    }
+    .mobile-navigation-overlay {
+      position: fixed;
+      inset: 64px 0 0;
+      z-index: 1;
+      width: 100%;
+      height: auto;
+      padding: 0;
+      border: 0;
+      background: rgba(4, 2, 8, 0.68);
     }
     .mobile-navigation .nav-button {
       min-width: 0;
@@ -235,6 +253,15 @@ export const BacklogScope = styled.div`
     align-items: center;
     justify-content: space-between;
     gap: 14px;
+    touch-action: pan-y;
+    transition:
+      transform 160ms ease,
+      opacity 160ms ease;
+  }
+  .toast-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
   .toast button {
     border: 0;
