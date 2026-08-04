@@ -1,10 +1,12 @@
 import { useState } from "react";
-import type { QuestData, Resource } from "../../../shared/kernel/quest";
+import type { Channel, QuestData, Resource } from "../../../shared/kernel/quest";
+import { addChannel } from "../../../shared/kernel/channelCatalog";
 import {
   Button,
   CardActions,
   ConfirmationModal,
   FormGrid,
+  InlineCreateField,
   Modal,
   ModalActions,
 } from "../../../shared/ui";
@@ -15,6 +17,7 @@ interface DeviceEditorModalProps {
   device: Resource;
   isNew: boolean;
   onChange(platforms: Resource[]): void;
+  onCopyPlatformsChange(platforms: Channel[]): void;
   onClose(): void;
 }
 
@@ -23,6 +26,7 @@ export function DeviceEditorModal({
   device,
   isNew,
   onChange,
+  onCopyPlatformsChange,
   onClose,
 }: DeviceEditorModalProps) {
   const [draft, setDraft] = useState<Resource>(() => structuredClone(device));
@@ -112,6 +116,22 @@ export function DeviceEditorModal({
               />
             </label>
           </FormGrid>
+
+          <div className="device-channel-tools">
+            <div>
+              <strong>Plataformas o canales</strong>
+              <p>Agrégalos aquí para usarlos después en las modalidades de cualquier actividad.</p>
+            </div>
+            <InlineCreateField
+              buttonLabel="+ Crear plataforma"
+              inputLabel="Nombre de la plataforma"
+              placeholder="Ej. Steam, Xbox, físico…"
+              onCreate={name => {
+                const result = addChannel(data.catalogs.platforms, name);
+                onCopyPlatformsChange(result.channels);
+              }}
+            />
+          </div>
 
           {!isNew && (
             <div className="device-reference-summary">

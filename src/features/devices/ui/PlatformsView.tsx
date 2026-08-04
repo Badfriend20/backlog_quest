@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { QuestData, Resource } from "../../../shared/kernel/quest";
+import type { Channel, QuestData, Resource } from "../../../shared/kernel/quest";
 import { Button, Eyebrow } from "../../../shared/ui";
 import { createDevice } from "../domain/deviceCatalog";
 import { DeviceCard } from "./DeviceCard";
@@ -12,6 +12,7 @@ interface PlatformsViewProps {
   onSelectGame(id: string): void;
   onEditMission(id: string): void;
   onPlatformsChange(platforms: Resource[]): void;
+  onCopyPlatformsChange(platforms: Channel[]): void;
 }
 
 export function PlatformsView({
@@ -19,6 +20,7 @@ export function PlatformsView({
   onSelectGame,
   onEditMission,
   onPlatformsChange,
+  onCopyPlatformsChange,
 }: PlatformsViewProps) {
   const terms = useVocabulary();
   const [selectedDevice, setSelectedDevice] = useState<Resource>();
@@ -61,6 +63,7 @@ export function PlatformsView({
           device={selectedDevice}
           isNew={isCreating}
           onChange={onPlatformsChange}
+          onCopyPlatformsChange={onCopyPlatformsChange}
           onClose={() => setSelectedDevice(undefined)}
         />
       )}

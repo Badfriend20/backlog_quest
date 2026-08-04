@@ -9,6 +9,7 @@ import {
   selectQuickCopyPresets,
 } from "../../../shared/kernel/questSelectors";
 import { createGameCopyFromPreset } from "../domain/quickCopy";
+import { addChannel } from "../../../shared/kernel/channelCatalog";
 import type { GameDraftController } from "./gameEditorControllerTypes";
 import { createBlankCopy, UNKNOWN_GAME_RELATION } from "./gameEditorDraft";
 import type { GameEditorProps } from "./gameEditorTypes";
@@ -20,6 +21,7 @@ export function useGameCopiesController({
   data,
   missionIntent,
   onSave,
+  onCopyPlatformsChange,
   onResolveMissionRelation,
   onRemoveCopy,
   initialEditingCopyId,
@@ -27,7 +29,12 @@ export function useGameCopiesController({
 }: GameDraftController &
   Pick<
     GameEditorProps,
-    "data" | "missionIntent" | "onSave" | "onResolveMissionRelation" | "onRemoveCopy"
+    | "data"
+    | "missionIntent"
+    | "onSave"
+    | "onCopyPlatformsChange"
+    | "onResolveMissionRelation"
+    | "onRemoveCopy"
   > & {
     initialEditingCopyId: string | null;
     initialSnapshot?: Pick<Activity, "copies" | "playthroughs">;
@@ -105,6 +112,12 @@ export function useGameCopiesController({
   function updateCopyPlatform(copyId: string, platformId: string) {
     const platform = data.catalogs.platforms.find(item => item.id === platformId);
     updateCopy(copyId, { platformId: platform?.id, library: platform?.name ?? "" });
+  }
+
+  function addCopyPlatform(copyId: string, name: string) {
+    const result = addChannel(data.catalogs.platforms, name);
+    onCopyPlatformsChange(result.channels);
+    updateCopy(copyId, { platformId: result.channel.id, library: result.channel.name });
   }
 
   function updateCopyDevices(copyId: string, deviceIds: string[]) {
@@ -188,6 +201,7 @@ export function useGameCopiesController({
     addCopyFromPreset,
     updateCopy,
     updateCopyPlatform,
+    addCopyPlatform,
     updateCopyDevices,
     removeCopy,
   };

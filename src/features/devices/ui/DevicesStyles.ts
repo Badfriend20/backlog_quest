@@ -92,6 +92,21 @@ export const DevicesScope = styled.div`
     color: var(--muted);
     font-size: 0.82rem;
   }
+  .device-channel-tools {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+  }
+  .device-channel-tools p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
   .device-mission-modal-list {
     display: grid;
     gap: 14px;
@@ -114,6 +129,9 @@ export const DevicesScope = styled.div`
     }
     .device-view-heading > button {
       align-self: flex-start;
+    }
+    .device-channel-tools {
+      flex-direction: column;
     }
   }
   .device-selector {

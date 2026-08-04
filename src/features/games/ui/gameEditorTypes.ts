@@ -1,4 +1,4 @@
-import type { QuestData, Activity, Mission } from "../../../shared/kernel/quest";
+import type { QuestData, Activity, Channel, Mission } from "../../../shared/kernel/quest";
 
 export interface GameEditorMissionIntent {
   kind: "copy" | "playthrough";
@@ -16,6 +16,7 @@ export interface GameEditorProps {
   missionIntent?: GameEditorMissionIntent;
   onClose: () => void;
   onSave: (game: Activity, closeEditor: boolean) => void;
+  onCopyPlatformsChange: (platforms: Channel[]) => void;
   onResolveMissionRelation: (
     game: Activity,
     missionId: string,

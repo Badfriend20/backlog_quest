@@ -8,7 +8,7 @@ import {
   crossCopyProgressLabel,
   getSlotLabel,
 } from "../../../shared/kernel/questSelectors";
-import { FormGrid, HelpTooltip, RelationSummaryGrid } from "../../../shared/ui";
+import { FormGrid, HelpTooltip, InlineCreateField, RelationSummaryGrid } from "../../../shared/ui";
 import { DeviceMultiSelect } from "../../devices";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
@@ -34,6 +34,7 @@ export function GameCopyCard({
     copyPlatforms,
     updateCopy,
     updateCopyPlatform,
+    addCopyPlatform,
     updateCopyDevices,
     removeCopy,
   } = editor;
@@ -110,6 +111,12 @@ export function GameCopyCard({
               ))}
             </select>
           </label>
+          <InlineCreateField
+            buttonLabel={`+ Crear ${terms.channel}`}
+            inputLabel={`Nombre del ${terms.channel}`}
+            placeholder="Ej. Steam, Xbox, físico…"
+            onCreate={name => addCopyPlatform(copy.id, name)}
+          />
           <div className="field-block wide-field">
             <span>{capitalizeTerm(terms.resources)}</span>
             <DeviceMultiSelect

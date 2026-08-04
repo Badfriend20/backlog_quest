@@ -267,6 +267,7 @@ export function BacklogQuestApp({
                   setGameEditorIntent(undefined);
                 }}
                 onSave={selectedGame ? updateGame : addGame}
+                onCopyPlatformsChange={updateCopyPlatforms}
                 onResolveMissionRelation={resolveMissionRelation}
                 onRemoveContent={(gameId, contentId) =>
                   commands.commit(

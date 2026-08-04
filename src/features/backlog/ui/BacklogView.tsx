@@ -73,6 +73,7 @@ export function BacklogView(props: BacklogViewProps) {
           onSelectGame={props.onSelectGame}
           onEditMission={props.onEditMission}
           onPlatformsChange={props.onPlatformsChange}
+          onCopyPlatformsChange={props.onCopyPlatformsChange}
         />
       );
     case "settings":

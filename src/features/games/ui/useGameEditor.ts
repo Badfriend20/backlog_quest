@@ -15,6 +15,7 @@ export function useGameEditor({
   data,
   missionIntent,
   onSave,
+  onCopyPlatformsChange,
   onResolveMissionRelation,
   onRemoveContent,
   onRemoveCopy,
@@ -25,6 +26,7 @@ export function useGameEditor({
   | "data"
   | "missionIntent"
   | "onSave"
+  | "onCopyPlatformsChange"
   | "onResolveMissionRelation"
   | "onRemoveContent"
   | "onRemoveCopy"
@@ -96,6 +98,7 @@ export function useGameEditor({
     data,
     missionIntent,
     onSave,
+    onCopyPlatformsChange,
     onResolveMissionRelation,
     onRemoveCopy,
     initialEditingCopyId: editorInitial.editingCopyId,
