@@ -5,7 +5,9 @@ import {
   Callout,
   CardTopline,
   DependencyWarning,
+  Eyebrow,
   PriorityChip,
+  SectionHeading,
   Stack,
   StatusChip,
 } from "../../../shared/ui";
@@ -18,6 +20,8 @@ import {
 } from "../../../shared/kernel/questSelectors";
 import { QueueScope } from "./QueueStyles";
 import { useVocabulary } from "../../../shared/vocabulary";
+import { buildRotationPlan } from "../domain/rotation";
+import { RotationRecommendationItem } from "./RotationRecommendationItem";
 
 export function QueueView({
   data,
@@ -33,17 +37,48 @@ export function QueueView({
   const items = sortedQueue(data).filter(
     item => stateFilter === "Todos" || item.state === stateFilter
   );
+  const rotationPlan = buildRotationPlan(data, {
+    limit: data.preferences.queueDisplayCount,
+  });
   return (
     <QueueScope>
       <Stack>
         <Callout>
           <strong>La lista contiene todo el catálogo</strong>
           <p>
-            La portada solo muestra los primeros {data.preferences.queueDisplayCount}. Aplazar manda
-            a la posición {data.preferences.deferPosition}; terminar reorganiza según tu intención
-            de repetición.
+            La rotación sugerida orienta la siguiente elección sin cambiar tu orden manual. Aplazar
+            manda a la posición {data.preferences.deferPosition}; terminar reorganiza según tu
+            intención de repetición.
           </p>
         </Callout>
+        <section aria-labelledby="rotation-heading">
+          <SectionHeading>
+            <div>
+              <Eyebrow>RECOMENDACIÓN DINÁMICA</Eyebrow>
+              <h2 id="rotation-heading">Rotación sugerida</h2>
+            </div>
+          </SectionHeading>
+          <ol className="rotation-list">
+            {rotationPlan.candidates.map((candidate, index) => (
+              <RotationRecommendationItem
+                key={candidate.game.id}
+                data={data}
+                candidate={candidate}
+                suggestionPosition={index + 1}
+                onActivate={onActivate}
+              />
+            ))}
+          </ol>
+          {!rotationPlan.candidates.length && (
+            <p className="rotation-empty">No hay actividades elegibles para recomendar ahora.</p>
+          )}
+        </section>
+        <SectionHeading>
+          <div>
+            <Eyebrow>INTENCIÓN PERSISTIDA</Eyebrow>
+            <h2>Orden manual</h2>
+          </div>
+        </SectionHeading>
         <div className="queue-toolbar">
           <label>
             <span>Estado</span>

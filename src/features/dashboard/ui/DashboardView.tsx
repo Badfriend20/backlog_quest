@@ -1,13 +1,8 @@
 import type { AppView, QuestData } from "../../../shared/kernel/quest";
 import { Button, Eyebrow, SectionHeading, Stack } from "../../../shared/ui";
-import {
-  activeMissions,
-  formatDateTime,
-  normalize,
-  queueLabel,
-  sortedQueue,
-} from "../../../shared/kernel/questSelectors";
+import { activeMissions, formatDateTime, normalize } from "../../../shared/kernel/questSelectors";
 import { MissionCard, type MissionActions } from "../../missions";
+import { buildRotationPlan, RotationRecommendationItem } from "../../queue";
 import { EmptyCard } from "./EmptyCard";
 import { Metric } from "./Metric";
 import { DashboardScope } from "./DashboardStyles";
@@ -29,7 +24,9 @@ export function DashboardView({
     ["Terminado", "Completado"].includes(game.status)
   ).length;
   const completionRate = Math.round((finished / Math.max(1, data.games.length)) * 100);
-  const nextItems = sortedQueue(data).slice(0, data.preferences.queueDisplayCount);
+  const rotationPlan = buildRotationPlan(data, {
+    limit: data.preferences.queueDisplayCount,
+  });
 
   return (
     <DashboardScope>
@@ -90,30 +87,15 @@ export function DashboardView({
               </Button>
             </SectionHeading>
             <ol className="quest-list">
-              {nextItems.map(item => {
-                const game = data.games.find(candidate => candidate.id === item.gameId);
-                if (!game) return null;
-                const active = data.missions.some(
-                  mission => mission.gameId === game.id && mission.status === "active"
-                );
-                return (
-                  <li key={item.gameId}>
-                    <span className="quest-number">{item.position}</span>
-                    <div className="quest-copy">
-                      <strong>{game.title}</strong>
-                      <small>
-                        {item.preferredDevice || "Plataforma por elegir"} ·{" "}
-                        {queueLabel(data, item.state)}
-                      </small>
-                    </div>
-                    {!active && (
-                      <Button size="compact" onClick={() => onActivate(game.id)}>
-                        Activar
-                      </Button>
-                    )}
-                  </li>
-                );
-              })}
+              {rotationPlan.candidates.map((candidate, index) => (
+                <RotationRecommendationItem
+                  key={candidate.game.id}
+                  data={data}
+                  candidate={candidate}
+                  suggestionPosition={index + 1}
+                  onActivate={onActivate}
+                />
+              ))}
             </ol>
           </div>
           <Stack>

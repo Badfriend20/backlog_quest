@@ -16,7 +16,7 @@ export function QueueSettingsSection({
       <h2>Comportamiento real</h2>
       <div className="settings-form">
         <label>
-          <span>Elementos visibles en Inicio</span>
+          <span>Recomendaciones visibles</span>
           <input
             type="number"
             min="3"
@@ -25,7 +25,7 @@ export function QueueSettingsSection({
             onChange={event =>
               onChange(
                 { queueDisplayCount: Number(event.target.value) },
-                "Cantidad visible de la lista actualizada."
+                "Cantidad visible de recomendaciones actualizada."
               )
             }
           />

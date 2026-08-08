@@ -64,36 +64,6 @@ export const DashboardScope = styled.div`
     display: grid;
     gap: 8px;
   }
-  .quest-list li {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    padding: 11px 13px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-  }
-  .quest-number {
-    width: 30px;
-    height: 30px;
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    background: var(--purple-2);
-    font:
-      800 0.8rem ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      monospace;
-  }
-  .quest-list strong {
-    display: block;
-  }
-  .quest-list small {
-    display: block;
-  }
-  .quest-list small {
-    margin-top: 3px;
-  }
   .platform-stack {
     display: grid;
     gap: 8px;
@@ -152,13 +122,6 @@ export const DashboardScope = styled.div`
     justify-content: center;
     min-height: 240px;
     border-style: dashed;
-  }
-  .quest-copy {
-    flex: 1;
-    min-width: 0;
-  }
-  .quest-list li > button {
-    margin-left: auto;
   }
   .activity-list {
     display: grid;

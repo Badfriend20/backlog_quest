@@ -12,6 +12,8 @@ Vitest prueba seams puras y estables:
 - migración, persistencia y fusión de plataformas con conservación de referencias;
 - tema claro;
 - pausar, aplazar, enviar al final, terminar y activar misiones.
+- rotación sugerida: prioridad, orden manual, historial por recurso, restricciones, diversidad,
+  pins, fecha inyectada e inmutabilidad.
 
 Las pruebas usan resultados literales de la especificación, no replican el algoritmo dentro del test.
 

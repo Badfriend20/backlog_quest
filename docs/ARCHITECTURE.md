@@ -21,7 +21,7 @@ src/
     games/               biblioteca, editor, copias y partidas
     history/             historial global
     missions/            cards, activación y cierre
-    queue/               lista completa
+    queue/               orden manual y rotación sugerida
     schedule/            calendario generado
     settings/            preferencias y temas
   shared/
@@ -85,6 +85,12 @@ La feature `games` es propietaria del catálogo de contenidos. `Mission` y `Play
 `shared/kernel/schedule.ts` concentra el lenguaje transversal de agenda: normalización de sesiones recurrentes, detección de conflictos y etiquetas. Missions edita esas sesiones, Backlog las persiste y Schedule las proyecta; ninguna de esas features reimplementa la regla.
 
 `backlog/application/useBacklogCommands.ts` es la fachada que posee el estado persistente, el snapshot de deshacer, las notificaciones y las operaciones de importar, restaurar y exportar. `BacklogQuestApp` conserva únicamente estado efímero de navegación y modales.
+
+`queue/domain/rotation.ts` es propietario de la elegibilidad, la deuda de rotación por recurso, la
+puntuación base y la selección diversa de recomendaciones. `RotationPlan` es una proyección pura y
+determinista de `QuestData` para una fecha de referencia: no persiste resultados ni modifica
+`QueueItem.position`. Dashboard consume esta capacidad exclusivamente mediante el `index.ts` de
+Queue; la lista manual continúa derivándose con `sortedQueue`.
 
 `backlog/application/demoSession.ts` concentra la transición pura entre datos reales, ejemplo y
 respaldo original. `BacklogStorage` persiste ese respaldo en una clave separada y Settings aporta

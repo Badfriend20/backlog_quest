@@ -3,6 +3,20 @@ import styled from "styled-components";
 export const QueueScope = styled.div`
   display: contents;
 
+  .rotation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .rotation-empty {
+    margin: 0;
+    padding: 14px;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+  }
+
   .queue-toolbar {
     display: flex;
     align-items: end;

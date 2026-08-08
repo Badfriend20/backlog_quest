@@ -69,13 +69,43 @@ Activar una misión vincula juego, contenido, copia, dispositivo y partida; actu
 
 Dos misiones solo entran en conflicto cuando una sesión coincide tanto en día como en franja. El reemplazo nunca es silencioso: requiere confirmación y aplaza las misiones conflictivas.
 
-Terminar cierra misión y partida, elimina calendario, actualiza progreso y contenido, registra actividad y reorganiza la lista según intención de rejugada.
+Terminar cierra misión y partida, elimina calendario, actualiza progreso y contenido, registra
+actividad y ajusta únicamente la entrada terminada según la intención de repetición. La rotación
+sugerida se recalcula al renderizar y nunca provoca un reordenamiento persistido adicional.
 
 Pausar, aplazar, enviar al final y abandonar conservan historial, liberan la franja y eliminan programación futura. Las acciones importantes admiten restaurar el snapshot previo mediante Deshacer.
 
 ## Lista y calendario
 
 Cada juego aparece una sola vez en la lista, con posiciones continuas. Los estados válidos son `active`, `queued`, `paused`, `deferred`, `replay`, `replay-later`, `archived`, `low-interest`, `blocked` y `wishlist`.
+
+La Lista separa dos conceptos. **Orden manual** muestra `QueueItem.position`, respeta pins y conserva
+los controles de movimiento y las transiciones existentes. **Rotación sugerida** es un ranking
+calculado en tiempo real que también alimenta Camino sugerido en Inicio. Construir la sugerencia es
+una operación de solo lectura: no modifica posiciones, pins, estados ni ningún otro dato y no
+persiste scores, deuda o planes en el JSON.
+
+Solo los estados `queued` y `replay` son elegibles. Se excluyen los demás estados, en particular
+`paused` y `deferred`, porque expresan decisiones manuales. Disponibilidad y dependencias son
+restricciones duras: una fecha futura o una dependencia sin terminar impide recomendar. Una fecha
+igual al día de referencia ya está disponible. Un recurso preferido desactivado también excluye el
+candidato; la ausencia o un ID desconocido no falla y simplemente elimina los bonus asociados al
+recurso.
+
+La puntuación combina prioridad de la actividad, influencia decreciente de la posición manual,
+deuda de rotación derivada del historial, prioridad del recurso y una penalización moderada cuando
+ese recurso ya tiene una misión activa. La deuda está acotada: considera tiempo desde el último uso
+y terminaciones de otros recursos desde entonces; un recurso sin historial recibe una oportunidad
+inicial moderada, no deuda infinita.
+
+La ventana se construye mediante selección sucesiva. Una tercera recomendación consecutiva del
+mismo recurso recibe una penalización de diversidad cuando existe una alternativa elegible, pero
+puede aparecer si su prioridad lo justifica o si no quedan alternativas. No existen cuotas ni
+nombres de recursos codificados en el algoritmo.
+
+Un pin futuro sigue excluido hasta `availableFrom`. Cuando está disponible recibe influencia fuerte
+en la sugerencia, sin cambiar `pinnedPosition` ni garantizar una prohibición absoluta sobre otros
+candidatos. El mismo `QuestData` y la misma fecha de referencia producen el mismo `RotationPlan`.
 
 El calendario se deriva de `scheduleRules`, sus `sessions`, `scheduleOverrides`, `scheduleWeeks` y `weekStartsOn`; no se codifican títulos o fechas manuales. Una misión sin sesiones permanece activa y accesible desde Plan, pero no genera bloques de calendario.
 
