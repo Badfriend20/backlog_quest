@@ -15,7 +15,7 @@ src/
   app/composition/       composición y arranque
   data/                  respaldo inicial incluido
   features/
-    backlog/             coordinación, comandos, migración y persistencia
+    backlog/             coordinación, comandos, normalización y persistencia
     dashboard/           vista de inicio
     devices/             catálogo, reglas de integridad, edición y selectores de dispositivos
     games/               biblioteca, editor, copias y partidas
@@ -45,8 +45,8 @@ No todas las features necesitan todas las capas. Agregar carpetas vacías está 
 ## Política de shared
 
 El kernel transversal expone `QuestData`, `Activity`, `ActivityVariant`, `ActivityContent`,
-`ActivityProgress`, `Journey`, `Resource` y `Channel`. Las claves históricas del JSON v2 se
-conservan como contrato de portabilidad y la migración actúa como adaptador; no deben volver a ser
+`ActivityProgress`, `Journey`, `Resource` y `Channel`. Las claves históricas del formato actual se
+conservan como contrato de portabilidad y la normalización actúa como adaptador; no deben volver a ser
 el lenguaje canónico del código.
 
 `shared/vocabulary` es un módulo profundo compartido por las vistas. Su interfaz resuelve un perfil

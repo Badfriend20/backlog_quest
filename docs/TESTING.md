@@ -8,12 +8,16 @@ Vitest prueba seams puras y estables:
 
 - agregado rápido: clave, etiqueta configurable, selección global, deduplicación, recencia y copias sin dispositivos preseleccionados;
 - creación de presets personalizados;
-- migración y reconstrucción de presets;
-- migración, persistencia y fusión de plataformas con conservación de referencias;
+- normalización y reconstrucción de presets;
+- normalización, persistencia y fusión de plataformas con conservación de referencias;
 - tema claro;
 - pausar, aplazar, enviar al final, terminar y activar misiones.
 - rotación sugerida: prioridad, orden manual, historial por recurso, restricciones, diversidad,
   pins, fecha inyectada e inmutabilidad.
+- movimiento directo de recomendaciones: destinos relativos, continuidad, estado, pins, límites,
+  bitácora y efecto sobre la posición observada por la rotación.
+- importación: formato actual válido y normalizable, rechazo de formatos anteriores, desconocidos o
+  sin estructura suficiente.
 
 Las pruebas usan resultados literales de la especificación, no replican el algoritmo dentro del test.
 
@@ -40,7 +44,11 @@ npm run validate
 - Configurar: el modal muestra todos los presets y los campos configurables, excepto dispositivos.
 - Propiedades: ocultar deshabilita el texto visible; al mostrarlo se respeta el máximo de 24 caracteres.
 - Tema personalizado: cada color se persiste al cambiar de vista.
-- Portabilidad: solo se muestra el botón personalizado **Importar JSON v1 o v2**; el selector nativo permanece oculto.
+- Portabilidad: solo se muestran **Exportar JSON** e **Importar JSON**; el selector nativo permanece oculto.
+- Inicio y Lista: Camino sugerido y Rotación sugerida permiten activar o mover hacia abajo; los
+  destinos anteriores y las posiciones fijadas permanecen deshabilitados.
+- Recursos: no existe un campo de rol manual; Balance muestra actividad activa, notas o el fallback
+  discreto correspondiente.
 - Actualización PWA: una versión nueva queda en espera hasta pulsar **Actualizar** en el aviso.
 - Vista compacta: reduce espacios en Inicio, Biblioteca y Lista sin ocultar información.
 - Biblioteca: cambiar el orden no modifica posiciones de Lista y los cerrados quedan al final en el orden predeterminado.

@@ -9,8 +9,8 @@ identificadores funcionales.
 ## Modelo neutral y compatibilidad
 
 El lenguaje canónico es Actividad, Modalidad, Recorrido, Contenido, Recurso y Canal. Las claves
-históricas del JSON v2, como `games`, `copies` y `playthroughs`, se conservan exclusivamente como
-contrato de portabilidad; la migración las adapta al modelo neutral sin reescribir los respaldos
+históricas del formato actual, como `games`, `copies` y `playthroughs`, se conservan exclusivamente como
+contrato de portabilidad; la normalización las adapta al modelo neutral sin reescribir los respaldos
 del usuario.
 
 El perfil de vocabulario es una preferencia global de presentación. Cambiarlo adapta todas las
@@ -85,6 +85,11 @@ calculado en tiempo real que también alimenta Camino sugerido en Inicio. Constr
 una operación de solo lectura: no modifica posiciones, pins, estados ni ningún otro dato y no
 persiste scores, deuda o planes en el JSON.
 
+Cada recomendación conserva **Activar** como acción principal y permite mover la actividad a mitad,
+a dos tercios o al final del orden manual sin activar una misión. La acción solo cambia
+`QueueItem.position`, nunca mueve hacia arriba y queda bloqueada para elementos fijados. El cambio
+participa en el historial de actividad y en Deshacer como los demás movimientos manuales.
+
 Solo los estados `queued` y `replay` son elegibles. Se excluyen los demás estados, en particular
 `paused` y `deferred`, porque expresan decisiones manuales. Disponibilidad y dependencias son
 restricciones duras: una fecha futura o una dependencia sin terminar impide recomendar. Una fecha
@@ -115,7 +120,11 @@ La edición agrupa las sesiones por franja. Cada franja aparece una sola vez y c
 
 Las relaciones usan IDs (`deviceIds`, `deviceId`, `activeDeviceId`, `preferredDeviceId`). Los nombres son presentación y compatibilidad. Renombrar no rompe referencias; eliminar se bloquea mientras existan usos.
 
-La administración del catálogo vive en esta vista, no en Configuración. La lista conserva el resumen de juegos y misiones; seleccionar una tarjeta o su acción Editar abre un formulario individual. Agregar dispositivo abre el mismo formulario con un ID nuevo y estable.
+La administración del catálogo vive en esta vista, no en Configuración. Cada recurso conserva
+nombre, tipo, disponibilidad, prioridad y notas. La lista conserva el resumen de actividades y
+misiones; seleccionar una tarjeta o su acción Editar abre un formulario individual. Agregar un
+recurso abre el mismo formulario con un ID nuevo y estable. En Balance, una misión activa muestra
+su actividad; sin misión se muestran las notas o el fallback `Sin misión activa`.
 
 ## Configuración
 
@@ -179,3 +188,5 @@ El control **Editar misión** permite seleccionar otro contenido existente, camb
 - IDs internos y etiquetas visibles están desacoplados.
 - Cambiar textos de ayuda no altera claves, relaciones ni operaciones.
 - Importar o normalizar nunca borra datos existentes para reconstruirlos artificialmente.
+- Solo se importan respaldos del formato actual con `schemaVersion: 2`; los formatos anteriores o
+  desconocidos se rechazan.

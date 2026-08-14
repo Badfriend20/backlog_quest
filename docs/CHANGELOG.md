@@ -1,5 +1,15 @@
 # Changelog
 
+## Sin publicar — 2026-08-13
+
+- Camino sugerido y Rotación sugerida permiten mover una recomendación a mitad, a dos tercios o al
+  final del orden manual sin activar una misión, respetando pins y Deshacer.
+- Recursos elimina `currentRole`; las notas conservan contexto manual y Balance deriva el uso actual
+  de las misiones activas.
+- La importación deja de aceptar respaldos con `schemaVersion: 1` y conserva únicamente la
+  normalización del formato actual con `schemaVersion: 2`.
+- Portabilidad simplifica sus etiquetas visibles a **Exportar JSON** e **Importar JSON**.
+
 ## 2.6.0 — 2026-07-29
 
 ### Modelo neutral y vocabulario

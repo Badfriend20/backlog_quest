@@ -36,6 +36,7 @@ _Avoid_: Referencia obligatoria por ID, borrado de valores históricos
 
 **Recurso**:
 Equipo, herramienta, espacio, medio o entorno concreto usado para realizar una actividad.
+Las notas conservan el contexto manual; las misiones activas describen su uso actual.
 _Avoid_: Canal
 
 **Contenido**:

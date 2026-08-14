@@ -40,7 +40,7 @@ La carpeta `dist` queda lista para GitHub Pages o cualquier hosting estático.
 
 El archivo `src/data/backlog.json` contiene el estado inicial anónimo. Los cambios del usuario se
 guardan en `localStorage` y pueden importarse o exportarse como un único respaldo JSON. La
-aplicación normaliza respaldos compatibles de las versiones 1 y 2.
+aplicación importa y normaliza respaldos compatibles con el formato actual (`schemaVersion: 2`).
 
 ## Documentación
 

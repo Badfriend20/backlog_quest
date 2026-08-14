@@ -1,4 +1,4 @@
-# Datos, persistencia y migración
+# Datos, persistencia y normalización
 
 ## Estado inicial y privacidad
 
@@ -30,20 +30,24 @@ El JSON incluido es un estado inicial anónimo: conserva solamente catálogos y 
 
 `QuestData` es el documento completo del dominio: metadatos, preferencias, catálogos, recursos,
 lista, misiones, reglas, excepciones, actividad y actividades. El adaptador de persistencia conserva
-las claves históricas `devices` y `games` del JSON v2. `catalogs.platforms` guarda los canales
+las claves históricas `devices` y `games` del formato actual. `catalogs.platforms` guarda los canales
 configurables y cada modalidad los referencia mediante `platformId`. Cada actividad contiene
 modalidades, recorridos, contenidos y dependencias.
 
 Cada regla de agenda guarda `sessions`: una lista de combinaciones `{ weekday, slotId }`. La duración mínima y máxima sigue perteneciendo a la regla completa. Una lista vacía representa una misión activa sin calendario fijo.
 
-`crossCopyProgress` indica compatibilidad de partidas guardadas entre copias mediante valores estables: `shared`, `separate`, `partial` o `unknown`. La migración convierte el antiguo `sharedProgress` y elimina `platformPriority` y el porcentaje global `progress.percent` de respaldos anteriores.
+`crossCopyProgress` indica compatibilidad de recorridos entre modalidades mediante valores estables:
+`shared`, `separate`, `partial` o `unknown`. La normalización del formato actual acepta sus
+iteraciones compatibles y descarta campos que ya no forman parte del modelo al volver a exportar.
+
+Cada recurso conserva `id`, `name`, `kind`, `active`, `priority` y `notes`. Las notas expresan
+contexto manual; el uso actual se deriva de las misiones y no se persiste como un rol paralelo.
 
 ## Persistencia
 
 `BacklogStorage` es la seam de Application. `browserBacklogStorage` es su adaptador de navegador y usa:
 
 - `backlog-quest:data:v2` como clave actual;
-- `backlog-quest:data:v1` como fallback heredado;
 - `backlog-quest:demo-snapshot:v2` como respaldo aislado de una sesión de demostración;
 - el JSON incluido si no hay respaldo local válido.
 
@@ -51,11 +55,11 @@ La UI recibe el adaptador desde `app/composition`; no accede directamente a loca
 
 ## Datos de demostración
 
-`public/examples` contiene seis respaldos v2 segmentados: genérico, videojuegos, lectura,
+`public/examples` contiene seis respaldos del formato actual segmentados: genérico, videojuegos, lectura,
 aprendizaje, proyectos y personalizado/cocina. Cada archivo tiene 15 actividades ficticias y
 combina modalidades, formas de acceso, recursos, contenidos, recorridos, estados de lista,
 misiones y reglas de calendario. `npm run generate:examples` los regenera de forma determinista y
-las pruebas los recorren por el mismo adaptador de migración usado por la importación.
+las pruebas los recorren por el mismo normalizador usado por la importación.
 
 Iniciar una demostración guarda una copia estructural del estado actual en
 `backlog-quest:demo-snapshot:v2`. Cargar otro ejemplo reutiliza ese primer respaldo. La sesión
@@ -65,11 +69,21 @@ después de una confirmación.
 
 ## Importación
 
-`migrateBacklog` acepta v1 y v2. `normalizeV2` completa campos faltantes, resuelve IDs de dispositivos, completa la lista y normaliza relaciones. Los valores existentes tienen prioridad sobre defaults.
+`normalizeBacklog` acepta únicamente documentos compatibles con el formato actual,
+`schemaVersion: 2`. Dentro de ese formato, completa campos faltantes razonables, resuelve IDs de
+recursos, completa la lista y normaliza relaciones. Los valores existentes tienen prioridad sobre
+los defaults.
+
+Un respaldo con `schemaVersion: 1` se rechaza explícitamente como formato anterior no compatible.
+Una versión desconocida o un documento sin la estructura mínima de Backlog Quest también se
+rechazan; ya no existe una ruta de conversión desde el formato anterior.
 
 Los presets rápidos existentes se conservan. Si no existen o están vacíos, se reconstruyen con todas las copias y se deduplican por biblioteca/propiedad.
 
-Los respaldos sin catálogo de plataformas lo reconstruyen desde las copias y presets. La migración separa sufijos de propiedad heredados del nombre de plataforma usando los propios datos de cada copia; por ejemplo, dos variantes de una misma plataforma con propiedades diferentes convergen en un ID sin depender de nombres codificados.
+Los respaldos compatibles sin catálogo de plataformas lo reconstruyen desde las modalidades y
+presets. La normalización separa sufijos de propiedad conservados en el nombre de plataforma usando
+los propios datos de cada modalidad; así, variantes de una misma plataforma con propiedades
+diferentes convergen en un ID sin depender de nombres codificados.
 
 La normalización crea una regla de presentación por cada propiedad del catálogo. Los respaldos anteriores conservan el comportamiento histórico ocultando `Propio` inicialmente; desde ese momento todas las reglas se guardan como datos configurables, sin lógica especial en la UI.
 
@@ -85,6 +99,10 @@ Las relaciones de misión con contenido, copia y partida son opcionales una vez 
 
 La creación y la conservación tienen reglas diferentes: una partida nueva requiere una copia y un contenido válidos, mientras que una partida existente puede quedar sin cualquiera de esas relaciones después de desacoplarlas.
 
-La migración conserva arreglos de contenido explícitamente vacíos; no inventa una campaña para sustituir una decisión del usuario. En respaldos anteriores completa los snapshots de partidas a partir del contenido referenciado cuando todavía existe.
+La normalización conserva arreglos de contenido explícitamente vacíos; no inventa una campaña para
+sustituir una decisión del usuario. En iteraciones compatibles del formato actual completa los
+snapshots de recorridos a partir del contenido referenciado cuando todavía existe.
 
-Los respaldos anteriores con `weekdays` se convierten a `sessions` usando `mission.slotId` como franja de cada día heredado. La normalización elimina `weekdays` al exportar para evitar dos fuentes de verdad.
+Los respaldos compatibles que todavía contienen `weekdays` se normalizan a `sessions` usando
+`mission.slotId` como franja de cada día. La exportación elimina `weekdays` para evitar dos fuentes
+de verdad.
