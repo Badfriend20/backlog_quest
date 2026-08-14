@@ -65,6 +65,8 @@ Ejemplos actuales:
 - `PrioritySelectChip` es un control visual compartido y ajeno a `QuestData`; Games, Missions y
   Queue le entregan opciones y conectan su selección con la mutación de `Activity.priority` en
   Application. `PriorityChip` permanece como representación pasiva de otras prioridades.
+- `ReorderControls` concentra los dos movimientos compactos y accesibles usados por Games y Queue;
+  recibe callbacks y límites, sin conocer contenidos, posiciones ni pins.
 - `CardSurface` es la seam de superficie consumida por Dashboard, Games, Missions, Devices y
   Settings. `GameCard`, `LibraryCard` y `RelationCard` son adapters visuales, no implementaciones
   paralelas.

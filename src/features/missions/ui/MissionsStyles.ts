@@ -47,7 +47,17 @@ export const MissionsScope = styled.div`
     cursor: pointer;
     border: 1px solid var(--border);
     background: var(--panel-2);
+    color: var(--text);
     font-weight: 800;
+  }
+  .action-menu-trigger:hover,
+  .action-menu-trigger:focus-visible {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .action-menu-trigger:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
   }
   .action-menu > div {
     position: absolute;
@@ -56,9 +66,9 @@ export const MissionsScope = styled.div`
     z-index: 20;
     width: 220px;
     display: grid;
-    background: #0c0814;
+    background: var(--panel);
     border: 1px solid var(--border);
-    box-shadow: 5px 5px 0 #040207;
+    box-shadow: 5px 5px 0 var(--bg);
     padding: 6px;
   }
   .action-menu button {
@@ -69,7 +79,8 @@ export const MissionsScope = styled.div`
     padding: 9px;
     cursor: pointer;
   }
-  .action-menu button:hover {
+  .action-menu button:hover,
+  .action-menu button:focus-visible {
     background: var(--panel-2);
   }
   .danger-text {

@@ -32,6 +32,10 @@ Las variantes de acción se expresan con `Button`: `primary`, `ghost`, `danger`,
 `PrioritySelectChip` conserva esa apariencia, pero es un botón accesible con menú; no conoce datos
 de dominio y solo se usa como editor cuando su consumidor conecta explícitamente una mutación.
 
+`ReorderControls` presenta Subir/Bajar como dos targets de 34 píxeles con etiquetas accesibles. Los
+menús contextuales usan panel, borde, texto y sombra mediante tokens; ninguna superficie de menú
+depende de fondos oscuros literales.
+
 `CardSurface` es la seam compartida de tarjetas. Define superficie `var(--panel)`, borde, color y
 transición sin introducir degradados ni colores literales. Inicio, Colección, Recursos,
 Configuración y las relaciones reutilizan esta base mediante adapters pequeños:

@@ -93,19 +93,16 @@ export function MissionCard({
           })}
         </ChipList>
         <CardActions>
-          <Button size="compact" onClick={() => actions.onEditMission(mission.id)}>
-            Editar misión
-          </Button>
-          <Button size="compact" onClick={() => actions.onEditGame(game.id)}>
-            Editar actividad
-          </Button>
           <Button variant="primary" size="compact" onClick={() => actions.onFinish(mission.id)}>
             Terminar
           </Button>
           <Button size="compact" onClick={() => actions.onDefer(mission.id)}>
             Aplazar
           </Button>
-          <MissionActionMenu missionId={mission.id} actions={actions} />
+          <Button size="compact" onClick={() => actions.onEditMission(mission.id)}>
+            Editar misión
+          </Button>
+          <MissionActionMenu missionId={mission.id} gameId={game.id} actions={actions} />
         </CardActions>
       </GameCard>
     </MissionsScope>

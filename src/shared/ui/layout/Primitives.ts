@@ -331,7 +331,10 @@ export const RelationBadges = styled.div`
 
 export const RelationActions = styled.div<{ $split?: boolean }>`
   display: flex;
+  align-items: center;
   justify-content: ${({ $split }) => ($split ? "space-between" : "flex-end")};
+  gap: 8px;
+  flex-wrap: wrap;
   margin-top: 10px;
 `;
 

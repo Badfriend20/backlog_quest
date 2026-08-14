@@ -1,5 +1,5 @@
 import type { ContentType, ActivityContent } from "../../../shared/kernel/quest";
-import { Button, FormGrid } from "../../../shared/ui";
+import { FormGrid, ReorderControls } from "../../../shared/ui";
 import { EditableRelationCard } from "./EditableRelationCard";
 import type { GameEditorController } from "./useGameEditor";
 
@@ -54,22 +54,12 @@ export function GameContentCard({
       summary={
         <>
           {content.notes && <p className="copy-summary-notes">{content.notes}</p>}
-          <div className="content-order-actions" aria-label="Orden del contenido">
-            <Button
-              size="compact"
-              disabled={index === 0}
-              onClick={() => moveContent(content.id, -1)}
-            >
-              Subir
-            </Button>
-            <Button
-              size="compact"
-              disabled={index === total - 1}
-              onClick={() => moveContent(content.id, 1)}
-            >
-              Bajar
-            </Button>
-          </div>
+          <ReorderControls
+            upDisabled={index === 0}
+            downDisabled={index === total - 1}
+            onMoveUp={() => moveContent(content.id, -1)}
+            onMoveDown={() => moveContent(content.id, 1)}
+          />
         </>
       }
       editor={

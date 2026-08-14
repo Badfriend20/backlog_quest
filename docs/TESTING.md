@@ -20,6 +20,8 @@ Vitest prueba seams puras y estables:
   sin estructura suficiente.
 - prioridad inline: mutación exclusiva de la actividad objetivo, aceptación del catálogo, estructura
   semántica de Biblioteca y presencia del editor sin retirar acciones de Misión o Lista.
+- jerarquía de cards: eliminación visible solo al editar relaciones, acciones frecuentes de misión
+  separadas del menú contextual y controles compartidos de reordenamiento con límites accesibles.
 
 Las pruebas usan resultados literales de la especificación, no replican el algoritmo dentro del test.
 
@@ -68,6 +70,12 @@ npm run validate
 - Activadores de agenda: agrupar sesiones produce una sola entrada por franja; alternar un día no duplica la franja ni modifica los demás días.
 - Conflictos: solo bloquean sesiones que coinciden simultáneamente en día y franja.
 - Tooltips: cursor y teclado no quedan recortados en las chips inferiores.
+- Relaciones: a 320, 390 y 760 píxeles, Eliminar, Cerrar sin guardar y Guardar y cerrar envuelven
+  sin solaparse; eliminar continúa abriendo confirmación.
+- Menú de misión: muestra Pausar, Enviar al final, Editar actividad y Abandonar, cierra con Escape o
+  clic exterior y conserva contraste en todos los temas.
+- Reordenamiento: Queue y Contenidos usan targets de 34 píxeles; pins y extremos permanecen
+  deshabilitados y los callbacks conservan su dirección.
 
 ## Incorporar nuevas pruebas
 

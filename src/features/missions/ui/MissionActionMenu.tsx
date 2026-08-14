@@ -3,9 +3,11 @@ import type { MissionActions } from "./MissionActions";
 
 export function MissionActionMenu({
   missionId,
+  gameId,
   actions,
 }: {
   missionId: string;
+  gameId: string;
   actions: MissionActions;
 }) {
   const [open, setOpen] = useState(false);
@@ -55,14 +57,21 @@ export function MissionActionMenu({
       </button>
       {open && (
         <div id={menuId} role="menu">
-          <button type="button" role="menuitem" onClick={() => run(actions.onEditMission)}>
-            Editar contenido, plataforma o agenda
-          </button>
           <button type="button" role="menuitem" onClick={() => run(actions.onPause)}>
             Pausar
           </button>
           <button type="button" role="menuitem" onClick={() => run(actions.onSendEnd)}>
             Enviar al final
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              actions.onEditGame(gameId);
+            }}
+          >
+            Editar actividad
           </button>
           <button
             type="button"

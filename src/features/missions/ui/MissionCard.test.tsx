@@ -5,7 +5,7 @@ import { MissionCard } from "./MissionCard";
 import type { MissionActions } from "./MissionActions";
 
 describe("MissionCard", () => {
-  it("muestra prioridad editable sin retirar las acciones de misión", () => {
+  it("prioriza terminar, aplazar y editar misión sin duplicar edición de actividad", () => {
     const data = createBacklogFixture();
     const mission = data.missions[0];
     const game = data.games.find(item => item.id === mission.gameId)!;
@@ -30,5 +30,7 @@ describe("MissionCard", () => {
     expect(markup).toContain("Terminar");
     expect(markup).toContain("Aplazar");
     expect(markup).toContain("Más acciones");
+    expect(markup).not.toContain("Editar actividad");
+    expect(markup.match(/Editar misión/g)).toHaveLength(1);
   });
 });

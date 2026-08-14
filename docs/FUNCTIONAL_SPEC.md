@@ -63,6 +63,11 @@ cuando la actividad tiene al menos una modalidad y un contenido; comienza vincul
 eliminarse aunque una misión lo referencie; la misión se conserva y queda marcada como pendiente de
 vincular a un nuevo recorrido.
 
+Las cards de modalidad, contenido y recorrido muestran únicamente Editar mientras están en lectura.
+Al editar muestran Eliminar, Cerrar sin guardar y Guardar y cerrar; la eliminación continúa
+requiriendo confirmación. Contenidos y Lista comparten controles compactos Subir/Bajar sin compartir
+reglas de dominio.
+
 ## Misiones
 
 Activar una misión vincula juego, contenido, copia, dispositivo y partida; actualiza lista/copia/contenido y crea una regla cuando existen sesiones. Cada sesión combina un día y una franja. Una misión puede usar distintas franjas durante la semana o varias el mismo día.
@@ -74,6 +79,10 @@ actividad y ajusta únicamente la entrada terminada según la intención de repe
 sugerida se recalcula al renderizar y nunca provoca un reordenamiento persistido adicional.
 
 Pausar, aplazar, enviar al final y abandonar conservan historial, liberan la franja y eliminan programación futura. Las acciones importantes admiten restaurar el snapshot previo mediante Deshacer.
+
+Las cards de misión mantienen visibles Terminar, Aplazar y Editar misión. Pausar, Enviar al final,
+Editar actividad y Abandonar viven en el menú contextual; la edición de misión no se duplica dentro
+de ese menú y Abandonar conserva tratamiento destructivo.
 
 La prioridad general de la actividad se puede cambiar directamente desde su card de misión. El
 selector conserva la descripción del catálogo y no interfiere con edición, cierre, aplazamiento ni

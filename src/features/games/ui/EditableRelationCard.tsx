@@ -58,18 +58,20 @@ export function EditableRelationCard({
         {editing ? editor : summary}
 
         <RelationActions $split={editing}>
-          <Button variant="danger" size="compact" onClick={() => setConfirmingRemoval(true)}>
-            Eliminar {itemLabel}
-          </Button>
           {editing ? (
-            <div className="relation-save-actions">
-              <Button size="compact" onClick={onDiscard}>
-                Cerrar sin guardar
+            <>
+              <Button variant="danger" size="compact" onClick={() => setConfirmingRemoval(true)}>
+                Eliminar {itemLabel}
               </Button>
-              <Button variant="primary" size="compact" onClick={onSave}>
-                Guardar y cerrar
-              </Button>
-            </div>
+              <div className="relation-save-actions">
+                <Button size="compact" onClick={onDiscard}>
+                  Cerrar sin guardar
+                </Button>
+                <Button variant="primary" size="compact" onClick={onSave}>
+                  Guardar y cerrar
+                </Button>
+              </div>
+            </>
           ) : (
             <Button size="compact" onClick={onEdit}>
               Editar {itemLabel}

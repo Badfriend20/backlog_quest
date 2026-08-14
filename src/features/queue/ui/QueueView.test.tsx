@@ -22,6 +22,7 @@ describe("QueueView", () => {
     expect(markup).toContain(`aria-label="Cambiar prioridad. Actual: ${game.priority}"`);
     expect(markup).toContain('aria-label="Subir"');
     expect(markup).toContain('aria-label="Bajar"');
+    expect(markup).toContain('aria-label="Controles de orden"');
     expect(markup).toContain("FIJO · 2");
     expect(markup).toContain("Activar misión");
   });

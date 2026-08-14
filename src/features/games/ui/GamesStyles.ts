@@ -146,11 +146,6 @@ export const GamesScope = styled.div`
     border: 1px solid var(--border);
     background: var(--panel-2);
   }
-  .content-order-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
   .playthrough-link-summary {
     display: flex;
     gap: 18px;

@@ -4,6 +4,8 @@ export { PriorityChip, StatusChip, chipBaseStyles, chipToneStyles } from "./Chip
 export type { ChipTone } from "./Chip";
 export { PrioritySelectChip } from "./PrioritySelectChip";
 export type { PrioritySelectOption } from "./PrioritySelectChip";
+export { ReorderControls } from "./ReorderControls";
+export type { ReorderControlsProps } from "./ReorderControls";
 export { HelpTooltip } from "./HelpTooltip";
 export { InlineCreateField } from "./InlineCreateField";
 export { tooltipAnchorStyles } from "./Tooltip";

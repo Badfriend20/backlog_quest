@@ -63,23 +63,6 @@ export const QueueScope = styled.div`
       Menlo,
       monospace;
   }
-  .queue-position > div {
-    display: grid;
-    gap: 3px;
-  }
-  .queue-position button {
-    width: 25px;
-    height: 20px;
-    border: 1px solid var(--border);
-    background: var(--panel-2);
-    color: var(--muted);
-    cursor: pointer;
-    line-height: 1;
-  }
-  .queue-position button:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
   .queue-main h3 {
     margin-bottom: 4px;
   }

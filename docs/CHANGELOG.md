@@ -2,6 +2,10 @@
 
 ## Sin publicar — 2026-08-13
 
+- Las relaciones reservan Eliminar para el modo edición y mantienen confirmación antes del borrado.
+- Las cards de misión priorizan Terminar, Aplazar y Editar misión; Editar actividad pasa al menú
+  contextual, que ahora usa exclusivamente tokens temáticos.
+- Lista y Contenidos comparten controles Subir/Bajar accesibles con targets táctiles de 34 píxeles.
 - Colección, cards de misión y Orden manual permiten cambiar la prioridad general de una actividad
   desde un chip accesible, con opciones del catálogo, persistencia y Deshacer.
 - Las cards de Colección separan encabezado, contenido abrible y acción de activación para evitar

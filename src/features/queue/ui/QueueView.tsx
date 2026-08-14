@@ -8,6 +8,7 @@ import {
   Eyebrow,
   PriorityChip,
   PrioritySelectChip,
+  ReorderControls,
   SectionHeading,
   Stack,
   StatusChip,
@@ -114,24 +115,12 @@ export function QueueView({
               <article className="queue-row" key={game.id}>
                 <div className="queue-position">
                   <strong>{item.position}</strong>
-                  <div>
-                    <button
-                      type="button"
-                      disabled={item.pinned || item.position === 1}
-                      onClick={() => onMove(game.id, -1)}
-                      aria-label="Subir"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      disabled={item.pinned || item.position === data.queue.length}
-                      onClick={() => onMove(game.id, 1)}
-                      aria-label="Bajar"
-                    >
-                      ↓
-                    </button>
-                  </div>
+                  <ReorderControls
+                    upDisabled={item.pinned || item.position === 1}
+                    downDisabled={item.pinned || item.position === data.queue.length}
+                    onMoveUp={() => onMove(game.id, -1)}
+                    onMoveDown={() => onMove(game.id, 1)}
+                  />
                 </div>
                 <div className="queue-main">
                   <CardTopline>
