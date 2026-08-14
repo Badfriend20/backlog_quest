@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useId } from "react";
 import styled from "styled-components";
+import { useDismissiblePopover } from "../hooks";
 import { chipBaseStyles } from "./Chip";
 
 export interface PrioritySelectOption {
@@ -80,29 +81,9 @@ export function PrioritySelectChip({
   options: PrioritySelectOption[];
   onChange: (value: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const { open, rootRef, triggerRef, toggle, close } = useDismissiblePopover();
   const menuId = `priority-menu-${useId().replaceAll(":", "")}`;
   const current = options.find(option => option.label === value);
-
-  useEffect(() => {
-    if (!open) return;
-    function closeFromOutside(event: PointerEvent) {
-      if (event.target instanceof Node && !rootRef.current?.contains(event.target)) setOpen(false);
-    }
-    function closeFromKeyboard(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      triggerRef.current?.focus();
-    }
-    document.addEventListener("pointerdown", closeFromOutside);
-    document.addEventListener("keydown", closeFromKeyboard);
-    return () => {
-      document.removeEventListener("pointerdown", closeFromOutside);
-      document.removeEventListener("keydown", closeFromKeyboard);
-    };
-  }, [open]);
 
   return (
     <PriorityMenuRoot ref={rootRef}>
@@ -114,7 +95,7 @@ export function PrioritySelectChip({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(currentOpen => !currentOpen)}
+        onClick={toggle}
       >
         {value} <span aria-hidden="true">▾</span>
       </PriorityTrigger>
@@ -129,9 +110,8 @@ export function PrioritySelectChip({
               aria-checked={option.label === value}
               title={option.description}
               onClick={() => {
-                setOpen(false);
+                close({ restoreFocus: true });
                 onChange(option.label);
-                triggerRef.current?.focus();
               }}
             >
               {option.label}

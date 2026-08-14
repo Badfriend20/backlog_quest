@@ -25,6 +25,10 @@ Vitest prueba seams puras y estables:
 
 Las pruebas usan resultados literales de la especificación, no replican el algoritmo dentro del test.
 
+- popovers dismissibles: estado inicial, toggle, pointerdown interior/exterior, Escape, foco y
+  limpieza de listeners mediante un entorno DOM ligero de Vitest.
+- botones de icono: tipo seguro por defecto, contenido, disabled, atributos ARIA y callback.
+
 ## Comandos
 
 ```bash

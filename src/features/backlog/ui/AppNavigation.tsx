@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useId } from "react";
 import type { AppView } from "../../../shared/kernel/quest";
+import { useDismissiblePopover } from "../../../shared/ui";
 import { useVocabulary } from "../../../shared/vocabulary";
 import { NavigationItems, navigationItems } from "./NavigationItems";
 
@@ -10,35 +11,18 @@ interface AppNavigationProps {
 
 export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigationProps>) {
   const terms = useVocabulary();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const {
+    open: mobileMenuOpen,
+    rootRef: headerRef,
+    triggerRef,
+    toggle,
+    close,
+  } = useDismissiblePopover<HTMLElement>();
   const navigationId = useId();
-  const headerRef = useRef<HTMLElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-
-    function closeFromOutside(event: PointerEvent) {
-      if (!headerRef.current?.contains(event.target as Node)) setMobileMenuOpen(false);
-    }
-
-    function closeWithEscape(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-      setMobileMenuOpen(false);
-      triggerRef.current?.focus();
-    }
-
-    document.addEventListener("pointerdown", closeFromOutside);
-    document.addEventListener("keydown", closeWithEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeFromOutside);
-      document.removeEventListener("keydown", closeWithEscape);
-    };
-  }, [mobileMenuOpen]);
 
   function navigate(view: AppView) {
     onNavigate(view);
-    setMobileMenuOpen(false);
+    close();
   }
 
   return (
@@ -84,7 +68,7 @@ export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigation
             aria-expanded={mobileMenuOpen}
             aria-controls={navigationId}
             aria-label={mobileMenuOpen ? "Cerrar navegación" : "Abrir navegación"}
-            onClick={() => setMobileMenuOpen(open => !open)}
+            onClick={toggle}
           >
             <span aria-hidden="true">{mobileMenuOpen ? "×" : "☰"}</span>
           </button>
@@ -96,7 +80,7 @@ export function AppNavigation({ activeView, onNavigate }: Readonly<AppNavigation
               className="mobile-navigation-overlay"
               data-navigation-overlay
               aria-label="Cerrar navegación"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => close()}
             />
             <nav id={navigationId} className="mobile-navigation" aria-label="Navegación principal">
               <NavigationItems activeView={activeView} onNavigate={navigate} />
