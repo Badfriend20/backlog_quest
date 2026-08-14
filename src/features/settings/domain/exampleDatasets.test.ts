@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { migrateBacklog } from "../../backlog";
+import { normalizeBacklog } from "../../backlog";
 import { EXAMPLE_DATASETS } from "./exampleDatasets";
 import generic from "../../../../public/examples/backlog-quest-ejemplo-generico.json";
 import gaming from "../../../../public/examples/backlog-quest-ejemplo-videojuegos.json";
@@ -19,7 +19,7 @@ const examples = {
 
 describe("JSON de demostración", () => {
   it.each(EXAMPLE_DATASETS)("$label contiene al menos 15 ejemplos válidos y combinados", item => {
-    const data = migrateBacklog(examples[item.fileName as keyof typeof examples]);
+    const data = normalizeBacklog(examples[item.fileName as keyof typeof examples]);
 
     expect(data.preferences.vocabularyProfile).toBe(item.profile);
     expect(data.games.length).toBeGreaterThanOrEqual(15);
@@ -36,7 +36,7 @@ describe("JSON de demostración", () => {
   it("el ejemplo personalizado demuestra términos propios", () => {
     const item = EXAMPLE_DATASETS.find(dataset => dataset.profile === "custom");
     expect(item).toBeDefined();
-    const data = migrateBacklog(examples[item!.fileName as keyof typeof examples]);
+    const data = normalizeBacklog(examples[item!.fileName as keyof typeof examples]);
 
     expect(data.preferences.customVocabulary.activity).toBe("receta");
     expect(data.preferences.customVocabulary.journey).toBe("preparación");

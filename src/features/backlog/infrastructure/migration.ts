@@ -2,7 +2,6 @@ import type {
   QuestData,
   Activity,
   ActivityContent,
-  Mission,
   PriorityCatalogItem,
   QuickVariantPreset,
   QueueItem,
@@ -10,7 +9,6 @@ import type {
   ScheduleRule,
   ScheduleSession,
   SlotProfile,
-  StatusCatalogItem,
   ThemeColors,
 } from "../../../shared/kernel/quest";
 import {
@@ -214,158 +212,28 @@ function queueStateFor(game: Activity): QueueState {
   return "queued";
 }
 
-function selectCopy(game: Activity, preferredText = "") {
-  const normalized = normalize(preferredText);
-  return (
-    game.copies.find(copy => normalize(`${copy.library} ${copy.device}`).includes(normalized)) ??
-    game.copies.find(copy => normalize(copy.status).includes("jugando")) ??
-    game.copies[0] ??
-    null
-  );
-}
-
-function legacyPreferredSlot(): QueueItem["preferredSlotId"] {
-  return "flexible";
-}
-
-function buildMissions(): { missions: Mission[]; rules: ScheduleRule[] } {
-  return { missions: [], rules: [] };
-}
-
-export function isBacklogV2(value: unknown): value is QuestData {
+export function isCurrentBacklog(value: unknown): value is QuestData {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<QuestData>;
   return (
     candidate.schemaVersion === 2 &&
     Array.isArray(candidate.games) &&
     Array.isArray(candidate.queue) &&
-    Array.isArray(candidate.missions) &&
-    Array.isArray(candidate.scheduleRules)
+    Boolean(candidate.preferences && typeof candidate.preferences === "object") &&
+    Boolean(candidate.catalogs && typeof candidate.catalogs === "object")
   );
 }
 
-export function migrateBacklog(value: unknown): QuestData {
-  if (isBacklogV2(value)) return normalizeV2(value);
-  if (!value || typeof value !== "object")
-    throw new Error("El archivo no contiene datos válidos de Backlog Quest.");
-  const old = value as any;
-  if (old.schemaVersion !== 1 || !Array.isArray(old.games)) {
-    throw new Error("El archivo no corresponde a Backlog Quest v1 o v2.");
-  }
-
-  const games: Activity[] = old.games.map((game: any) => ({
-    ...game,
-    tags: Array.isArray(game.tags) ? game.tags : [],
-    copies: Array.isArray(game.copies) ? game.copies : [],
-    playthroughs: Array.isArray(game.playthroughs) ? game.playthroughs : [],
-    contents: defaultContent(game),
-    dependencies: dependenciesFor(),
-    availableFrom: availableFromFor(),
-  }));
-
-  const queueSeed = new Map<string, any>((old.queue ?? []).map((item: any) => [item.gameId, item]));
-  const firstIds = (old.queue ?? []).map((item: any) => item.gameId);
-  const remaining = games
-    .filter(game => !firstIds.includes(game.id))
-    .sort((a, b) => {
-      const priority = ["S", "Alta", "Media", "Baja"];
-      return (
-        priority.indexOf(a.priority) - priority.indexOf(b.priority) ||
-        a.title.localeCompare(b.title, "es")
-      );
-    });
-  const orderedGames = [
-    ...firstIds.map((id: string) => games.find(game => game.id === id)).filter(Boolean),
-    ...remaining,
-  ] as Activity[];
-  const queue: QueueItem[] = orderedGames.map((game, index) => {
-    const seed = queueSeed.get(game.id);
-    const copy = selectCopy(game, seed?.platform ?? "");
-    return {
-      gameId: game.id,
-      position: index + 1,
-      state: queueStateFor(game),
-      preferredCopyId: copy?.id ?? null,
-      preferredDevice: seed?.platform ?? copy?.device ?? "",
-      preferredSlotId: legacyPreferredSlot(),
-      replayIntent: game.progress.replays > 0 ? "maybe" : "unknown",
-      availableFrom: availableFromFor(),
-      pinned: seed?.pinned ?? false,
-      pinnedPosition: seed?.pinnedPosition ?? null,
-      deferredAt: null,
-      reason: seed?.reason ?? game.notes ?? "",
-    };
-  });
-
-  const { missions, rules } = buildMissions();
-  queue.forEach(item => {
-    if (missions.some(mission => mission.gameId === item.gameId)) item.state = "active";
-  });
-
-  const statuses: StatusCatalogItem[] = (old.catalogs?.statuses ?? []).map((item: any) => ({
-    id: item.id,
-    label: item.label,
-    color: item.color,
-    description: descriptionForStatus(item.label),
-  }));
-
-  return normalizeV2({
-    schemaVersion: 2,
-    meta: normalizeMeta({
-      ...(old.meta ?? {}),
-      updatedAt: new Date().toISOString(),
-      source: `${old.meta?.source ?? "Backlog Quest"} · migrado a v2`,
-    }),
-    preferences: {
-      theme: "midnight",
-      customTheme: DEFAULT_CUSTOM_THEME,
-      vocabularyProfile: "generic",
-      customVocabulary: {},
-      hidePrivateByDefault: old.preferences?.hidePrivateByDefault ?? true,
-      activeView: "dashboard",
-      activeSlotProfileId: "day-night",
-      slotProfiles: SLOT_PROFILES,
-      secondarySlotLabel: "Secundario",
-      flexibleSlotLabel: "Flexible",
-      queueDisplayCount: 10,
-      deferPosition: 12,
-      scheduleWeeks: 4,
-      weekStartsOn: 1,
-      compactCards: false,
-      showTooltips: true,
-      confirmDestructiveActions: true,
-      autoSuggestNext: true,
-      quickCopyPresetsReady: false,
-      quickCopyPresets: [],
-      ownershipDisplayRules: {},
-      rules: [],
-    },
-    catalogs: {
-      statuses,
-      priorities: PRIORITIES,
-      platforms: [],
-      ownership: old.catalogs?.ownership ?? [],
-      deviceKinds: old.catalogs?.deviceKinds ?? [],
-      queueStates: QUEUE_STATE_CATALOG,
-    },
-    platforms: old.platforms ?? [],
-    queue,
-    missions,
-    scheduleRules: rules,
-    scheduleOverrides: [],
-    activityLog: [
-      {
-        id: "A001",
-        type: "migration",
-        gameId: null,
-        missionId: null,
-        at: new Date().toISOString(),
-        description:
-          "Datos migrados al esquema v2 con misiones, lista completa y calendario dinámico.",
-      },
-    ],
-    games,
-  });
+export function normalizeBacklog(value: unknown): QuestData {
+  if (
+    value &&
+    typeof value === "object" &&
+    (value as { schemaVersion?: unknown }).schemaVersion === 1
+  )
+    throw new Error("Este respaldo utiliza un formato anterior que ya no es compatible.");
+  if (!isCurrentBacklog(value))
+    throw new Error("El archivo no corresponde a un respaldo compatible de Backlog Quest.");
+  return normalizeCurrentBacklog(value);
 }
 
 function ownershipSuffixCandidates(ownership: string): string[][] {
@@ -389,7 +257,7 @@ function trimPlatformSeparator(value: string): string {
   return result;
 }
 
-function legacyPlatformName(library: string, ownership: string): string {
+function platformNameWithoutOwnership(library: string, ownership: string): string {
   const libraryWords = [...library.matchAll(/[\p{L}\p{N}]+/gu)];
   const normalizedLibraryWords = libraryWords.map(match => normalize(match[0]));
   for (const suffix of ownershipSuffixCandidates(ownership)) {
@@ -404,31 +272,39 @@ function legacyPlatformName(library: string, ownership: string): string {
   return library.trim();
 }
 
-export function normalizeV2(data: QuestData): QuestData {
-  const platformData = { platforms: data.platforms ?? [] };
+export function normalizeCurrentBacklog(data: QuestData): QuestData {
+  const platforms = (data.platforms ?? []).map(platform => ({
+    id: platform.id,
+    name: platform.name,
+    kind: platform.kind,
+    active: platform.active,
+    priority: platform.priority,
+    notes: platform.notes ?? "",
+  }));
+  const platformData = { platforms };
   const copyPlatforms = normalizeCopyPlatforms(data.catalogs.platforms ?? [], [
     ...data.games.flatMap(game =>
-      (game.copies ?? []).map(copy => legacyPlatformName(copy.library, copy.ownership))
+      (game.copies ?? []).map(copy => platformNameWithoutOwnership(copy.library, copy.ownership))
     ),
     ...(data.preferences.quickCopyPresets ?? []).map(preset =>
-      legacyPlatformName(preset.library, preset.ownership)
+      platformNameWithoutOwnership(preset.library, preset.ownership)
     ),
   ]);
   const games = data.games.map(game => {
     const contents = Array.isArray(game.contents) ? game.contents : defaultContent(game);
     const copies = (game.copies ?? []).map(copy => {
-      const legacyLibrary = legacyPlatformName(copy.library, copy.ownership);
-      const copyPlatform = resolveCopyPlatform(copyPlatforms, copy.platformId, legacyLibrary);
+      const platformName = platformNameWithoutOwnership(copy.library, copy.ownership);
+      const copyPlatform = resolveCopyPlatform(copyPlatforms, copy.platformId, platformName);
       const deviceIds = (
         copy.deviceIds?.length ? copy.deviceIds : inferDeviceIds(platformData, copy.device)
       ).filter(
         (id, index, all) =>
-          data.platforms.some(platform => platform.id === id) && all.indexOf(id) === index
+          platforms.some(platform => platform.id === id) && all.indexOf(id) === index
       );
       return {
         id: copy.id,
         platformId: copyPlatform?.id,
-        library: copyPlatform?.name ?? legacyLibrary,
+        library: copyPlatform?.name ?? platformName,
         ownership: copy.ownership,
         status: copy.status,
         priority: copy.priority,
@@ -448,7 +324,7 @@ export function normalizeV2(data: QuestData): QuestData {
       const selectedContent = contents.find(content => content.id === play.contentId);
       const allowed = selectedCopy?.deviceIds ?? [];
       const inferred =
-        play.deviceId && data.platforms.some(platform => platform.id === play.deviceId)
+        play.deviceId && platforms.some(platform => platform.id === play.deviceId)
           ? play.deviceId
           : (inferDeviceIds(platformData, play.device)[0] ?? allowed[0]);
       return {
@@ -503,8 +379,7 @@ export function normalizeV2(data: QuestData): QuestData {
     .sort((a, b) => a.position - b.position)
     .map((item, index) => {
       const preferredDeviceId =
-        item.preferredDeviceId &&
-        data.platforms.some(platform => platform.id === item.preferredDeviceId)
+        item.preferredDeviceId && platforms.some(platform => platform.id === item.preferredDeviceId)
           ? item.preferredDeviceId
           : inferDeviceIds(platformData, item.preferredDevice)[0];
       return {
@@ -518,8 +393,7 @@ export function normalizeV2(data: QuestData): QuestData {
     });
   const missions = (data.missions ?? []).map(mission => {
     const activeDeviceId =
-      mission.activeDeviceId &&
-      data.platforms.some(platform => platform.id === mission.activeDeviceId)
+      mission.activeDeviceId && platforms.some(platform => platform.id === mission.activeDeviceId)
         ? mission.activeDeviceId
         : inferDeviceIds(platformData, mission.activeDevice)[0];
     return {
@@ -533,16 +407,12 @@ export function normalizeV2(data: QuestData): QuestData {
   const existingPresets = data.preferences.quickCopyPresets ?? [];
   const quickCopyPresets: QuickVariantPreset[] = existingPresets.length
     ? existingPresets.map(preset => {
-        const legacyLibrary = legacyPlatformName(preset.library, preset.ownership);
-        const copyPlatform = resolveCopyPlatform(copyPlatforms, preset.platformId, legacyLibrary);
+        const platformName = platformNameWithoutOwnership(preset.library, preset.ownership);
+        const copyPlatform = resolveCopyPlatform(copyPlatforms, preset.platformId, platformName);
         return {
-          key: quickCopyKey(
-            copyPlatform?.name ?? legacyLibrary,
-            preset.ownership,
-            copyPlatform?.id
-          ),
+          key: quickCopyKey(copyPlatform?.name ?? platformName, preset.ownership, copyPlatform?.id),
           platformId: copyPlatform?.id,
-          library: copyPlatform?.name ?? legacyLibrary,
+          library: copyPlatform?.name ?? platformName,
           ownership: preset.ownership,
           status: preset.status,
           priority: preset.priority,
@@ -554,7 +424,7 @@ export function normalizeV2(data: QuestData): QuestData {
           notes: preset.notes,
           updatedAt: preset.updatedAt,
           deviceIds: (preset.deviceIds ?? []).filter(id =>
-            data.platforms.some(platform => platform.id === id)
+            platforms.some(platform => platform.id === id)
           ),
         };
       })
@@ -569,20 +439,20 @@ export function normalizeV2(data: QuestData): QuestData {
     savedOwnershipRules
   );
   if (Object.keys(savedOwnershipRules).length === 0) {
-    const legacyOwnTerm = (data.catalogs.ownership ?? []).find(
+    const ownTerm = (data.catalogs.ownership ?? []).find(
       ownership => normalize(ownership) === "propio"
     );
-    if (legacyOwnTerm) ownershipDisplayRules[ownershipDisplayKey(legacyOwnTerm)].hidden = true;
+    if (ownTerm) ownershipDisplayRules[ownershipDisplayKey(ownTerm)].hidden = true;
   }
   const scheduleRules = (data.scheduleRules ?? []).map(rule => {
     const mission = missions.find(item => item.id === rule.missionId);
-    const legacyRule = rule as unknown as ScheduleRule & {
+    const compatibleRule = rule as unknown as ScheduleRule & {
       sessions?: ScheduleSession[];
       weekdays?: number[];
     };
     const sessions = normalizeScheduleSessions(
-      legacyRule.sessions ??
-        (legacyRule.weekdays ?? []).map(weekday => ({
+      compatibleRule.sessions ??
+        (compatibleRule.weekdays ?? []).map(weekday => ({
           weekday,
           slotId: mission?.slotId ?? "flexible",
         }))
@@ -660,7 +530,7 @@ export function normalizeV2(data: QuestData): QuestData {
         ? data.catalogs.queueStates
         : QUEUE_STATE_CATALOG,
     },
-    platforms: data.platforms ?? [],
+    platforms,
     games,
     queue,
     missions,

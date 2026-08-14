@@ -31,14 +31,14 @@ export function PortabilitySettingsSection({
       <Eyebrow>PORTABILIDAD</Eyebrow>
       <h2>Importar y exportar</h2>
       <p>
-        El navegador guarda un respaldo local. El JSON v2 contiene catálogo, lista completa,
-        misiones, calendario, configuración y actividad.
+        El navegador guarda tus datos localmente. Puedes exportar un respaldo completo o importar
+        uno previamente generado por Backlog Quest.
       </p>
       <div className="button-stack">
         <Button variant="primary" onClick={() => storage.export(data)}>
-          Exportar JSON v2
+          Exportar JSON
         </Button>
-        <Button onClick={() => inputRef.current?.click()}>Importar JSON v1 o v2</Button>
+        <Button onClick={() => inputRef.current?.click()}>Importar JSON</Button>
         <input
           ref={inputRef}
           hidden
