@@ -99,14 +99,6 @@ export function DeviceEditorModal({
               <span>Disponible en selectores</span>
             </label>
             <label className="wide-field">
-              <span>Rol actual</span>
-              <input
-                value={draft.currentRole}
-                maxLength={120}
-                onChange={event => update({ currentRole: event.target.value })}
-              />
-            </label>
-            <label className="wide-field">
               <span>Notas</span>
               <textarea
                 rows={3}

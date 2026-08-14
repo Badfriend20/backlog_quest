@@ -72,9 +72,6 @@ export const DevicesScope = styled.div`
   .platform-metrics button strong {
     color: var(--cyan);
   }
-  .platform-card-role {
-    display: block;
-  }
   .platform-card-actions {
     display: flex;
     justify-content: flex-end;

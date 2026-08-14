@@ -85,7 +85,6 @@ export interface Resource {
   kind: string;
   active: boolean;
   priority: string;
-  currentRole: string;
   notes: string;
 }
 

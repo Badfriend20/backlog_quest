@@ -118,21 +118,26 @@ export function DashboardView({
               </SectionHeading>
               <div className="platform-stack">
                 {data.platforms.map(platform => {
-                  const activeCount = missions.filter(
+                  const platformMissions = missions.filter(
                     mission =>
                       mission.activeDeviceId === platform.id ||
                       (!mission.activeDeviceId &&
                         normalize(mission.activeDevice).includes(
                           normalize(platform.name.split(" / ")[0])
                         ))
-                  ).length;
+                  );
+                  const activeCount = platformMissions.length;
+                  const activeTitle = data.games.find(
+                    game => game.id === platformMissions[0]?.gameId
+                  )?.title;
+                  let summary = platform.notes || "Sin misión activa";
+                  if (activeCount === 1) summary = activeTitle ?? "1 misión activa";
+                  if (activeCount > 1) summary = `${activeCount} misiones activas`;
                   return (
                     <article className="platform-row" key={platform.id}>
                       <div>
                         <strong>{platform.name}</strong>
-                        <small>
-                          {activeCount ? `${activeCount} misión activa` : platform.currentRole}
-                        </small>
+                        <small>{summary}</small>
                       </div>
                       <span className="count-badge">{activeCount}</span>
                     </article>

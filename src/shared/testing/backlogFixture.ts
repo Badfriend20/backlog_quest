@@ -190,7 +190,6 @@ export function withBacklogFixture(base: QuestData): QuestData {
         kind: "computer",
         active: true,
         priority: "Alta",
-        currentRole: "Principal",
         notes: "",
       },
       {
@@ -199,7 +198,6 @@ export function withBacklogFixture(base: QuestData): QuestData {
         kind: "console",
         active: true,
         priority: "Media",
-        currentRole: "Secundario",
         notes: "",
       },
     ],

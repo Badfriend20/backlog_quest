@@ -229,7 +229,6 @@
       "kind": "computer",
       "active": true,
       "priority": "Alta",
-      "currentRole": "Principal",
       "notes": "Recurso 1 del conjunto de demostración."
     },
     {
@@ -238,7 +237,6 @@
       "kind": "handheld",
       "active": true,
       "priority": "Media",
-      "currentRole": "Móvil",
       "notes": "Recurso 2 del conjunto de demostración."
     },
     {
@@ -247,7 +245,6 @@
       "kind": "custom",
       "active": true,
       "priority": "Baja",
-      "currentRole": "Compartido",
       "notes": "Recurso 3 del conjunto de demostración."
     }
   ],

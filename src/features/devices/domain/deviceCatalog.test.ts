@@ -11,15 +11,24 @@ describe("catálogo de dispositivos", () => {
     expect(data.platforms.some(platform => platform.id === draft.id)).toBe(false);
     expect(platforms).toHaveLength(data.platforms.length + 1);
     expect(platforms.at(-1)).toMatchObject({ id: draft.id, name: "Equipo nuevo" });
+    expect(draft).not.toHaveProperty(["current", "Role"].join(""));
   });
 
   it("edita un dispositivo conservando su ID y posición", () => {
     const data = createBacklogFixture();
     const original = data.platforms[0];
-    const platforms = saveDevice(data.platforms, { ...original, name: "Nombre actualizado" });
+    const platforms = saveDevice(data.platforms, {
+      ...original,
+      name: "Nombre actualizado",
+      notes: "  Contexto manual  ",
+    });
 
     expect(platforms).toHaveLength(data.platforms.length);
-    expect(platforms[0]).toMatchObject({ id: original.id, name: "Nombre actualizado" });
+    expect(platforms[0]).toMatchObject({
+      id: original.id,
+      name: "Nombre actualizado",
+      notes: "Contexto manual",
+    });
   });
 
   it("solo permite eliminar dispositivos sin referencias", () => {

@@ -11,7 +11,6 @@ export function createDevice(platforms: Resource[]): Resource {
     kind: "device",
     active: true,
     priority: "Media",
-    currentRole: "Sin misión activa",
     notes: "",
   };
 }
@@ -35,7 +34,6 @@ export function saveDevice(platforms: Resource[], draft: Resource): Resource[] {
     ...draft,
     name: draft.name.trim() || "Dispositivo sin nombre",
     kind: draft.kind.trim() || "device",
-    currentRole: draft.currentRole.trim(),
     notes: draft.notes.trim(),
   };
   const index = platforms.findIndex(platform => platform.id === device.id);

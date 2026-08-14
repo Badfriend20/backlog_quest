@@ -1,14 +1,7 @@
 import { useState } from "react";
 import type { QuestData, Resource } from "../../../shared/kernel/quest";
 import { activeMissions, copyDeviceIds, normalize } from "../../../shared/kernel/questSelectors";
-import {
-  Button,
-  Callout,
-  CardSurface,
-  CardTopline,
-  PriorityChip,
-  StatusChip,
-} from "../../../shared/ui";
+import { Button, CardSurface, CardTopline, PriorityChip, StatusChip } from "../../../shared/ui";
 import { DeviceRelationsModal } from "./DeviceRelationsModal";
 import { useVocabulary } from "../../../shared/vocabulary";
 
@@ -68,16 +61,6 @@ export function DeviceCard({
             <strong>{missions.length}</strong> {terms.missions}
           </button>
         </div>
-
-        <Callout $compact className="platform-card-role">
-          <strong>Rol actual:</strong>{" "}
-          {missions.length
-            ? missions
-                .map(mission => data.games.find(game => game.id === mission.gameId)?.title)
-                .filter(Boolean)
-                .join(", ")
-            : device.currentRole}
-        </Callout>
 
         <div className="platform-card-actions">
           <Button onClick={onEdit}>Editar</Button>

@@ -252,7 +252,6 @@ function buildExample(definition) {
     kind: ["computer", "handheld", "custom"][index],
     active: true,
     priority: ["Alta", "Media", "Baja"][index],
-    currentRole: ["Principal", "Móvil", "Compartido"][index],
     notes: `Recurso ${index + 1} del conjunto de demostración.`,
   }));
   const games = definition.names.map((title, index) => {
