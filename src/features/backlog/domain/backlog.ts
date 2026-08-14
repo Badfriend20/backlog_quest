@@ -560,8 +560,20 @@ export function activateMission(
 
 export function moveQueueOneStep(data: QuestData, gameId: string, direction: -1 | 1): QuestData {
   const current = data.queue.find(item => item.gameId === gameId);
+  if (!current) return data;
+  return moveQueueToPosition(data, gameId, current.position + direction);
+}
+
+export function moveQueueToPosition(
+  data: QuestData,
+  gameId: string,
+  targetPosition: number
+): QuestData {
+  const current = data.queue.find(item => item.gameId === gameId);
   if (!current || current.pinned) return data;
-  const queue = moveQueue(data.queue, gameId, current.position + direction, current.state);
+  const normalizedTarget = Math.max(1, Math.min(Math.round(targetPosition), data.queue.length));
+  if (normalizedTarget === current.position) return data;
+  const queue = moveQueue(data.queue, gameId, normalizedTarget, current.state);
   return touch(
     withActivity(
       { ...data, queue },

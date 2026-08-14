@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
+import type { QuestData } from "../../../shared/kernel/quest";
 import { createBacklogFixture } from "../../../shared/testing/backlogFixture";
+import { buildRotationPlan } from "../../queue";
 import {
   activateMission,
   deferMission,
   finishMission,
   pauseMission,
   sendMissionToEnd,
+  moveQueueToPosition,
 } from "./backlog";
 
 function referenceData() {
@@ -191,5 +194,95 @@ describe("acciones coherentes de misión", () => {
       { weekday: 2, slotId: "first" },
       { weekday: 3, slotId: "flexible" },
     ]);
+  });
+});
+
+function queueFixture(length = 6): QuestData {
+  const data = createBacklogFixture();
+  const templateGame = data.games[1];
+  const templateItem = data.queue[1];
+  return {
+    ...data,
+    games: Array.from({ length }, (_, index) => ({
+      ...structuredClone(templateGame),
+      id: `game-${index + 1}`,
+      title: `Actividad ${index + 1}`,
+      priority: "Media",
+    })),
+    queue: Array.from({ length }, (_, index) => ({
+      ...structuredClone(templateItem),
+      gameId: `game-${index + 1}`,
+      position: index + 1,
+      state: index === 0 ? ("replay" as const) : ("queued" as const),
+      pinned: false,
+      pinnedPosition: null,
+    })),
+    missions: [],
+    scheduleRules: [],
+    activityLog: [],
+  };
+}
+
+describe("moveQueueToPosition", () => {
+  it("mueve a una posición exacta y conserva posiciones continuas", () => {
+    const result = moveQueueToPosition(queueFixture(), "game-1", 4);
+
+    expect(result.queue.find(item => item.gameId === "game-1")?.position).toBe(4);
+    expect(result.queue.map(item => item.position).sort((a, b) => a - b)).toEqual([
+      1, 2, 3, 4, 5, 6,
+    ]);
+  });
+
+  it("conserva el estado y el resto de los datos de la entrada", () => {
+    const data = queueFixture();
+    const original = data.queue[0];
+    const result = moveQueueToPosition(data, original.gameId, 5);
+    const moved = result.queue.find(item => item.gameId === original.gameId)!;
+
+    expect(moved).toEqual({ ...original, position: 5 });
+  });
+
+  it("no mueve un elemento fijado", () => {
+    const data = queueFixture();
+    data.queue[0] = { ...data.queue[0], pinned: true, pinnedPosition: 1 };
+
+    expect(moveQueueToPosition(data, "game-1", 6)).toBe(data);
+  });
+
+  it("respeta la posición de otros elementos fijados", () => {
+    const data = queueFixture();
+    data.queue[2] = { ...data.queue[2], pinned: true, pinnedPosition: 3 };
+    const result = moveQueueToPosition(data, "game-1", 5);
+
+    expect(result.queue.find(item => item.gameId === "game-3")?.position).toBe(3);
+    expect(result.queue.map(item => item.position).sort((a, b) => a - b)).toEqual([
+      1, 2, 3, 4, 5, 6,
+    ]);
+  });
+
+  it("mueve al final y normaliza posiciones fuera de límites", () => {
+    const atEnd = moveQueueToPosition(queueFixture(), "game-1", 999);
+    expect(atEnd.queue.find(item => item.gameId === "game-1")?.position).toBe(6);
+
+    const atStart = moveQueueToPosition(queueFixture(), "game-6", -20);
+    expect(atStart.queue.find(item => item.gameId === "game-6")?.position).toBe(1);
+  });
+
+  it("registra actividad y actualiza metadatos", () => {
+    const data = queueFixture();
+    const result = moveQueueToPosition(data, "game-1", 4);
+
+    expect(result.activityLog[0]).toMatchObject({ type: "queue-moved", gameId: "game-1" });
+    expect(result.meta.updatedAt).not.toBe(data.meta.updatedAt);
+  });
+
+  it("cambia naturalmente la influencia de posición en la rotación", () => {
+    const data = queueFixture(2);
+    const before = buildRotationPlan(data, { referenceDate: "2026-06-15" });
+    const result = moveQueueToPosition(data, "game-1", 2);
+    const after = buildRotationPlan(result, { referenceDate: "2026-06-15" });
+
+    expect(before.candidates[0].game.id).toBe("game-1");
+    expect(after.candidates[0].game.id).toBe("game-2");
   });
 });

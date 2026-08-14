@@ -11,7 +11,7 @@ import { PlatformsView } from "../../devices";
 import { HistoryView } from "../../history";
 import { LibraryView } from "../../games";
 import type { MissionActions } from "../../missions";
-import { QueueView } from "../../queue";
+import { QueueView, type RecommendationMoveTarget } from "../../queue";
 import { ScheduleView } from "../../schedule";
 import { SettingsView } from "../../settings";
 import type { BacklogStorage } from "../application/ports";
@@ -26,6 +26,7 @@ interface BacklogViewProps {
   onEditMission(id: string): void;
   onActivate(gameId: string): void;
   onMove(id: string, direction: -1 | 1): void;
+  onMoveRecommendation(id: string, target: RecommendationMoveTarget): void;
   onPreferencesChange(patch: Partial<AppPreferences>, message: string): void;
   onPlatformsChange(platforms: Resource[]): void;
   onCopyPlatformsChange(platforms: Channel[]): void;
@@ -43,7 +44,14 @@ export function BacklogView(props: BacklogViewProps) {
   const { view, data } = props;
   switch (view) {
     case "queue":
-      return <QueueView data={data} onActivate={props.onActivate} onMove={props.onMove} />;
+      return (
+        <QueueView
+          data={data}
+          onActivate={props.onActivate}
+          onMove={props.onMove}
+          onMoveRecommendation={props.onMoveRecommendation}
+        />
+      );
     case "library":
       return (
         <LibraryView
@@ -98,6 +106,7 @@ export function BacklogView(props: BacklogViewProps) {
           data={data}
           onOpenView={props.onOpenView}
           onActivate={props.onActivate}
+          onMoveRecommendation={props.onMoveRecommendation}
           {...props.missionActions}
         />
       );

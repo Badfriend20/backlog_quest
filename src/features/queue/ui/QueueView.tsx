@@ -21,16 +21,19 @@ import {
 import { QueueScope } from "./QueueStyles";
 import { useVocabulary } from "../../../shared/vocabulary";
 import { buildRotationPlan } from "../domain/rotation";
+import type { RecommendationMoveTarget } from "../domain/recommendationMove";
 import { RotationRecommendationItem } from "./RotationRecommendationItem";
 
 export function QueueView({
   data,
   onActivate,
   onMove,
+  onMoveRecommendation,
 }: {
   data: QuestData;
   onActivate: (gameId: string) => void;
   onMove: (gameId: string, direction: -1 | 1) => void;
+  onMoveRecommendation: (gameId: string, target: RecommendationMoveTarget) => void;
 }) {
   const [stateFilter, setStateFilter] = useState("Todos");
   const terms = useVocabulary();
@@ -66,6 +69,7 @@ export function QueueView({
                 candidate={candidate}
                 suggestionPosition={index + 1}
                 onActivate={onActivate}
+                onMove={onMoveRecommendation}
               />
             ))}
           </ol>

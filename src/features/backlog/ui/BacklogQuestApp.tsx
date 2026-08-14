@@ -13,7 +13,9 @@ import { getThemeColors, themeStyle } from "../../settings";
 import { VocabularyProvider } from "../../../shared/vocabulary";
 import { GameEditor, type GameEditorMissionIntent, type SavedMissionRelation } from "../../games";
 import { CompletionModal, MissionEditor } from "../../missions";
+import { recommendationMoveMessage } from "../../queue";
 import type { BacklogStorage } from "../application/ports";
+import { moveRecommendation } from "../application/recommendationMovement";
 import { useBacklogCommands } from "../application/useBacklogCommands";
 import {
   appendGame,
@@ -226,6 +228,12 @@ export function BacklogQuestApp({
                   commands.commit(
                     current => moveQueueOneStep(current, id, direction),
                     "Posición de lista actualizada."
+                  )
+                }
+                onMoveRecommendation={(id, target) =>
+                  commands.commit(
+                    current => moveRecommendation(current, id, target),
+                    recommendationMoveMessage(target)
                   )
                 }
                 onPreferencesChange={(patch, message) =>

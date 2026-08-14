@@ -2,7 +2,11 @@ import type { AppView, QuestData } from "../../../shared/kernel/quest";
 import { Button, Eyebrow, SectionHeading, Stack } from "../../../shared/ui";
 import { activeMissions, formatDateTime, normalize } from "../../../shared/kernel/questSelectors";
 import { MissionCard, type MissionActions } from "../../missions";
-import { buildRotationPlan, RotationRecommendationItem } from "../../queue";
+import {
+  buildRotationPlan,
+  RotationRecommendationItem,
+  type RecommendationMoveTarget,
+} from "../../queue";
 import { EmptyCard } from "./EmptyCard";
 import { Metric } from "./Metric";
 import { DashboardScope } from "./DashboardStyles";
@@ -12,11 +16,13 @@ export function DashboardView({
   data,
   onOpenView,
   onActivate,
+  onMoveRecommendation,
   ...actions
 }: {
   data: QuestData;
   onOpenView: (view: AppView) => void;
   onActivate: (gameId: string) => void;
+  onMoveRecommendation: (gameId: string, target: RecommendationMoveTarget) => void;
 } & MissionActions) {
   const terms = useVocabulary();
   const missions = activeMissions(data);
@@ -94,6 +100,7 @@ export function DashboardView({
                   candidate={candidate}
                   suggestionPosition={index + 1}
                   onActivate={onActivate}
+                  onMove={onMoveRecommendation}
                 />
               ))}
             </ol>

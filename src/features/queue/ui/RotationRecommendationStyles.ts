@@ -36,10 +36,66 @@ export const RotationRecommendationRow = styled.li`
     color: var(--muted);
     font-size: 0.78rem;
   }
+  .rotation-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .rotation-move-menu {
+    position: relative;
+  }
+  .rotation-menu-trigger {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 800;
+  }
+  .rotation-menu-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .rotation-move-menu > div {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 7px);
+    z-index: 20;
+    width: 180px;
+    display: grid;
+    padding: 6px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    box-shadow: 5px 5px 0 rgba(4, 2, 7, 0.8);
+  }
+  .rotation-move-menu strong {
+    padding: 7px 9px 5px;
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+  .rotation-move-menu > div button {
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    padding: 9px;
+    cursor: pointer;
+  }
+  .rotation-move-menu > div button:hover:not(:disabled) {
+    background: var(--panel-2);
+  }
+  .rotation-move-menu > div button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
   @media (max-width: 520px) {
     grid-template-columns: 36px minmax(0, 1fr);
 
-    > button {
+    .rotation-actions {
       grid-column: 2;
       justify-self: start;
     }
