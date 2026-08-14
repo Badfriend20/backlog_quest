@@ -3,8 +3,7 @@ import styled, { css } from "styled-components";
 import { chipBaseStyles, tooltipAnchorStyles } from "../../../shared/ui";
 
 const chipStyles = css`
-  &.status-pill,
-  &.priority-chip {
+  &.status-pill {
     ${chipBaseStyles}
   }
 
@@ -39,11 +38,6 @@ const chipStyles = css`
   }
 
   &.status-yellow {
-    color: var(--yellow);
-    background: rgba(255, 213, 106, 0.08);
-  }
-
-  &.priority-chip {
     color: var(--yellow);
     background: rgba(255, 213, 106, 0.08);
   }

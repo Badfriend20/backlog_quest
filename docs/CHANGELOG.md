@@ -2,6 +2,10 @@
 
 ## Sin publicar — 2026-08-13
 
+- Colección, cards de misión y Orden manual permiten cambiar la prioridad general de una actividad
+  desde un chip accesible, con opciones del catálogo, persistencia y Deshacer.
+- Las cards de Colección separan encabezado, contenido abrible y acción de activación para evitar
+  controles interactivos anidados.
 - Camino sugerido y Rotación sugerida permiten mover una recomendación a mitad, a dos tercios o al
   final del orden manual sin activar una misión, respetando pins y Deshacer.
 - Recursos elimina `currentRole`; las notas conservan contexto manual y Balance deriva el uso actual

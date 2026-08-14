@@ -75,6 +75,10 @@ sugerida se recalcula al renderizar y nunca provoca un reordenamiento persistido
 
 Pausar, aplazar, enviar al final y abandonar conservan historial, liberan la franja y eliminan programación futura. Las acciones importantes admiten restaurar el snapshot previo mediante Deshacer.
 
+La prioridad general de la actividad se puede cambiar directamente desde su card de misión. El
+selector conserva la descripción del catálogo y no interfiere con edición, cierre, aplazamiento ni
+las demás acciones de la misión.
+
 ## Lista y calendario
 
 Cada juego aparece una sola vez en la lista, con posiciones continuas. Los estados válidos son `active`, `queued`, `paused`, `deferred`, `replay`, `replay-later`, `archived`, `low-interest`, `blocked` y `wishlist`.
@@ -84,6 +88,11 @@ los controles de movimiento y las transiciones existentes. **Rotación sugerida*
 calculado en tiempo real que también alimenta Camino sugerido en Inicio. Construir la sugerencia es
 una operación de solo lectura: no modifica posiciones, pins, estados ni ningún otro dato y no
 persiste scores, deuda o planes en el JSON.
+
+Cada fila del orden manual permite cambiar `Activity.priority` con las opciones del catálogo sin
+abrir General. El pin y los controles Subir/Bajar permanecen independientes. Cambiar la prioridad
+persiste mediante el sistema de comandos, admite Deshacer y provoca el recálculo natural de la
+rotación sin modificar su fórmula.
 
 Cada recomendación conserva **Activar** como acción principal y permite mover la actividad a mitad,
 a dos tercios o al final del orden manual sin activar una misión. La acción solo cambia
@@ -163,6 +172,12 @@ estado; conservar la demostración elimina el respaldo sólo mediante confirmaci
 ## Biblioteca y Lista
 
 Biblioteca y Lista representan órdenes distintos. Lista conserva exclusivamente el orden planeado de juego; Biblioteca ofrece orden por pendientes, alfabético, prioridad o actividad reciente sin escribir posiciones en Lista. El orden predeterminado deja contenidos terminados, completados o abandonados al final y ordena cada grupo alfabéticamente.
+
+Biblioteca permite cambiar `Activity.priority` desde el encabezado de cada card usando
+`catalogs.priorities`. El encabezado aloja estado y prioridad, el contenido abre General y el pie
+conserva Activar misión; ninguno de esos controles queda anidado dentro de otro. La misma edición
+inline aparece en las cards de misión y en el orden manual. Las prioridades de modalidades y
+recursos continúan siendo conceptos distintos y no cambian mediante este control.
 
 ## Misiones, copias y partidas
 

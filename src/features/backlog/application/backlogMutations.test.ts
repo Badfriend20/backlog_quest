@@ -10,7 +10,36 @@ import {
   replaceCopyPlatforms,
   replaceOwnershipCatalog,
   replacePlatforms,
+  updateActivityPriority,
 } from "./backlogMutations";
+
+describe("prioridad de actividad", () => {
+  it("actualiza solo la actividad objetivo con una prioridad del catálogo", () => {
+    const data = createBacklogFixture();
+    data.catalogs.priorities.push({
+      id: "custom",
+      label: "Personalizada",
+      description: "Prioridad creada por la persona.",
+    });
+    const target = data.games[1];
+    const untouched = data.games[0];
+
+    const updated = updateActivityPriority(data, target.id, "Personalizada");
+
+    expect(updated.games.find(game => game.id === target.id)?.priority).toBe("Personalizada");
+    expect(updated.games.find(game => game.id === untouched.id)).toEqual(untouched);
+    expect(updated.queue).toEqual(data.queue);
+    expect(updated.missions).toEqual(data.missions);
+    expect(updated.meta.updatedAt).not.toBe(data.meta.updatedAt);
+  });
+
+  it("rechaza actividades inexistentes y valores ajenos al catálogo", () => {
+    const data = createBacklogFixture();
+
+    expect(updateActivityPriority(data, "missing", "Alta")).toBe(data);
+    expect(updateActivityPriority(data, data.games[0].id, "Inventada")).toBe(data);
+  });
+});
 
 describe("contenidos vinculados", () => {
   it("elimina el contenido y conserva snapshots en misión y partida", () => {

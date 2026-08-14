@@ -27,6 +27,7 @@ import {
   replaceOwnershipCatalog,
   replaceGame,
   replacePlatforms,
+  updateActivityPriority,
 } from "../application/backlogMutations";
 import { BacklogView } from "./BacklogView";
 import {
@@ -61,17 +62,11 @@ export function BacklogQuestApp({
   const [creatingGame, setCreatingGame] = useState(false);
   const [completionMissionId, setCompletionMissionId] = useState<string | null>(null);
   const [missionEditor, setMissionEditor] = useState<MissionEditorState>(null);
-
-  const selectedGame = selectedGameId
-    ? (data.games.find(game => game.id === selectedGameId) ?? null)
-    : null;
-  const completionMission = completionMissionId
-    ? (data.missions.find(mission => mission.id === completionMissionId) ?? null)
-    : null;
-  const editingMission = missionEditor?.missionId
-    ? (data.missions.find(mission => mission.id === missionEditor.missionId) ?? null)
-    : null;
-
+  const selectedGame = data.games.find(game => game.id === selectedGameId) ?? null;
+  const completionMission =
+    data.missions.find(mission => mission.id === completionMissionId) ?? null;
+  const editingMission =
+    data.missions.find(mission => mission.id === missionEditor?.missionId) ?? null;
   function changeView(nextView: AppView) {
     setView(nextView);
     commands.update(current => updatePreferences(current, { activeView: nextView }));
@@ -197,6 +192,11 @@ export function BacklogQuestApp({
     onAddPlaythroughForMission: (missionId: string) =>
       openMissionRelation(missionId, "playthrough"),
     onManageContentsForMission: manageMissionContents,
+    onChangePriority: (gameId: string, priority: string) =>
+      commands.commit(
+        current => updateActivityPriority(current, gameId, priority),
+        `Prioridad de ${data.games.find(game => game.id === gameId)?.title ?? "la actividad"} cambiada a ${priority}.`
+      ),
   };
 
   return (

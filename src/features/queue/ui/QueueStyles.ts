@@ -83,6 +83,13 @@ export const QueueScope = styled.div`
   .queue-main h3 {
     margin-bottom: 4px;
   }
+  .queue-topline-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
   .queue-main p {
     margin: 0 0 5px;
     color: var(--muted);

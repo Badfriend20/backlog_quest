@@ -50,6 +50,7 @@ export function BacklogView(props: BacklogViewProps) {
           onActivate={props.onActivate}
           onMove={props.onMove}
           onMoveRecommendation={props.onMoveRecommendation}
+          onChangePriority={props.missionActions.onChangePriority}
         />
       );
     case "library":
@@ -59,6 +60,7 @@ export function BacklogView(props: BacklogViewProps) {
           onSelectGame={props.onSelectGame}
           onCreateGame={props.onCreateGame}
           onActivate={props.onActivate}
+          onChangePriority={props.missionActions.onChangePriority}
         />
       );
     case "schedule":

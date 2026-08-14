@@ -28,6 +28,10 @@ encapsulación, no como un mecanismo para inyectar antiguas hojas globales.
 Las variantes de acción se expresan con `Button`: `primary`, `ghost`, `danger`, `warning` y `text`;
 `size="compact"` y `fullWidth` son opciones de presentación. No se recrean mediante clases.
 
+`PriorityChip` es una etiqueta pasiva y puede representar prioridades de distintos conceptos.
+`PrioritySelectChip` conserva esa apariencia, pero es un botón accesible con menú; no conoce datos
+de dominio y solo se usa como editor cuando su consumidor conecta explícitamente una mutación.
+
 `CardSurface` es la seam compartida de tarjetas. Define superficie `var(--panel)`, borde, color y
 transición sin introducir degradados ni colores literales. Inicio, Colección, Recursos,
 Configuración y las relaciones reutilizan esta base mediante adapters pequeños:
@@ -41,6 +45,10 @@ Configuración y las relaciones reutilizan esta base mediante adapters pequeños
 
 No se crea una tarjeta de dominio universal: encabezados, métricas, acciones y relaciones siguen
 perteneciendo a sus respectivas features.
+
+Una tarjeta con controles independientes separa encabezado, contenido accionable y pie. Nunca se
+anida un botón dentro del botón que abre el contenido ni se usa `onClick` en toda la superficie si
+la tarjeta también contiene otras acciones.
 
 ## Extracción y duplicación
 

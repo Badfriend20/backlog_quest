@@ -7,6 +7,7 @@ import {
   DependencyWarning,
   Eyebrow,
   PriorityChip,
+  PrioritySelectChip,
   SectionHeading,
   Stack,
   StatusChip,
@@ -29,11 +30,13 @@ export function QueueView({
   onActivate,
   onMove,
   onMoveRecommendation,
+  onChangePriority,
 }: {
   data: QuestData;
   onActivate: (gameId: string) => void;
   onMove: (gameId: string, direction: -1 | 1) => void;
   onMoveRecommendation: (gameId: string, target: RecommendationMoveTarget) => void;
+  onChangePriority: (gameId: string, priority: string) => void;
 }) {
   const [stateFilter, setStateFilter] = useState("Todos");
   const terms = useVocabulary();
@@ -135,7 +138,14 @@ export function QueueView({
                     <StatusChip tone={statusClass(queueLabel(data, item.state))}>
                       {queueLabel(data, item.state)}
                     </StatusChip>
-                    {item.pinned && <PriorityChip>FIJO · {item.pinnedPosition}</PriorityChip>}
+                    <div className="queue-topline-actions">
+                      {item.pinned && <PriorityChip>FIJO · {item.pinnedPosition}</PriorityChip>}
+                      <PrioritySelectChip
+                        value={game.priority}
+                        options={data.catalogs.priorities}
+                        onChange={priority => onChangePriority(game.id, priority)}
+                      />
+                    </div>
                   </CardTopline>
                   <h3>{game.title}</h3>
                   <p>{item.reason || game.notes || "Sin motivo registrado."}</p>

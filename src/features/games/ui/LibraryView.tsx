@@ -9,7 +9,7 @@ import {
   Eyebrow,
   LibraryCard,
   LibraryGrid,
-  PriorityChip,
+  PrioritySelectChip,
   ProgressRow,
   SectionHeading,
   Stack,
@@ -31,11 +31,13 @@ export function LibraryView({
   onSelectGame,
   onCreateGame,
   onActivate,
+  onChangePriority,
 }: {
   data: QuestData;
   onSelectGame: (id: string) => void;
   onCreateGame: () => void;
   onActivate: (id: string) => void;
+  onChangePriority: (id: string, priority: string) => void;
 }) {
   const terms = useVocabulary();
   const [query, setQuery] = useState("");
@@ -153,13 +155,21 @@ export function LibraryView({
             );
             return (
               <LibraryCard key={game.id}>
-                <CardOpenButton type="button" onClick={() => onSelectGame(game.id)}>
-                  <CardTopline>
-                    <StatusChip tone={statusClass(game.status)}>
-                      {activityStatusLabel(game.status, terms)}
-                    </StatusChip>
-                    <PriorityChip>{game.priority}</PriorityChip>
-                  </CardTopline>
+                <CardTopline>
+                  <StatusChip tone={statusClass(game.status)}>
+                    {activityStatusLabel(game.status, terms)}
+                  </StatusChip>
+                  <PrioritySelectChip
+                    value={game.priority}
+                    options={data.catalogs.priorities}
+                    onChange={nextPriority => onChangePriority(game.id, nextPriority)}
+                  />
+                </CardTopline>
+                <CardOpenButton
+                  type="button"
+                  aria-label={`Abrir ${game.title}`}
+                  onClick={() => onSelectGame(game.id)}
+                >
                   <h3>
                     {game.private ? "🔒 " : ""}
                     {game.title}

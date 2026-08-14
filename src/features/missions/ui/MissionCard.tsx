@@ -6,7 +6,14 @@ import {
   missionLinkState,
   statusClass,
 } from "../../../shared/kernel/questSelectors";
-import { Button, CardActions, CardTopline, ChipList, GameCard } from "../../../shared/ui";
+import {
+  Button,
+  CardActions,
+  CardTopline,
+  ChipList,
+  GameCard,
+  PrioritySelectChip,
+} from "../../../shared/ui";
 import { TooltipChip } from "./TooltipChip";
 import type { MissionActions } from "./MissionActions";
 import { MissionActionMenu } from "./MissionActionMenu";
@@ -24,7 +31,6 @@ export function MissionCard({
   if (!game) return null;
   const activeCopy = game.copies.find(copy => copy.id === mission.copyId);
   const statusInfo = data.catalogs.statuses.find(item => item.label === game.status);
-  const priorityInfo = data.catalogs.priorities.find(item => item.label === game.priority);
   const links = missionLinkState(data, mission);
   return (
     <MissionsScope>
@@ -37,13 +43,11 @@ export function MissionCard({
           >
             {activityStatusLabel(game.status, terms)}
           </TooltipChip>
-          <TooltipChip
-            enabled={data.preferences.showTooltips}
-            className="priority-chip"
-            tooltip={priorityInfo?.description ?? `Prioridad ${game.priority}`}
-          >
-            {game.priority}
-          </TooltipChip>
+          <PrioritySelectChip
+            value={game.priority}
+            options={data.catalogs.priorities}
+            onChange={priority => actions.onChangePriority(game.id, priority)}
+          />
         </CardTopline>
         <div className="mission-content-line">
           <span>{mission.contentTitle}</span>

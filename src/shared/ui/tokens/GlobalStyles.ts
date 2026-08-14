@@ -46,7 +46,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   body {
-    min-width: 320px;
+    min-width: min(320px, 100%);
     min-height: 100vh;
     margin: 0;
     background:

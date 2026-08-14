@@ -9,4 +9,5 @@ export interface MissionActions {
   onAddCopyForMission: (id: string) => void;
   onAddPlaythroughForMission: (id: string) => void;
   onManageContentsForMission: (id: string) => void;
+  onChangePriority: (id: string, priority: string) => void;
 }

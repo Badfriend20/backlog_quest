@@ -18,6 +18,8 @@ Vitest prueba seams puras y estables:
   bitácora y efecto sobre la posición observada por la rotación.
 - importación: formato actual válido y normalizable, rechazo de formatos anteriores, desconocidos o
   sin estructura suficiente.
+- prioridad inline: mutación exclusiva de la actividad objetivo, aceptación del catálogo, estructura
+  semántica de Biblioteca y presencia del editor sin retirar acciones de Misión o Lista.
 
 Las pruebas usan resultados literales de la especificación, no replican el algoritmo dentro del test.
 
@@ -52,6 +54,10 @@ npm run validate
 - Actualización PWA: una versión nueva queda en espera hasta pulsar **Actualizar** en el aviso.
 - Vista compacta: reduce espacios en Inicio, Biblioteca y Lista sin ocultar información.
 - Biblioteca: cambiar el orden no modifica posiciones de Lista y los cerrados quedan al final en el orden predeterminado.
+- Prioridad inline: Biblioteca abre General solo desde su contenido; Biblioteca, Misión y Orden
+  manual cambian `Activity.priority`, cierran el menú al seleccionar o pulsar Escape y permiten
+  Deshacer. Revisar el menú y el wrapping a 320, 390, 760 píxeles y en escritorio, incluidos pin y
+  prioridad juntos en Lista, sin overflow horizontal.
 - Partidas: eliminar una vinculada conserva la misión con alerta; editarla o cerrarla vuelve a crear el vínculo.
 - Copias: eliminar una vinculada conserva misión y partida, limpia la preferencia de Lista y muestra `Sin copia` sin borrar las descripciones históricas.
 - Alertas de misión: `Sin contenido` abre General; `Sin copia` abre una copia nueva; `Sin partida` abre una partida nueva y queda deshabilitada hasta que existan copia y contenido.

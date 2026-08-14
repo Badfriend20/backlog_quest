@@ -25,6 +25,21 @@ function preferredDevice(data: QuestData, copy?: ActivityVariant) {
   return { deviceId, label: deviceId ? deviceName(data, deviceId) : (copy?.device ?? "") };
 }
 
+export function updateActivityPriority(
+  data: QuestData,
+  gameId: string,
+  priority: string
+): QuestData {
+  if (!data.catalogs.priorities.some(item => item.label === priority)) return data;
+  const game = data.games.find(item => item.id === gameId);
+  if (!game || game.priority === priority) return data;
+  return {
+    ...data,
+    meta: updatedMeta(data),
+    games: data.games.map(item => (item.id === gameId ? { ...item, priority } : item)),
+  };
+}
+
 export function removeGameContent(data: QuestData, gameId: string, contentId: string): QuestData {
   const game = data.games.find(item => item.id === gameId);
   const content = game?.contents.find(item => item.id === contentId);
