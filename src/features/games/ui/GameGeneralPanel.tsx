@@ -1,5 +1,5 @@
 import type { QuestData } from "../../../shared/kernel/quest";
-import { FormGrid } from "../../../shared/ui";
+import { CheckRow, FormGrid } from "../../../shared/ui";
 import { getSlotLabel } from "../../../shared/kernel/questSelectors";
 import type { GameEditorController } from "./useGameEditor";
 import { GameContentsSection } from "./GameContentsSection";
@@ -121,14 +121,14 @@ export function GameGeneralPanel({
           }
         />
       </label>
-      <label className="check-row wide-field">
+      <CheckRow className="wide-field">
         <input
           type="checkbox"
           checked={draft.private}
           onChange={event => patch("private", event.target.checked)}
         />
         <span>{capitalizeTerm(terms.activity)} privada</span>
-      </label>
+      </CheckRow>
       <label className="wide-field">
         <span>Notas</span>
         <textarea

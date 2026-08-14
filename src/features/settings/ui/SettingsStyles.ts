@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { CardSurface } from "../../../shared/ui";
+import { CardSurface, CheckRow } from "../../../shared/ui";
 
 export const SettingsGrid = styled.div`
   display: grid;
@@ -138,17 +138,6 @@ export const ExampleDatasetCard = styled(CardSurface)`
 export const SettingsScope = styled.div`
   display: contents;
 
-  .check-row {
-    display: flex !important;
-    align-items: center;
-    gap: 8px !important;
-    padding-bottom: 10px;
-    white-space: nowrap;
-  }
-  .check-row input {
-    width: 18px;
-    height: 18px;
-  }
   .button-stack {
     display: flex;
     gap: 10px;
@@ -274,7 +263,7 @@ export const SettingsScope = styled.div`
     display: grid;
     gap: 4px;
   }
-  .setting-with-description .check-row {
+  .setting-with-description > ${CheckRow} {
     padding-bottom: 0;
   }
   .setting-with-description > small {

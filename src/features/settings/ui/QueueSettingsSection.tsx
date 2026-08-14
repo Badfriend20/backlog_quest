@@ -1,5 +1,5 @@
 import type { QuestData } from "../../../shared/kernel/quest";
-import { Eyebrow } from "../../../shared/ui";
+import { CheckRow, Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { SettingsCard } from "./SettingsStyles";
 
@@ -45,7 +45,7 @@ export function QueueSettingsSection({
             }
           />
         </label>
-        <label className="check-row">
+        <CheckRow>
           <input
             type="checkbox"
             checked={data.preferences.autoSuggestNext}
@@ -57,7 +57,7 @@ export function QueueSettingsSection({
             }
           />
           <span>Abrir la lista después de terminar</span>
-        </label>
+        </CheckRow>
       </div>
     </SettingsCard>
   );

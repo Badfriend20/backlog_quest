@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { IconButton, useDismissiblePopover } from "../../../shared/ui";
 import type { MissionActions } from "./MissionActions";
 
 export function MissionActionMenu({
@@ -10,51 +10,27 @@ export function MissionActionMenu({
   gameId: string;
   actions: MissionActions;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const { open, rootRef, triggerRef, toggle, close } = useDismissiblePopover();
   const menuId = `mission-actions-${missionId}`;
 
-  useEffect(() => {
-    if (!open) return;
-
-    function closeFromOutside(event: PointerEvent) {
-      if (event.target instanceof Node && !rootRef.current?.contains(event.target)) setOpen(false);
-    }
-
-    function closeFromKeyboard(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      triggerRef.current?.focus();
-    }
-
-    document.addEventListener("pointerdown", closeFromOutside);
-    document.addEventListener("keydown", closeFromKeyboard);
-    return () => {
-      document.removeEventListener("pointerdown", closeFromOutside);
-      document.removeEventListener("keydown", closeFromKeyboard);
-    };
-  }, [open]);
-
   function run(action: (id: string) => void) {
-    setOpen(false);
+    close();
     action(missionId);
   }
 
   return (
     <div className="action-menu" ref={rootRef}>
-      <button
+      <IconButton
         ref={triggerRef}
-        type="button"
         className="action-menu-trigger"
         aria-label="Más acciones"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(current => !current)}
+        onClick={toggle}
       >
         ⋯
-      </button>
+      </IconButton>
       {open && (
         <div id={menuId} role="menu">
           <button type="button" role="menuitem" onClick={() => run(actions.onPause)}>
@@ -67,7 +43,7 @@ export function MissionActionMenu({
             type="button"
             role="menuitem"
             onClick={() => {
-              setOpen(false);
+              close();
               actions.onEditGame(gameId);
             }}
           >

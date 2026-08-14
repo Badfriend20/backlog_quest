@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import type { QueueItem } from "../../../shared/kernel/quest";
+import { IconButton, useDismissiblePopover } from "../../../shared/ui";
 import {
   recommendationMoveOptions,
   type RecommendationMoveTarget,
@@ -14,35 +14,14 @@ export function RotationMoveMenu({
   queueLength: number;
   onMove: (target: RecommendationMoveTarget) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const { open, rootRef, triggerRef, toggle, close } = useDismissiblePopover();
   const menuId = `recommendation-move-${item.gameId}`;
   const options = recommendationMoveOptions(queueLength, item.position);
 
-  useEffect(() => {
-    if (!open) return;
-    function closeFromOutside(event: PointerEvent) {
-      if (event.target instanceof Node && !rootRef.current?.contains(event.target)) setOpen(false);
-    }
-    function closeFromKeyboard(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      triggerRef.current?.focus();
-    }
-    document.addEventListener("pointerdown", closeFromOutside);
-    document.addEventListener("keydown", closeFromKeyboard);
-    return () => {
-      document.removeEventListener("pointerdown", closeFromOutside);
-      document.removeEventListener("keydown", closeFromKeyboard);
-    };
-  }, [open]);
-
   return (
     <div className="rotation-move-menu" ref={rootRef}>
-      <button
+      <IconButton
         ref={triggerRef}
-        type="button"
         className="rotation-menu-trigger"
         disabled={item.pinned}
         title={item.pinned ? "Posición fijada" : "Mover en la lista"}
@@ -50,10 +29,10 @@ export function RotationMoveMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(current => !current)}
+        onClick={toggle}
       >
         ⋮
-      </button>
+      </IconButton>
       {open && (
         <div id={menuId} role="menu">
           <strong>Mover en la lista</strong>
@@ -64,7 +43,7 @@ export function RotationMoveMenu({
               role="menuitem"
               disabled={option.disabled}
               onClick={() => {
-                setOpen(false);
+                close();
                 onMove(option.id);
               }}
             >

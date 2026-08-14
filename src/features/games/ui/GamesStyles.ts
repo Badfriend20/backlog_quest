@@ -18,17 +18,6 @@ export const GamesScope = styled.div`
     color: var(--muted);
     font-size: 0.8rem;
   }
-  .check-row {
-    display: flex !important;
-    align-items: center;
-    gap: 8px !important;
-    padding-bottom: 10px;
-    white-space: nowrap;
-  }
-  .check-row input {
-    width: 18px;
-    height: 18px;
-  }
   @media (max-width: 1180px) {
     .filter-panel {
       grid-template-columns: repeat(2, minmax(0, 1fr));

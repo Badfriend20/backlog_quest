@@ -10,7 +10,7 @@ import {
 } from "../../../shared/kernel/questSelectors";
 import { findScheduleConflicts } from "../../../shared/kernel/schedule";
 import { DeviceSelect } from "../../devices";
-import { Button, FormGrid, Modal, ModalActions } from "../../../shared/ui";
+import { Button, CheckRow, FormGrid, Modal, ModalActions } from "../../../shared/ui";
 import { MissionScheduleField } from "./MissionScheduleField";
 import { MissionsScope } from "./MissionsStyles";
 import { capitalizeTerm, useVocabulary } from "../../../shared/vocabulary";
@@ -194,7 +194,7 @@ export function MissionEditor({
                   .filter(Boolean)
                   .join(", ")}
               </strong>
-              <label className="check-row">
+              <CheckRow>
                 <input
                   type="checkbox"
                   checked={replaceOccupied}
@@ -203,7 +203,7 @@ export function MissionEditor({
                 <span>
                   Aplazar las misiones en conflicto a la posición {data.preferences.deferPosition}
                 </span>
-              </label>
+              </CheckRow>
             </div>
           )}
           <label>

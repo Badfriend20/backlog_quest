@@ -44,21 +44,6 @@ export const RotationRecommendationRow = styled.li`
   .rotation-move-menu {
     position: relative;
   }
-  .rotation-menu-trigger {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--border);
-    background: var(--panel-2);
-    color: var(--text);
-    cursor: pointer;
-    font-weight: 800;
-  }
-  .rotation-menu-trigger:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-  }
   .rotation-move-menu > div {
     position: absolute;
     right: 0;

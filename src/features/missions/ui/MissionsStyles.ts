@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { CheckRow } from "../../../shared/ui";
 
 export const MissionsScope = styled.div`
   display: contents;
@@ -39,26 +40,6 @@ export const MissionsScope = styled.div`
   .action-menu {
     position: relative;
   }
-  .action-menu-trigger {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: var(--panel-2);
-    color: var(--text);
-    font-weight: 800;
-  }
-  .action-menu-trigger:hover,
-  .action-menu-trigger:focus-visible {
-    border-color: var(--cyan);
-    color: var(--cyan);
-  }
-  .action-menu-trigger:focus-visible {
-    outline: 2px solid var(--cyan);
-    outline-offset: 2px;
-  }
   .action-menu > div {
     position: absolute;
     right: 0;
@@ -71,7 +52,7 @@ export const MissionsScope = styled.div`
     box-shadow: 5px 5px 0 var(--bg);
     padding: 6px;
   }
-  .action-menu button {
+  .action-menu > div button {
     border: 0;
     background: transparent;
     color: var(--text);
@@ -79,8 +60,8 @@ export const MissionsScope = styled.div`
     padding: 9px;
     cursor: pointer;
   }
-  .action-menu button:hover,
-  .action-menu button:focus-visible {
+  .action-menu > div button:hover,
+  .action-menu > div button:focus-visible {
     background: var(--panel-2);
   }
   .danger-text {
@@ -100,18 +81,7 @@ export const MissionsScope = styled.div`
     color: #ffe4cc;
     font-size: 0.8rem;
   }
-  .check-row {
-    display: flex !important;
-    align-items: center;
-    gap: 8px !important;
-    padding-bottom: 10px;
-    white-space: nowrap;
-  }
-  .check-row input {
-    width: 18px;
-    height: 18px;
-  }
-  .occupied-warning .check-row {
+  .occupied-warning ${CheckRow} {
     margin-top: 8px;
     padding-bottom: 0;
   }

@@ -5,7 +5,7 @@ import {
   OWNERSHIP_LABEL_MAX_LENGTH,
   ownershipDisplayKey,
 } from "../../../shared/kernel/questSelectors";
-import { FormGrid } from "../../../shared/ui";
+import { CheckRow, FormGrid } from "../../../shared/ui";
 import { EditableCatalogSection } from "./EditableCatalogSection";
 
 const ACCESS_METHOD_NAME_MAX_LENGTH = 40;
@@ -119,14 +119,14 @@ export function OwnershipSettingsSection({
               {item.name.length}/{ACCESS_METHOD_NAME_MAX_LENGTH}
             </small>
           </label>
-          <label className="check-row">
+          <CheckRow>
             <input
               type="checkbox"
               checked={item.hidden}
               onChange={event => replace({ ...item, hidden: event.target.checked })}
             />
             <span>Ocultar en agregado rápido</span>
-          </label>
+          </CheckRow>
           <label>
             <span>Texto a mostrar</span>
             <input

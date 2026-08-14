@@ -38,7 +38,7 @@ export function MissionCard({
         <CardTopline>
           <TooltipChip
             enabled={data.preferences.showTooltips}
-            className={`status-pill ${statusClass(game.status)}`}
+            tone={statusClass(game.status)}
             tooltip={statusInfo?.description ?? game.status}
           >
             {activityStatusLabel(game.status, terms)}

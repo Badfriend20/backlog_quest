@@ -164,17 +164,6 @@ export const DevicesScope = styled.div`
   .device-option span {
     overflow-wrap: anywhere;
   }
-  .check-row {
-    display: flex !important;
-    align-items: center;
-    gap: 8px !important;
-    padding-bottom: 10px;
-    white-space: nowrap;
-  }
-  .check-row input {
-    width: 18px;
-    height: 18px;
-  }
   .device-library-grid > article {
     min-height: 190px;
   }

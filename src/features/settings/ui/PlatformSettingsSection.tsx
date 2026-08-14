@@ -4,7 +4,7 @@ import {
   normalizeCopyPlatforms,
   resolveCopyPlatform,
 } from "../../../shared/kernel/questSelectors";
-import { Callout, FormGrid } from "../../../shared/ui";
+import { Callout, CheckRow, FormGrid } from "../../../shared/ui";
 import { EditableCatalogSection } from "./EditableCatalogSection";
 
 const PLATFORM_NAME_MAX_LENGTH = 40;
@@ -75,14 +75,14 @@ export function PlatformSettingsSection({
               {platform.name.length}/{PLATFORM_NAME_MAX_LENGTH}
             </small>
           </label>
-          <label className="check-row">
+          <CheckRow>
             <input
               type="checkbox"
               checked={platform.active}
               onChange={event => replace({ ...platform, active: event.target.checked })}
             />
             <span>Disponible en nuevas modalidades</span>
-          </label>
+          </CheckRow>
         </FormGrid>
       )}
       renderNotice={(platform, items) => {

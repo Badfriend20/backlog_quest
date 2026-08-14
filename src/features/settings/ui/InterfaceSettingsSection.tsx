@@ -1,5 +1,5 @@
 import type { QuestData } from "../../../shared/kernel/quest";
-import { Eyebrow } from "../../../shared/ui";
+import { CheckRow, Eyebrow } from "../../../shared/ui";
 import type { SettingsChangeHandler } from "./settingsTypes";
 import { SettingsCard } from "./SettingsStyles";
 
@@ -16,7 +16,7 @@ export function InterfaceSettingsSection({
       <h2>Presentación</h2>
       <div className="settings-form">
         <div className="setting-with-description">
-          <label className="check-row">
+          <CheckRow>
             <input
               type="checkbox"
               checked={data.preferences.compactCards}
@@ -28,13 +28,13 @@ export function InterfaceSettingsSection({
               }
             />
             <span>Vista compacta de tarjetas y lista</span>
-          </label>
+          </CheckRow>
           <small>
             Reduce el relleno y los espacios verticales en Inicio, Colección y Lista; no oculta
             información.
           </small>
         </div>
-        <label className="check-row">
+        <CheckRow>
           <input
             type="checkbox"
             checked={data.preferences.showTooltips}
@@ -43,8 +43,8 @@ export function InterfaceSettingsSection({
             }
           />
           <span>Mostrar explicaciones en chips</span>
-        </label>
-        <label className="check-row">
+        </CheckRow>
+        <CheckRow>
           <input
             type="checkbox"
             checked={data.preferences.hidePrivateByDefault}
@@ -56,8 +56,8 @@ export function InterfaceSettingsSection({
             }
           />
           <span>Ocultar actividades privadas por defecto</span>
-        </label>
-        <label className="check-row">
+        </CheckRow>
+        <CheckRow>
           <input
             type="checkbox"
             checked={data.preferences.confirmDestructiveActions}
@@ -69,7 +69,7 @@ export function InterfaceSettingsSection({
             }
           />
           <span>Confirmar abandonar o enviar al final</span>
-        </label>
+        </CheckRow>
       </div>
     </SettingsCard>
   );

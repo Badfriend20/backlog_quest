@@ -4,6 +4,7 @@ import { addChannel } from "../../../shared/kernel/channelCatalog";
 import {
   Button,
   CardActions,
+  CheckRow,
   ConfirmationModal,
   FormGrid,
   InlineCreateField,
@@ -90,14 +91,14 @@ export function DeviceEditorModal({
                 ))}
               </select>
             </label>
-            <label className="check-row">
+            <CheckRow>
               <input
                 type="checkbox"
                 checked={draft.active}
                 onChange={event => update({ active: event.target.checked })}
               />
               <span>Disponible en selectores</span>
-            </label>
+            </CheckRow>
             <label className="wide-field">
               <span>Notas</span>
               <textarea

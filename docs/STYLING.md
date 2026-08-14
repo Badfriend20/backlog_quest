@@ -20,6 +20,8 @@ encapsulación, no como un mecanismo para inyectar antiguas hojas globales.
 
 `shared/ui` se divide por profundidad:
 
+Los hooks compartidos concentran interacciones sin estilos, contenido ni conocimiento de dominio.
+
 - `atoms`: botones, chips y ayudas pequeñas;
 - `layout`: tarjetas, rejillas, acciones, formularios, estados vacíos y resúmenes;
 - `organisms`: modales y composiciones reutilizadas por varias features;
@@ -35,6 +37,11 @@ de dominio y solo se usa como editor cuando su consumidor conecta explícitament
 `ReorderControls` presenta Subir/Bajar como dos targets de 34 píxeles con etiquetas accesibles. Los
 menús contextuales usan panel, borde, texto y sombra mediante tokens; ninguna superficie de menú
 depende de fondos oscuros literales.
+
+`IconButton` concentra el target visual de 34 px, foco, hover y disabled de controles de icono
+equivalentes. `CheckRow` concentra el layout y dimension del checkbox horizontal. Los tonos de estado
+de `TooltipChip` reutilizan `chipBaseStyles` y `chipToneStyles`; sus variantes de copia permanecen
+locales a Missions.
 
 `CardSurface` es la seam compartida de tarjetas. Define superficie `var(--panel)`, borde, color y
 transición sin introducir degradados ni colores literales. Inicio, Colección, Recursos,

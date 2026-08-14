@@ -25,6 +25,7 @@ src/
     schedule/            calendario generado
     settings/            preferencias y temas
   shared/
+    ui/hooks/            comportamiento transversal de UI sin estilos ni dominio
     kernel/              contratos y selectores usados por varias features
     ui/atoms/            controles visuales indivisibles y reutilizables
     ui/layout/           composición visual compartida sin lógica de dominio
@@ -67,6 +68,12 @@ Ejemplos actuales:
   Application. `PriorityChip` permanece como representación pasiva de otras prioridades.
 - `ReorderControls` concentra los dos movimientos compactos y accesibles usados por Games y Queue;
   recibe callbacks y límites, sin conocer contenidos, posiciones ni pins.
+- `IconButton` define el target accesible de 34 px para acciones de icono equivalentes;
+  el consumidor conserva el significado y los atributos ARIA.
+- `useDismissiblePopover` concentra apertura, cierre exterior, Escape, retorno de foco y
+  limpieza de listeners para componentes de Backlog, Missions, Queue y los controles compartidos.
+- `CheckRow` es la central fuente del layout horizontal de checkbox; las features conservan unicamente
+  ajustes contextuales de espaciado.
 - `CardSurface` es la seam de superficie consumida por Dashboard, Games, Missions, Devices y
   Settings. `GameCard`, `LibraryCard` y `RelationCard` son adapters visuales, no implementaciones
   paralelas.

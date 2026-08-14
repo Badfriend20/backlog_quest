@@ -7,5 +7,6 @@ export type { PrioritySelectOption } from "./PrioritySelectChip";
 export { ReorderControls } from "./ReorderControls";
 export type { ReorderControlsProps } from "./ReorderControls";
 export { HelpTooltip } from "./HelpTooltip";
+export { IconButton } from "./IconButton";
 export { InlineCreateField } from "./InlineCreateField";
 export { tooltipAnchorStyles } from "./Tooltip";
